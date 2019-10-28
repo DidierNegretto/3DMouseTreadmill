@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 8, 2, 2, 0, 0, 0}, {1, 26, 26, 26, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 176, 17, 17, 0, 0, 0}, {2, 44, 17, 17, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -59,6 +59,7 @@ typedef enum MOUSE_MODE
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_heartbeat.h"
 #include "./mavlink_msg_speed_info.h"
+#include "./mavlink_msg_speed_setpoint.h"
 
 // base include
 
@@ -67,8 +68,8 @@ typedef enum MOUSE_MODE
 #define MAVLINK_THIS_XML_IDX 0
 
 #if MAVLINK_THIS_XML_IDX == MAVLINK_PRIMARY_XML_IDX
-# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO}
-# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }, { "SPEED_INFO", 1 }}
+# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO, MAVLINK_MESSAGE_INFO_SPEED_SETPOINT}
+# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }, { "SPEED_INFO", 1 }, { "SPEED_SETPOINT", 2 }}
 # if MAVLINK_COMMAND_24BIT
 #  include "../mavlink_get_info.h"
 # endif

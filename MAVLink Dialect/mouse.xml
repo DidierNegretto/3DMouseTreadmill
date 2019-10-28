@@ -17,15 +17,23 @@
         <message id="0" name="HEARTBEAT">
             <description>The heartbeat message shows that a system or component is present and responding.</description>
             <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
-            <field type="uint8_t" name="time">Time from boot of system</field>
+            <field type="uint32_t" name="time">Time from boot of system</field>
         </message>
         <message id="1" name="SPEED_INFO">
             <description>The message giving the actual speed of the motor.</description>
             <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
-            <field type="uint8_t" name="time">Time from boot of system</field>
-            <field type="double" name="speed_x">Speed in x direction</field>
-            <field type="double" name="speed_y">Speed in y direction</field>
-            <field type="double" name="speed_z">Speed in z direction</field>
+            <field type="uint32_t" name="time">Time from boot of system</field>
+            <field type="float" name="speed_x">Speed in x direction</field>
+            <field type="float" name="speed_y">Speed in y direction</field>
+            <field type="float" name="speed_z">Speed in z direction</field>
+        </message>
+         <message id="2" name="SPEED_SETPOINT">
+            <description>The message is sent to validate the setpoint sent from computer.</description>
+            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
+            <field type="uint32_t" name="time">Time from boot of system</field>
+            <field type="float" name="setpoint_x">Speed setpoint in x direction</field>
+            <field type="float" name="setpoint_y">Speed setpoint in y direction</field>
+            <field type="float" name="setpoint_z">Speed setpoint in z direction</field>
         </message>
     </messages>
 </mavlink>
