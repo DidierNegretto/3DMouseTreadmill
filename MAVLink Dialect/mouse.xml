@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<mavlink>
+    <version>3</version>
+    <dialect>98</dialect>
+    <enums>
+        <enum name="MOUSE_MODE">
+            <description>This enum defines the mode to be used</description>
+            <entry value="0" name="MOUSE_MODE_STOP">
+                <description>All motion of mouse treadmill is stopped</description>
+            </entry>
+            <entry value="1" name="MOUSE_MODE_SPEED">
+                <description>Constanst speed is applied</description>
+            </entry>
+        </enum>
+    </enums>
+    <messages>
+        <message id="0" name="HEARTBEAT">
+            <description>The heartbeat message shows that a system or component is present and responding.</description>
+            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
+            <field type="uint8_t" name="time">Time from boot of system</field>
+        </message>
+        <message id="1" name="SPEED_INFO">
+            <description>The message giving the actual speed of the motor.</description>
+            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
+            <field type="uint8_t" name="time">Time from boot of system</field>
+            <field type="double" name="speed_x">Speed in x direction</field>
+            <field type="double" name="speed_y">Speed in y direction</field>
+            <field type="double" name="speed_z">Speed in z direction</field>
+        </message>
+    </messages>
+</mavlink>
