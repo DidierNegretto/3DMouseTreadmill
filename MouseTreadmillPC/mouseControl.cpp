@@ -112,11 +112,12 @@ void comm_send(int fd, uint8_t mode){
     mavlink_message_t msg;
     uint8_t buf[100];
 
-    mavlink_msg_heartbeat_pack(0,0, &msg, mode, 0);
+    mavlink_msg_speed_setpoint_pack(0,0, &msg, mode, setpoint.setpoint_x, setpoint.setpoint_y, setpoint.setpoint_z );
 
     // Copy the message to the send buffer
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);
     uint16_t written = write(fd, buf, len);
+    //cout <<"Message sent"<<endl;
     if (len!=written)
         cout<<"len = "<<len<<" written = "<<written<<endl;
 
@@ -134,19 +135,19 @@ int main() {
 
 	setpoint.mode = 2;
 	setpoint.setpoint_x = 3.1415;
-    uint8_t mode = 239;
+    uint8_t mode = 4;
     int count = 0;
 
     while(1){
 
        count = 0;
-        while(setpoint.mode != mode){
-            //comm_send(fd, mode);
+       while(setpoint.mode != mode){
             comm_receive(fd);
+            comm_send(fd, mode);
             count++;
         }
         cout<< "Needed = "<<count<<" to transmit information"<<endl;
-        mode+=23;
+        mode+=1;
 
 
     }

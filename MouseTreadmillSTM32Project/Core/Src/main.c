@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TIMEOUT 15
+#define TIMEOUT 500
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -53,19 +53,24 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-
 /* USER CODE BEGIN PFP */
 void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
 }
 void main_receiveMsg (void){
-	/*	uint8_t c = 0;
-	mavlink_message_t inmsg;
-	mavlink_status_t msgStatus;
-	while(HAL_UART_Receive(&huart2, &c, 1, 5) == HAL_BUSY){
-		if(mavlink_parse_char(0, c, &inmsg, &msgStatus))
-			mouseDriver_readMsg(inmsg);
-	}*/
+	uint8_t c;
+	mavlink_message_t inmsg;	//Not re-initializing them is NOT the problem
+	mavlink_status_t msgStatus; //Not re-initializing them is NOT the problem
+	while(1){
+		if(HAL_UART_Receive(&huart2, &c, sizeof(c), TIMEOUT)==HAL_OK){
+			if(mavlink_parse_char(0, c, &inmsg, &msgStatus)){
+				mouseDriver_readMsg(inmsg);
+
+				return;
+			}
+		}
+	}
+
 }
 /* USER CODE END PFP */
 
@@ -92,6 +97,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 	mouseDriver_init();
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -113,11 +119,10 @@ int main(void)
   while (1)
   {
 	  main_receiveMsg();
-	  mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-	  mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-    /* USER CODE END WHILE */
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }
