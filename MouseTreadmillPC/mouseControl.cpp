@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "mouse/mavlink.h"
+#include "mavlink.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
@@ -17,15 +17,16 @@
 #include <ctime>
 
 using namespace std;
-char portname[22] = "/dev/cu.usbmodem14101";
+char portname[22] = "/dev/cu.usbmodem14103";
 mavlink_heartbeat_t heart;
+mavlink_speed_setpoint_t setpoint;
 
 int set_interface_attribs (int fd, int speed, int parity){
     struct termios tty;
     memset (&tty, 0, sizeof tty);
     if (tcgetattr (fd, &tty) != 0)
     {
-            cout<< "error %d from tcgetattr"<< errno;
+            cout<< "error " << errno<< " from tcgetattr"<<endl;
             return -1;
     }
 
@@ -53,7 +54,7 @@ int set_interface_attribs (int fd, int speed, int parity){
 
     if (tcsetattr (fd, TCSANOW, &tty) != 0)
     {
-            cout<<"error %d from tcsetattr"<<errno;
+            cout<<"error "<<errno<<" from tcsetattr"<<endl;
             return -1;
     }
     return 0;
@@ -90,11 +91,16 @@ void comm_receive(int fd) {
 
                 case MAVLINK_MSG_ID_HEARTBEAT:
                     mavlink_msg_heartbeat_decode(&msg, &heart);
-                    //cout<<"Received heart beat. Mode"<<(int)heart.mode<<" time"<<(int)heart.time<<endl;
+                    cout<<"Received heart beat. Mode"<<(int)heart.mode<<" time"<<(int)heart.time<<endl;
+                    return;
+                    break;
+                case MAVLINK_MSG_ID_SPEED_SETPOINT:
+                    mavlink_msg_speed_setpoint_decode(&msg, &setpoint);
+                    cout<<"Received speed setpoint."<<(int)setpoint.mode<<" "<<(float)setpoint.setpoint_x<<" "<<(float)setpoint.setpoint_y<<endl;
                     return;
                     break;
                 default:
-                    cout<<"ID NON VALID";
+                    cout<<"ID NON VALID"<<endl;
                     break;
             }
         }
@@ -121,20 +127,21 @@ int main() {
     int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 
 
-    set_interface_attribs (fd, B230400, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (fd, 0);                // set no blocking
 
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
-	heart.mode = 2;
+	setpoint.mode = 2;
+	setpoint.setpoint_x = 3.1415;
     uint8_t mode = 239;
     int count = 0;
 
     while(1){
 
        count = 0;
-        while(heart.mode != mode){
-            comm_send(fd, mode);
+        while(setpoint.mode != mode){
+            //comm_send(fd, mode);
             comm_receive(fd);
             count++;
         }

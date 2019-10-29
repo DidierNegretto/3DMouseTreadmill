@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TIMEOUT 5
+#define TIMEOUT 15
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -59,13 +59,13 @@ void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
 }
 void main_receiveMsg (void){
-	uint8_t c = 0;
+	/*	uint8_t c = 0;
 	mavlink_message_t inmsg;
 	mavlink_status_t msgStatus;
 	while(HAL_UART_Receive(&huart2, &c, 1, 5) == HAL_BUSY){
 		if(mavlink_parse_char(0, c, &inmsg, &msgStatus))
 			mouseDriver_readMsg(inmsg);
-	}
+	}*/
 }
 /* USER CODE END PFP */
 
@@ -113,6 +113,8 @@ int main(void)
   while (1)
   {
 	  main_receiveMsg();
+	  mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+	  mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
