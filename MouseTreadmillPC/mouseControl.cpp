@@ -4,6 +4,7 @@
 // Version     :
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
+// Path        : /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillPC/Debug
 //============================================================================
 
 #include <iostream>
