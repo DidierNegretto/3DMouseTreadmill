@@ -43,7 +43,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_speed_info.h \
  /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_speed_setpoint.h \
  /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_mode_selection.h \
- /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h
+ /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h \
+ /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/utils.h
 
 ../Core/Inc/main.h:
 
@@ -136,3 +137,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_mode_selection.h:
 
 /Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h:
+
+/Users/Didier/Desktop/EPFL/Secondo\ master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/utils.h:
