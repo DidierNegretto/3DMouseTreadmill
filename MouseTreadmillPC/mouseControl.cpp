@@ -96,7 +96,7 @@ void comm_receive(int fd) {
                     break;
                 case MAVLINK_MSG_ID_SPEED_SETPOINT:
                     mavlink_msg_speed_setpoint_decode(&msg, &setpoint);
-                    cout<<"Received speed setpoint."<<(int)setpoint.mode<<" "<<(float)setpoint.setpoint_x<<" "<<(float)setpoint.setpoint_y<<endl;
+                    cout<<"Received speed setpoint. "<<(int)setpoint.mode<<" "<<(float)setpoint.setpoint_x<<" "<<(float)setpoint.setpoint_y<<endl;
                     return;
                     break;
                 default:
@@ -135,6 +135,7 @@ int main() {
 
 	setpoint.mode = 2;
 	setpoint.setpoint_x = 3.1415;
+
     uint8_t mode = 4;
     int count = 0;
 

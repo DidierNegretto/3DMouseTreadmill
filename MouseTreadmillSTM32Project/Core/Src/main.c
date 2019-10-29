@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TIMEOUT 500
+#define TIMEOUT 2
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,16 +58,20 @@ void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
 }
 void main_receiveMsg (void){
-	uint8_t c;
+	uint8_t inByte = 0;
 	mavlink_message_t inmsg;	//Not re-initializing them is NOT the problem
 	mavlink_status_t msgStatus; //Not re-initializing them is NOT the problem
-	while(1){
-		if(HAL_UART_Receive(&huart2, &c, sizeof(c), TIMEOUT)==HAL_OK){
-			if(mavlink_parse_char(0, c, &inmsg, &msgStatus)){
-				mouseDriver_readMsg(inmsg);
+	int i = 0;
 
-				return;
-			}
+	while(UART_FLAG_RXNE){
+		HAL_UART_Receive(&huart2, &inByte, 1, TIMEOUT);
+		if(mavlink_parse_char(0, inByte, &inmsg, &msgStatus)){
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+			HAL_Delay(300);
+			mouseDriver_readMsg(inmsg);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+			return;
 		}
 	}
 
@@ -119,6 +123,7 @@ int main(void)
   while (1)
   {
 	  main_receiveMsg();
+	  mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
 	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -202,7 +207,7 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.Parity = UART_PARITY_NONE;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_8;
   huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
   if (HAL_UART_Init(&huart2) != HAL_OK)
