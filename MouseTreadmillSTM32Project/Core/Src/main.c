@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mouseDriver.h"
+#include "mavlink.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,9 +53,19 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+
 /* USER CODE BEGIN PFP */
 void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
+}
+void main_receiveMsg (void){
+	uint8_t c = 0;
+	mavlink_message_t inmsg;
+	mavlink_status_t msgStatus;
+	while(HAL_UART_Receive(&huart2, &c, 1, 5) == HAL_BUSY){
+		if(mavlink_parse_char(0, c, &inmsg, &msgStatus))
+			mouseDriver_readMsg(inmsg);
+	}
 }
 /* USER CODE END PFP */
 
@@ -99,13 +110,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t h[] = "HELLO\n";
   while (1)
   {
-
-
-	HAL_UART_Transmit(&huart2, h, sizeof(h), 10);
-	HAL_Delay(1000);
+	  main_receiveMsg();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
