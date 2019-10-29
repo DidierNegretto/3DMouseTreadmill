@@ -46,7 +46,7 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t inByte = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,10 +57,8 @@ static void MX_USART2_UART_Init(void);
 void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
 }
+/*
 void main_receiveMsg (void){
-	uint8_t inByte = 0;
-	mavlink_message_t inmsg;	//Not re-initializing them is NOT the problem
-	mavlink_status_t msgStatus; //Not re-initializing them is NOT the problem
 	int i = 0;
 
 	while(UART_FLAG_RXNE){
@@ -75,11 +73,32 @@ void main_receiveMsg (void){
 		}
 	}
 
-}
+}*/
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/* UART2 Interrupt Service Routine */
+void USART2_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(&huart2);
+}
+/* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	mavlink_message_t inmsg;
+	mavlink_status_t msgStatus;
+	if (huart->Instance == USART2)
+	{
+		/* Receive one byte in interrupt mode */
+		HAL_UART_Receive_IT(&huart2, &inByte, 1);
+
+		if(mavlink_parse_char(0, inByte, &inmsg, &msgStatus)){
+			mouseDriver_readMsg(inmsg);
+		}
+	}
+
+  }
 
 /* USER CODE END 0 */
 
@@ -115,16 +134,14 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_UART_Receive_IT(&huart2, &inByte, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  main_receiveMsg();
-	  mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-	  /* USER CODE END WHILE */
+	/* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  HAL_Delay(100);
@@ -207,7 +224,7 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.Parity = UART_PARITY_NONE;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_8;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
   huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
   if (HAL_UART_Init(&huart2) != HAL_OK)
@@ -215,7 +232,9 @@ static void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-
+  /* Peripheral interrupt init*/
+  HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE END USART2_Init 2 */
 
 }

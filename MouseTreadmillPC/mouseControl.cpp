@@ -149,6 +149,8 @@ int main() {
         }
         cout<< "Needed = "<<count<<" to transmit information"<<endl;
         mode+=1;
+        if (mode == 250)
+            mode=0;
 
 
     }
