@@ -50,6 +50,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -58,6 +60,14 @@ void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define DT_HEART 50
+#define PRESCALER_HEART 8000
+#define CLOCK_FREQ 80000000
+#define COUNTER_PERIOD_HEART ((CLOCK_FREQ/(PRESCALER_HEART))*0.001*DT_HEART)
+#define DT_PWM 20
+#define PRESCALER_PWM 8000
+#define COUNTER_PERIOD_PWM ((CLOCK_FREQ/(PRESCALER_PWM))*0.001*DT_PWM)
+#define PULSE_PWM ((CLOCK_FREQ/(PRESCALER_PWM))*0.001)
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2

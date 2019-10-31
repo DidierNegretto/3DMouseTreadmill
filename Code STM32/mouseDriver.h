@@ -18,12 +18,6 @@
 
 /* maximum size of the trasmit buffer */
 #define BUFFER_SIZE 50
-/* time enlapsed between two calls to mouseDriver_controlISR in 0.1s */
-#define DT 50
-#define PRESCALER 8000
-#define CLOCK_FREQ 80000000
-#define COUNTER_PERIOD ((CLOCK_FREQ/(PRESCALER))*1e-3*DT)
-
 
 /* Function for initializing the mouseDriver*/
 void mouseDriver_init(void);

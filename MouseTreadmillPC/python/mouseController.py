@@ -5,12 +5,18 @@ import numpy as np
 import matplotlib as plt
 from pymavlink.dialects.v20 import mouse as mouseController
 
-mouseController
-a = MAVLINK_MSG_ID_BAD_DATA
+"""
+Constants copied from mouse.py. REMEBER TO UPDATE
+"""
+MOUSE_MODE_STOP = 0 # All motion of mouse treadmill is stopped
+MOUSE_MODE_SPEED = 1 # Constanst speed is applied. Speed selected by PC message
+MOUSE_MODE_AUTO = 2 # Predefined speed profile is applied
+
 
 port = "/dev/cu.usbmodem14102"
 connection = serial.Serial(port, baudrate = 230400, timeout = 2)
 mavlink = mouseController.MAVLink(file = connection )
+
 mode = 0 
 actualTime = 0  
 
