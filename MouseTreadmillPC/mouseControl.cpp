@@ -130,7 +130,7 @@ int main() {
     int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 
 
-    set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_interface_attribs (fd, B230400, 0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (fd, 0);                // set no blocking
 
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
