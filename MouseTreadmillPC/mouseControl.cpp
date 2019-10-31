@@ -18,9 +18,10 @@
 #include <ctime>
 
 using namespace std;
-char portname[] = "/dev/cu.usbmodem14103";
+char portname[] = "/dev/cu.usbmodem14102";
 mavlink_heartbeat_t heart;
 mavlink_speed_setpoint_t setpoint;
+uint8_t mode = 0;
 
 int set_interface_attribs (int fd, int speed, int parity){
     struct termios tty;
@@ -113,8 +114,8 @@ void comm_send(int fd){
     mavlink_message_t msg;
     uint8_t buf[100];
 
-    mavlink_msg_speed_setpoint_pack(0,0, &msg, setpoint.setpoint_x, setpoint.setpoint_y, setpoint.setpoint_z );
-
+    //mavlink_msg_speed_setpoint_pack(0,0, &msg, setpoint.setpoint_x, setpoint.setpoint_y, setpoint.setpoint_z );
+    mavlink_msg_mode_selection_pack(0,0,&msg, mode);
     // Copy the message to the send buffer
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);
     uint16_t written = write(fd, buf, len);
@@ -144,6 +145,10 @@ int main() {
        count = 0;
        comm_receive(fd);
        comm_send(fd);
+       if (mode == 0 )
+           mode = 1;
+       else
+           mode = 0;
     }
 
 
