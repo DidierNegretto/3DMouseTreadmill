@@ -8,30 +8,37 @@
 #ifndef MOUSEDRIVER_N_H
 #define MOUSEDRIVER_N_H
 
-#define SYS_ID 0
-#define COMP_ID 0
-#define BUFFER_SIZE 40
-
 #include "mavlink.h"
 #include "main.h"
 #include "utils.h"
 
+/* Constants for MALINK functions*/
+#define SYS_ID 0
+#define COMP_ID 0
+
+/* maximum size of the trasmit buffer */
+#define BUFFER_SIZE 50
+/* time enlapsed between two calls to mouseDriver_controlISR in ms */
+#define DT 50
+#define PRESCALER 8000
+#define CLOCK_FREQ 80000000
+#define COUNTER_PERIOD ((CLOCK_FREQ/(PRESCALER))*DT*1e-3)
+
+
 /* Function for initializing the mouseDriver*/
 void mouseDriver_init(void);
-
-/* Function for setting time in the mouseDriver, time is used for the timestamps */
-void mouseDriver_setTime (const uint32_t time);
-
-/* Function for getting the measured speed from the sensors */
-mavlink_speed_info_t mouseDriver_getActualSpeed(void);
-
-/* Function for setting the setpoint of the mouse treadmill */
-void mouseDriver_setSetpoint(const mavlink_speed_setpoint_t speed);
 
 /* Function for decoding a message */
 void mouseDriver_readMsg(const mavlink_message_t msg);
 
-/* Function for sending a specific message from ID */
-void mouseDriver_sendMsg(uint32_t msgid);
+/* Idle function for mouse driver. To be called in the while(1) loop */
+void mouseDriver_idle (void);
+
+/* Function called every DT for updating the control signals to motors */
+void mouseDriver_controlISR(void);
+
+/* Functions for setting/getting time */
+void mouseDriver_setTime (const uint32_t time);
+uint32_t mouseDriver_getTime (void);
 
 #endif

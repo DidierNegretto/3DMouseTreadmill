@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 176, 17, 17, 0, 0, 0}, {2, 239, 13, 13, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 202, 16, 16, 0, 0, 0}, {2, 129, 12, 12, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -40,8 +40,9 @@ extern "C" {
 typedef enum MOUSE_MODE
 {
    MOUSE_MODE_STOP=0, /* All motion of mouse treadmill is stopped | */
-   MOUSE_MODE_SPEED=1, /* Constanst speed is applied | */
-   MOUSE_MODE_ENUM_END=2, /*  | */
+   MOUSE_MODE_SPEED=1, /* Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT. | */
+   MOUSE_MODE_AUTO=2, /* Predefined speed profile is applied | */
+   MOUSE_MODE_ENUM_END=3, /*  | */
 } MOUSE_MODE;
 #endif
 

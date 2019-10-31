@@ -43,6 +43,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim7;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -53,43 +55,29 @@ uint8_t inByte = 0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
 }
-/*
-void main_receiveMsg (void){
-	int i = 0;
 
-	while(UART_FLAG_RXNE){
-		HAL_UART_Receive(&huart2, &inByte, 1, TIMEOUT);
-		if(mavlink_parse_char(0, inByte, &inmsg, &msgStatus)){
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-			HAL_Delay(300);
-			mouseDriver_readMsg(inmsg);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-			return;
-		}
-	}
-
-}*/
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /* UART2 Interrupt Service Routine */
-void USART2_IRQHandler(void)
-{
+void USART2_IRQHandler(void){
   HAL_UART_IRQHandler(&huart2);
 }
+void TM7_IRQHandler(void){
+	HAL_TIM_IRQHandler(&htim7);
+}
+
 /* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	mavlink_message_t inmsg;
 	mavlink_status_t msgStatus;
-	if (huart->Instance == USART2)
-	{
+	if (huart->Instance == USART2){
 		/* Receive one byte in interrupt mode */
 		HAL_UART_Receive_IT(&huart2, &inByte, 1);
 
@@ -99,7 +87,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 
   }
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+    if (htim->Instance==TIM7){
+    	mouseDriver_setTime(mouseDriver_getTime()+DT);
+    	mouseDriver_controlISR();
+    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -133,15 +127,18 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
+  HAL_TIM_Base_Start_IT(&htim7);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	/* USER CODE END WHILE */
+	  mouseDriver_idle();
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  HAL_Delay(100);
@@ -200,6 +197,44 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = (uint32_t)PRESCALER;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = (uint32_t)COUNTER_PERIOD;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
+
 }
 
 /**

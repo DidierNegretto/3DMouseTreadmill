@@ -92,7 +92,7 @@ static void mavlink_test_speed_info(uint8_t system_id, uint8_t component_id, mav
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_speed_info_t packet_in = {
-        963497464,45.0,73.0,101.0,53
+        963497464,45.0,73.0,101.0
     };
     mavlink_speed_info_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -100,7 +100,6 @@ static void mavlink_test_speed_info(uint8_t system_id, uint8_t component_id, mav
         packet1.speed_x = packet_in.speed_x;
         packet1.speed_y = packet_in.speed_y;
         packet1.speed_z = packet_in.speed_z;
-        packet1.mode = packet_in.mode;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -115,12 +114,12 @@ static void mavlink_test_speed_info(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_info_pack(system_id, component_id, &msg , packet1.mode , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
+    mavlink_msg_speed_info_pack(system_id, component_id, &msg , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
     mavlink_msg_speed_info_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_info_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.mode , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
+    mavlink_msg_speed_info_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
     mavlink_msg_speed_info_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -133,7 +132,7 @@ static void mavlink_test_speed_info(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_info_send(MAVLINK_COMM_1 , packet1.mode , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
+    mavlink_msg_speed_info_send(MAVLINK_COMM_1 , packet1.time , packet1.speed_x , packet1.speed_y , packet1.speed_z );
     mavlink_msg_speed_info_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
@@ -150,14 +149,13 @@ static void mavlink_test_speed_setpoint(uint8_t system_id, uint8_t component_id,
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_speed_setpoint_t packet_in = {
-        17.0,45.0,73.0,41
+        17.0,45.0,73.0
     };
     mavlink_speed_setpoint_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         packet1.setpoint_x = packet_in.setpoint_x;
         packet1.setpoint_y = packet_in.setpoint_y;
         packet1.setpoint_z = packet_in.setpoint_z;
-        packet1.mode = packet_in.mode;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -172,12 +170,12 @@ static void mavlink_test_speed_setpoint(uint8_t system_id, uint8_t component_id,
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_setpoint_pack(system_id, component_id, &msg , packet1.mode , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
+    mavlink_msg_speed_setpoint_pack(system_id, component_id, &msg , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
     mavlink_msg_speed_setpoint_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_setpoint_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.mode , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
+    mavlink_msg_speed_setpoint_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
     mavlink_msg_speed_setpoint_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -190,7 +188,7 @@ static void mavlink_test_speed_setpoint(uint8_t system_id, uint8_t component_id,
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_speed_setpoint_send(MAVLINK_COMM_1 , packet1.mode , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
+    mavlink_msg_speed_setpoint_send(MAVLINK_COMM_1 , packet1.setpoint_x , packet1.setpoint_y , packet1.setpoint_z );
     mavlink_msg_speed_setpoint_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

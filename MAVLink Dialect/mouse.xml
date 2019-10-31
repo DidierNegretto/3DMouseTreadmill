@@ -9,8 +9,12 @@
                 <description>All motion of mouse treadmill is stopped</description>
             </entry>
             <entry value="1" name="MOUSE_MODE_SPEED">
-                <description>Constanst speed is applied</description>
+                <description>Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT.</description>
             </entry>
+            <entry value="2" name="MOUSE_MODE_AUTO">
+                <description>Predefined speed profile is applied</description>
+            </entry>
+            
         </enum>
     </enums>
     <messages>
@@ -27,7 +31,6 @@
                         Sender = STM32
                         Receiver = PC
             </description>
-            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
             <field type="uint32_t" name="time">Time from boot of system</field>
             <field type="float" name="speed_x">Speed in x direction</field>
             <field type="float" name="speed_y">Speed in y direction</field>
@@ -38,7 +41,6 @@
                         Sender = PC/STM32
                         Receiver = STM32/PC
             </description>
-            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
             <field type="float" name="setpoint_x">Speed setpoint in x direction</field>
             <field type="float" name="setpoint_y">Speed setpoint in y direction</field>
             <field type="float" name="setpoint_z">Speed setpoint in z direction</field>

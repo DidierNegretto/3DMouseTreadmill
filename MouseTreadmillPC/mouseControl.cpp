@@ -18,7 +18,7 @@
 #include <ctime>
 
 using namespace std;
-char portname[22] = "/dev/cu.usbmodem14103";
+char portname[] = "/dev/cu.usbmodem14103";
 mavlink_heartbeat_t heart;
 mavlink_speed_setpoint_t setpoint;
 
@@ -97,7 +97,7 @@ void comm_receive(int fd) {
                     break;
                 case MAVLINK_MSG_ID_SPEED_SETPOINT:
                     mavlink_msg_speed_setpoint_decode(&msg, &setpoint);
-                    cout<<"Received speed setpoint. "<<(int)setpoint.mode<<" "<<(float)setpoint.setpoint_x<<" "<<(float)setpoint.setpoint_y<<endl;
+                    cout<<"Received speed setpoint. "<<(float)setpoint.setpoint_x<<" "<<(float)setpoint.setpoint_y<<endl;
                     return;
                     break;
                 default:
@@ -109,11 +109,11 @@ void comm_receive(int fd) {
     return;
 }
 
-void comm_send(int fd, uint8_t mode){
+void comm_send(int fd){
     mavlink_message_t msg;
     uint8_t buf[100];
 
-    mavlink_msg_speed_setpoint_pack(0,0, &msg, mode, setpoint.setpoint_x, setpoint.setpoint_y, setpoint.setpoint_z );
+    mavlink_msg_speed_setpoint_pack(0,0, &msg, setpoint.setpoint_x, setpoint.setpoint_y, setpoint.setpoint_z );
 
     // Copy the message to the send buffer
     uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);
@@ -134,26 +134,16 @@ int main() {
 
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
-	setpoint.mode = 2;
 	setpoint.setpoint_x = 3.1415;
 
-    uint8_t mode = 4;
+    //uint8_t mode = 4;
     int count = 0;
 
     while(1){
 
        count = 0;
-       while(setpoint.mode != mode){
-            comm_receive(fd);
-            comm_send(fd, mode);
-            count++;
-        }
-        cout<< "Needed = "<<count<<" to transmit information"<<endl;
-        mode+=1;
-        if (mode == 250)
-            mode=0;
-
-
+       comm_receive(fd);
+       comm_send(fd);
     }
 
 
