@@ -50,6 +50,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t inByte = 0;
+uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
+uint32_t len;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,8 +61,46 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
-	HAL_UART_Transmit(&huart2, outBuffer, size, TIMEOUT);
+void main_transmit_buffer(uint8_t* buffer,uint16_t size){
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_UART_Transmit(&huart2, buffer, size, 100);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+}
+void main_transmit_buffer_IT(void)
+{
+	uint16_t index = 0;
+	uint16_t len = 0;
+	for (int i = 0; i < MSG_BUFFER_SIZE; i++){
+		len = 0;
+		len = mavlink_msg_to_send_buffer(outBuffer + index, outmsg+i);
+		index += len;
+		if (index >= MAX_BYTE_BUFFER_SIZE)
+			return;
+
+	}
+	HAL_UART_Transmit_IT(&huart2, outBuffer, len);
+}
+void main_stop_motors(void)
+{
+	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+}
+void main_set_motors_speed(mavlink_motor_setpoint_t motor )
+{
+
+	htim1.Instance->CCR1 = motor.motor_x;
+	htim1.Instance->CCR2 = motor.motor_y;
+
+	if (motor.motor_x == 0)
+		HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+	else
+		HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+
+	if (motor.motor_y == 0)
+		HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+	else
+		HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+
 }
 
 /* USER CODE END PFP */
@@ -68,32 +108,34 @@ void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size){
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /* UART2 Interrupt Service Routine */
-void USART2_IRQHandler(void){
-  HAL_UART_IRQHandler(&huart2);
-}
 void TM7_IRQHandler(void){
 	HAL_TIM_IRQHandler(&htim7);
 }
 
 /* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 	mavlink_message_t inmsg;
 	mavlink_status_t msgStatus;
 	if (huart->Instance == USART2){
 		/* Receive one byte in interrupt mode */
 		HAL_UART_Receive_IT(&huart2, &inByte, 1);
-
 		if(mavlink_parse_char(0, inByte, &inmsg, &msgStatus)){
 			mouseDriver_readMsg(inmsg);
 		}
 	}
-
-  }
+	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+}
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	tx_finish = 1;
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+}
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
+    	//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     	mouseDriver_setTime(mouseDriver_getTime()+DT_HEART);
     	mouseDriver_controlISR();
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     }
 }
 /* USER CODE END 0 */
@@ -134,14 +176,20 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
   HAL_TIM_Base_Start_IT(&htim7);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  outBuffer[0] = 'H';
+  outBuffer[1] = 'E';
+  outBuffer[2] = 'L';
+  outBuffer[3] = 'L';
+  outBuffer[4] = 'O';
+  outBuffer[5] = '\n';
   while (1)
   {
-	  mouseDriver_idle();
+
+	 mouseDriver_idle();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -251,13 +299,17 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = PULSE_PWM;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -277,7 +329,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM1_Init 2 */
-  htim1.Instance->CCR1 = 10;
+
   /* USER CODE END TIM1_Init 2 */
   HAL_TIM_MspPostInit(&htim1);
 
@@ -316,7 +368,7 @@ static void MX_TIM7_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM7_Init 2 */
-
+  HAL_NVIC_SetPriority(TIM7_IRQn,1,1);
   /* USER CODE END TIM7_Init 2 */
 
 }
@@ -354,6 +406,7 @@ static void MX_USART2_UART_Init(void)
   /* Peripheral interrupt init*/
   HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
+  tx_finish = 1;
   /* USER CODE END USART2_Init 2 */
 
 }

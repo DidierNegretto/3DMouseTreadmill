@@ -81,19 +81,19 @@
                                 								
                                 <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1205550372" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink Library/mouse&quot;"/>
-                                    									
-                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code STM32&quot;"/>
-                                    									
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink Library&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Core/Inc"/>
                                     									
+                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink Library/mouse&quot;"/>
+                                    									
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32L4xx/Include"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../Drivers/STM32L4xx_HAL_Driver/Inc"/>
+                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code STM32&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;/Users/Didier/Desktop/EPFL/Secondo master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink Library&quot;"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/STM32L4xx_HAL_Driver/Inc"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy"/>
                                     								
@@ -355,6 +355,20 @@
         	
     </storageModule>
     	
-    <storageModule moduleId="refreshScope"/>
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="Debug">
+            			
+            <resource resourceType="PROJECT" workspacePath="/MouseTreadmillSTM32Project"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="Release">
+            			
+            <resource resourceType="PROJECT" workspacePath="/MouseTreadmillSTM32Project"/>
+            		
+        </configuration>
+        	
+    </storageModule>
     
 </cproject>

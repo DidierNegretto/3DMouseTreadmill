@@ -15,9 +15,12 @@
 /* Constants for MALINK functions*/
 #define SYS_ID 0
 #define COMP_ID 0
-
 /* maximum size of the trasmit buffer */
-#define BUFFER_SIZE 50
+#define MAX_BYTE_BUFFER_SIZE 100
+#define MSG_BUFFER_SIZE 5
+
+/* Out buffer */
+mavlink_message_t outmsg[MSG_BUFFER_SIZE];
 
 /* Function for initializing the mouseDriver*/
 void mouseDriver_init(void);

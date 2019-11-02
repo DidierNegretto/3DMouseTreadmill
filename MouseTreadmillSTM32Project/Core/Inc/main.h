@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "mavlink.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -56,12 +56,16 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-void main_transmitBuffer(uint8_t* outBuffer, const uint32_t size);
+uint8_t tx_finish;
+void main_transmit_buffer(uint8_t* buffer,uint16_t size);
+void main_transmit_buffer_IT(void);
+void main_stop_motors(void);
+void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define DT_HEART 50
-#define PRESCALER_HEART 8000
+#define DT_HEART 5
+#define PRESCALER_HEART 1000
 #define CLOCK_FREQ 80000000
 #define COUNTER_PERIOD_HEART ((CLOCK_FREQ/(PRESCALER_HEART))*0.001*DT_HEART)
 #define DT_PWM 20

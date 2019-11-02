@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<mavlink>
+    <version>3</version>
+    <dialect>2</dialect>
+    <enums>
+        <enum name="MOUSE_MODE">
+            <description>This enum defines the mode to be used</description>
+            <entry value="0" name="MOUSE_MODE_STOP">
+                <description>All motion of mouse treadmill is stopped</description>
+            </entry>
+            <entry value="1" name="MOUSE_MODE_SPEED">
+                <description>Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT.</description>
+            </entry>
+            <entry value="2" name="MOUSE_MODE_AUTO">
+                <description>Predefined speed profile is applied</description>
+            </entry>
+            
+        </enum>
+    </enums>
+    <messages>
+        <message id="0" name="HEARTBEAT">
+            <description>The heartbeat message shows that a system or component is present and responding. Sender = STM32 Receiver = PC
+            </description>
+            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
+            <field type="uint32_t" name="time">Time from boot of system</field>
+        </message>
+        <message id="1" name="SPEED_INFO">
+            <description>The message giving the actual speed of the motor. Sender = STM32 Receiver = PC
+            </description>
+            <field type="uint32_t" name="time">Time from boot of system</field>
+            <field type="float" name="speed_x">Speed in x direction</field>
+            <field type="float" name="speed_y">Speed in y direction</field>
+            <field type="float" name="speed_z">Speed in z direction</field>
+        </message>
+         <message id="2" name="SPEED_SETPOINT">
+            <description>The message is sent to send and validate the setpoint sent from computer. Sender = PC/STM32 Receiver = STM32/PC
+            </description>
+            <field type="float" name="setpoint_x">Speed setpoint in x direction</field>
+            <field type="float" name="setpoint_y">Speed setpoint in y direction</field>
+            <field type="float" name="setpoint_z">Speed setpoint in z direction</field>
+        </message>
+        <message id="3" name="MODE_SELECTION">
+            <description>This message is used to select the mode of the STM32 Sender = PC Receiver = STM32
+            </description>
+            <field type="uint8_t" name="mode" enum="MOUSE_MODE">Actual operating mode</field>
+        </message>
+        <message id="4" name="MOTOR_SETPOINT">
+            <description>This message defines the raw motor input values. This values defines the Duty_Cycle up time for PWM signals. Sender = STM32 Receiver = PC
+            </description>
+            <field type="uint32_t" name="time">Time from boot of system</field>
+            <field type="float" name="motor_x">Speed setpoint in x direction</field>
+            <field type="float" name="motor_y">Speed setpoint in y direction</field>
+            <field type="float" name="motor_z">Speed setpoint in z direction</field>
+        </message>
+    </messages>
+</mavlink>
