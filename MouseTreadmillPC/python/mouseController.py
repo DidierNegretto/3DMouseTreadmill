@@ -24,10 +24,13 @@ POSITIONS = {
     "speedX": {"x":2,"y":0,"lx":1,"ly":1},
     "speedYLabel": {"x":1,"y":1,"lx":1,"ly":1},
     "speedY": {"x":2,"y":1,"lx":1,"ly":1},
-
     "speedSetpointLabel": {"x":3,"y":2,"lx":1,"ly":1},
     "speedSetpointX": {"x":3,"y":0,"lx":1,"ly":1},
     "speedSetpointY": {"x":3,"y":1,"lx":1,"ly":1},
+    
+    "motorSetpointLabel": {"x":4,"y":2,"lx":1,"ly":1},
+    "motorSetpointX": {"x":4,"y":0,"lx":1,"ly":1},
+    "motorSetpointY": {"x":4,"y":1,"lx":1,"ly":1},
    
 }
 MODES = ["STOP", "SPEED", "AUTO"]
@@ -39,18 +42,19 @@ class MyApplication():
      actualMode = 0 
      actualTime = 0 
      actualSpeedSetpoint = [None, None, None]
+     actualMotorSetpoint = [None, None, None]
      connection = serial.Serial(port, baudrate = 230400, timeout = 0)
      mavlink = mouseController.MAVLink(file = connection )
+     setpointX = 0.0
+     setpointY = 0.0
 
      def commSTM32 (self):
         # Init variables
-
         m = None
-        setpointX = None
-        setpointY = None
+
         if self.actualMode == mouseController.MOUSE_MODE_SPEED:
-            setpointX = self.app.getEntry("speedX")
-            setpointY = self.app.getEntry("speedY")
+            self.setpointX = self.app.getEntry("speedX")
+            self.setpointY = self.app.getEntry("speedY")
 
         while(self.connection.in_waiting>0):
             # Recive messages
@@ -67,12 +71,17 @@ class MyApplication():
                     self.actualSpeedSetpoint[0] = m.setpoint_x
                     self.actualSpeedSetpoint[1] = m.setpoint_y
                     self.actualSpeedSetpoint[2] = m.setpoint_z
+                elif m.name == "MOTOR_SETPOINT":
+                    self.actualMotorSetpoint[0] = m.motor_x
+                    self.actualMotorSetpoint[1] = m.motor_y
+                    self.actualMotorSetpoint[2] = m.motor_z
+                else:
                     pass
             m = None
-        if setpointX is None  or setpointY is None:
+        if self.setpointX is None  or self.setpointY is None:
             pass
         else:
-            self.mavlink.speed_setpoint_send(float(setpointX), float(setpointY), 0.0)
+            self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
 
         while(self.connection.out_waiting > 0):
             pass
@@ -85,9 +94,12 @@ class MyApplication():
         # Refresh with data from  
         self.app.setLabel("speedSetpointX", str(self.actualSpeedSetpoint[0]))
         self.app.setLabel("speedSetpointY", str(self.actualSpeedSetpoint[1]))
+        self.app.setLabel("motorSetpointX", str(self.actualMotorSetpoint[0]))
+        self.app.setLabel("motorSetpointY", str(self.actualMotorSetpoint[1]))
 
      def setMode(self):
          self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")])        
+
 
      def Prepare(self, app):
         
@@ -125,6 +137,9 @@ class MyApplication():
         app.addLabel("speedSetpointLabel", "MCU Setpoint",POSITIONS["speedSetpointLabel"]["x"],POSITIONS["speedSetpointLabel"]["y"],POSITIONS["speedSetpointLabel"]["lx"],POSITIONS["speedSetpointLabel"]["ly"])
         app.addLabel("speedSetpointX", "0",POSITIONS["speedSetpointX"]["x"],POSITIONS["speedSetpointX"]["y"],POSITIONS["speedSetpointX"]["lx"],POSITIONS["speedSetpointX"]["ly"])
         app.addLabel("speedSetpointY", "0",POSITIONS["speedSetpointY"]["x"],POSITIONS["speedSetpointY"]["y"],POSITIONS["speedSetpointY"]["lx"],POSITIONS["speedSetpointY"]["ly"])
+        app.addLabel("motorSetpointLabel", "Motors",POSITIONS["motorSetpointLabel"]["x"],POSITIONS["motorSetpointLabel"]["y"],POSITIONS["motorSetpointLabel"]["lx"],POSITIONS["motorSetpointLabel"]["ly"])
+        app.addLabel("motorSetpointX", "0",POSITIONS["motorSetpointX"]["x"],POSITIONS["motorSetpointX"]["y"],POSITIONS["motorSetpointX"]["lx"],POSITIONS["motorSetpointX"]["ly"])
+        app.addLabel("motorSetpointY", "0",POSITIONS["motorSetpointY"]["x"],POSITIONS["motorSetpointY"]["y"],POSITIONS["motorSetpointY"]["lx"],POSITIONS["motorSetpointY"]["ly"])
         
         # Add status bar
         app.addStatusbar(fields = 2, side=None)

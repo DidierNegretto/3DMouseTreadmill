@@ -16,11 +16,11 @@
 #define SYS_ID 0
 #define COMP_ID 0
 /* maximum size of the trasmit buffer */
-#define MAX_BYTE_BUFFER_SIZE 100
-#define MSG_BUFFER_SIZE 5
+#define MAX_BYTE_BUFFER_SIZE 500
+
 
 /* Out buffer */
-mavlink_message_t outmsg[MSG_BUFFER_SIZE];
+static uint8_t tx_finish = 1;
 
 /* Function for initializing the mouseDriver*/
 void mouseDriver_init(void);

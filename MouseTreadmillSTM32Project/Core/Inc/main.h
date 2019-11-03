@@ -56,9 +56,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-uint8_t tx_finish;
-void main_transmit_buffer(uint8_t* buffer,uint16_t size);
-void main_transmit_buffer_IT(void);
+void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size);
 void main_stop_motors(void);
 void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 /* USER CODE END EFP */
