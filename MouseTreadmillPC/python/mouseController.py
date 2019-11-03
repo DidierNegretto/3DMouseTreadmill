@@ -46,15 +46,11 @@ class MyApplication():
         # Init variables
 
         m = None
-        i = 0
-
+        setpointX = None
+        setpointY = None
         if self.actualMode == mouseController.MOUSE_MODE_SPEED:
             setpointX = self.app.getEntry("speedX")
             setpointY = self.app.getEntry("speedY")
-            if setpointX is None  or setpointY is None:
-                pass
-            else:
-                self.mavlink.speed_setpoint_send(float(setpointX), float(setpointY), 0.0)
 
         while(self.connection.in_waiting>0):
             # Recive messages
@@ -72,8 +68,11 @@ class MyApplication():
                     self.actualSpeedSetpoint[1] = m.setpoint_y
                     self.actualSpeedSetpoint[2] = m.setpoint_z
                     pass
-            i+=1
             m = None
+        if setpointX is None  or setpointY is None:
+            pass
+        else:
+            self.mavlink.speed_setpoint_send(float(setpointX), float(setpointY), 0.0)
 
         while(self.connection.out_waiting > 0):
             pass

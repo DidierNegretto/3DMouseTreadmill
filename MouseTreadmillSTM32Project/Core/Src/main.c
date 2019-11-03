@@ -47,6 +47,7 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 uint8_t inByte = 0;
@@ -60,10 +61,11 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_DMA_Init(void);
 /* USER CODE BEGIN PFP */
 void main_transmit_buffer(uint8_t* buffer,uint16_t size){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-	HAL_UART_Transmit(&huart2, buffer, size, 100);
+	HAL_UART_Transmit_DMA(&huart2, outBuffer,6);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 }
 void main_transmit_buffer_IT(void)
@@ -112,6 +114,7 @@ void TM7_IRQHandler(void){
 	HAL_TIM_IRQHandler(&htim7);
 }
 
+
 /* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
@@ -129,8 +132,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	tx_finish = 1;
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 }
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
     	//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -158,7 +161,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 	mouseDriver_init();
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -173,6 +176,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM7_Init();
   MX_TIM1_Init();
+  MX_DMA_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
   HAL_TIM_Base_Start_IT(&htim7);
@@ -369,6 +373,7 @@ static void MX_TIM7_Init(void)
   }
   /* USER CODE BEGIN TIM7_Init 2 */
   HAL_NVIC_SetPriority(TIM7_IRQn,1,1);
+  HAL_NVIC_EnableIRQ(TIM7_IRQn);
   /* USER CODE END TIM7_Init 2 */
 
 }
@@ -382,7 +387,20 @@ static void MX_USART2_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART2_Init 0 */
+  /* DMA controller clock enable */
+  __DMA1_CLK_ENABLE();
 
+  /* Peripheral DMA init*/
+  hdma_usart2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+  hdma_usart2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+  hdma_usart2_tx.Init.MemInc = DMA_MINC_ENABLE;
+  hdma_usart2_tx.Init.PeriphDataAlignment = DMA_MDATAALIGN_BYTE;
+  hdma_usart2_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+  hdma_usart2_tx.Init.Mode = DMA_NORMAL;
+  hdma_usart2_tx.Init.Priority = DMA_PRIORITY_LOW;
+  HAL_DMA_Init(&hdma_usart2_tx);
+
+  __HAL_LINKDMA(&huart2,hdmatx,hdma_usart2_tx);
   /* USER CODE END USART2_Init 0 */
 
   /* USER CODE BEGIN USART2_Init 1 */
@@ -403,11 +421,28 @@ static void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-  /* Peripheral interrupt init*/
-  HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(USART2_IRQn,0,0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
-  tx_finish = 1;
+
+  /* Enable the USART Rx DMA request */
+
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
 
 }
 
