@@ -43,7 +43,7 @@ class MyApplication():
      actualTime = 0 
      actualSpeedSetpoint = [None, None, None]
      actualMotorSetpoint = [None, None, None]
-     connection = serial.Serial(port, baudrate = 230400, timeout = 0)
+     connection = serial.Serial(port, baudrate = 230400, timeout = 50)
      mavlink = mouseController.MAVLink(file = connection )
      setpointX = 0.0
      setpointY = 0.0
@@ -51,11 +51,6 @@ class MyApplication():
      def commSTM32 (self):
         # Init variables
         m = None
-
-        if self.actualMode == mouseController.MOUSE_MODE_SPEED:
-            self.setpointX = self.app.getEntry("speedX")
-            self.setpointY = self.app.getEntry("speedY")
-
         while(self.connection.in_waiting>0):
             # Recive messages
             try:
@@ -63,7 +58,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                print(m)
+                #print(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -78,13 +73,6 @@ class MyApplication():
                 else:
                     pass
             m = None
-        if self.setpointX is None  or self.setpointY is None:
-            pass
-        else:
-            self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
-
-        while(self.connection.out_waiting > 0):
-            pass
 
      def refreshGUI(self):
         self.commSTM32()
@@ -98,7 +86,27 @@ class MyApplication():
         self.app.setLabel("motorSetpointY", str(self.actualMotorSetpoint[1]))
 
      def setMode(self):
-         self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")])        
+         self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")]) 
+         if self.actualMode == mouseController.MOUSE_MODE_STOP:
+             self.setpointX = 0
+             self.setpointY = 0
+     
+     def setSpeedX(self):
+        if self.actualMode == mouseController.MOUSE_MODE_SPEED:
+            self.setpointX = self.app.getEntry("speedX")
+            if self.setpointX is None or  self.setpointY is None :
+                pass
+            else:
+                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
+    
+     def setSpeedY(self):
+        if self.actualMode == mouseController.MOUSE_MODE_SPEED:
+            self.setpointY = self.app.getEntry("speedY")
+            if self.setpointX is None or  self.setpointY is None :
+                pass
+            else:
+                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
+               
 
 
      def Prepare(self, app):
@@ -129,9 +137,12 @@ class MyApplication():
         app.addLabel("speedXLabel", "Speed X", POSITIONS["speedXLabel"]["x"],POSITIONS["speedXLabel"]["y"],POSITIONS["speedXLabel"]["lx"],POSITIONS["speedXLabel"]["ly"])
         app.addNumericEntry("speedX",POSITIONS["speedX"]["x"],POSITIONS["speedX"]["y"],POSITIONS["speedX"]["lx"],POSITIONS["speedX"]["ly"])
         app.setEntry("speedX", 0.0)
+        app.setEntryChangeFunction("speedX", self.setSpeedX)
         app.addLabel("speedYLabel", "Speed Y",POSITIONS["speedYLabel"]["x"],POSITIONS["speedYLabel"]["y"],POSITIONS["speedYLabel"]["lx"],POSITIONS["speedYLabel"]["ly"])
         app.addNumericEntry("speedY",POSITIONS["speedY"]["x"],POSITIONS["speedY"]["y"],POSITIONS["speedY"]["lx"],POSITIONS["speedY"]["ly"])
         app.setEntry("speedY", 0.0)
+        app.setEntryChangeFunction("speedY", self.setSpeedY)
+       
 
         # Showing values from STM32
         app.addLabel("speedSetpointLabel", "MCU Setpoint",POSITIONS["speedSetpointLabel"]["x"],POSITIONS["speedSetpointLabel"]["y"],POSITIONS["speedSetpointLabel"]["lx"],POSITIONS["speedSetpointLabel"]["ly"])

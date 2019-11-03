@@ -104,6 +104,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		/* Receive one byte in interrupt mode */
 		HAL_UART_Receive_IT(&huart2, &inByte, 1);
 		if(mavlink_parse_char(0, inByte, &inmsg, &msgStatus)){
+
 			mouseDriver_readMsg(inmsg);
 		}
 	}

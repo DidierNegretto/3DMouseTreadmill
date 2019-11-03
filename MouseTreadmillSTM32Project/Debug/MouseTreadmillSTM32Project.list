@@ -27,9 +27,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020010  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00012f38  00000000  00000000  00020040  2**0
+ 12 .debug_info   00012f39  00000000  00000000  00020040  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_abbrev 000023fa  00000000  00000000  00032f78  2**0
+ 13 .debug_abbrev 000023fa  00000000  00000000  00032f79  2**0
                   CONTENTS, READONLY, DEBUGGING
  14 .debug_aranges 00001088  00000000  00000000  00035378  2**3
                   CONTENTS, READONLY, DEBUGGING
@@ -5553,6 +5553,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
  800289c:	4603      	mov	r3, r0
  800289e:	2b00      	cmp	r3, #0
  80028a0:	d00d      	beq.n	80028be <HAL_UART_RxCpltCallback+0x56>
+
 			mouseDriver_readMsg(inmsg);
  80028a2:	f107 0424 	add.w	r4, r7, #36	; 0x24
  80028a6:	4668      	mov	r0, sp
