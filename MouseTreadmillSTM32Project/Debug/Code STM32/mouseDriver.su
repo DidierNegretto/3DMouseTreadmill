@@ -29,9 +29,9 @@ mouseDriver.c:25:6:mouseDriver_getSpeedFromSensors	4	static
 mouseDriver.c:32:6:mouseDriver_setSetpoint	24	static
 mouseDriver.c:36:6:mouseDriver_setMode	16	static
 mouseDriver.c:41:6:mouseDriver_sendMsg	320	static
-mouseDriver.c:79:6:mouseDriver_init	8	static
-mouseDriver.c:86:6:mouseDriver_setTime	16	static
-mouseDriver.c:90:10:mouseDriver_getTime	4	static
-mouseDriver.c:94:6:mouseDriver_readMsg	8	static
-mouseDriver.c:117:6:mouseDriver_idle	8	static
-mouseDriver.c:149:6:mouseDriver_controlISR	4	static
+mouseDriver.c:82:6:mouseDriver_init	8	static
+mouseDriver.c:89:6:mouseDriver_setTime	16	static
+mouseDriver.c:93:10:mouseDriver_getTime	4	static
+mouseDriver.c:97:6:mouseDriver_readMsg	8	static
+mouseDriver.c:120:6:mouseDriver_idle	8	static
+mouseDriver.c:152:6:mouseDriver_controlISR	4	static

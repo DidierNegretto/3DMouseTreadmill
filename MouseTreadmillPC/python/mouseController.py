@@ -2,7 +2,7 @@ import serial
 import os
 import sys
 import numpy as np
-import matplotlib as plt
+#import matplotlib as plt
 from appJar import gui
 import time
 from pymavlink.dialects.v20 import mouse as mouseController
@@ -27,14 +27,19 @@ POSITIONS = {
     "speedSetpointLabel": {"x":3,"y":2,"lx":1,"ly":1},
     "speedSetpointX": {"x":3,"y":0,"lx":1,"ly":1},
     "speedSetpointY": {"x":3,"y":1,"lx":1,"ly":1},
-    
     "motorSetpointLabel": {"x":4,"y":2,"lx":1,"ly":1},
     "motorSetpointX": {"x":4,"y":0,"lx":1,"ly":1},
     "motorSetpointY": {"x":4,"y":1,"lx":1,"ly":1},
+
+    "plot" : {"":4,"y":1,"lx":1,"ly":1},
    
 }
 MODES = ["STOP", "SPEED", "AUTO"]
 MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2) }
+DATA = { "HEARTBEAT": {"time": [], "mode": []}, 
+         "SPEED_SETPOINT": {"time": [], "setpoint_x": [], "setpoint_y": []}, 
+         "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": []}, 
+         "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": []}, }
 port = "/dev/cu.usbmodem14102"
  
 
@@ -43,6 +48,7 @@ class MyApplication():
      actualTime = 0 
      actualSpeedSetpoint = [None, None, None]
      actualMotorSetpoint = [None, None, None]
+     actualSpeedInfo = [None, None, None] 
      connection = serial.Serial(port, baudrate = 230400, timeout = 50)
      mavlink = mouseController.MAVLink(file = connection )
      setpointX = 0.0
@@ -62,28 +68,65 @@ class MyApplication():
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
+                    DATA["HEARTBEAT"]["time"].append(self.actualTime)
+                    DATA["HEARTBEAT"]["mode"].append(self.actualMode)
                 elif m.name == "SPEED_SETPOINT":
                     self.actualSpeedSetpoint[0] = m.setpoint_x
                     self.actualSpeedSetpoint[1] = m.setpoint_y
                     self.actualSpeedSetpoint[2] = m.setpoint_z
+                    DATA["SPEED_SETPOINT"]["time"].append(self.actualTime)
+                    DATA["SPEED_SETPOINT"]["setpoint_x"].append(self.actualSpeedSetpoint[0])
+                    DATA["SPEED_SETPOINT"]["setpoint_y"].append(self.actualSpeedSetpoint[1])
+                    #DATA["SPEED_SETPOINT"]["setpoint_z"].append(self.actualSpeedSetpoint[2])
                 elif m.name == "MOTOR_SETPOINT":
                     self.actualMotorSetpoint[0] = m.motor_x
                     self.actualMotorSetpoint[1] = m.motor_y
                     self.actualMotorSetpoint[2] = m.motor_z
+                    DATA["MOTOR_SETPOINT"]["time"].append(m.time)
+                    DATA["MOTOR_SETPOINT"]["motor_x"].append(self.actualMotorSetpoint[0])
+                    DATA["MOTOR_SETPOINT"]["motor_y"].append(self.actualMotorSetpoint[1])
+                    #DATA["SPEED_SETPOINT"]["motor_z"].append(self.actualMotorSetpoint[2])
+                elif m.name == "SPEED_INFO":
+                    self.actualSpeedInfo[0] = m.speed_x
+                    self.actualSpeedInfo[1] = m.speed_y
+                    self.actualSpeedInfo[2] = m.speed_z
+                    DATA["SPEED_INFO"]["time"].append(m.time)
+                    DATA["SPEED_INFO"]["speed_x"].append(self.actualSpeedInfo[0])
+                    DATA["SPEED_INFO"]["speed_y"].append(self.actualSpeedInfo[1])
+                    #DATA["SPEED_SETPOINT"]["speed_z"].append(self.actualSpeedInfo[2])
                 else:
                     pass
             m = None
+     def refreshPlot(self):
+
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_x"], 'b')
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_y"], 'r')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_x"],'b')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_y"],'r')
+
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_x"],'b')
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_y"],'r')
+
+       
+        self.ax[0].set_adjustable('box',True)
+        self.app.refreshPlot("plot")
+        pass
 
      def refreshGUI(self):
         self.commSTM32()
+        
         # Refresh status bar
         self.app.setStatusbar("Time: "+str(self.actualTime)+" [ms]", 0)
         self.app.setStatusbar("Modes: "+str(MODES[self.actualMode]), 1)
-        # Refresh with data from  
+        
+        # Refresh with data from STM32
+        self.refreshPlot()
+        """
         self.app.setLabel("speedSetpointX", str(self.actualSpeedSetpoint[0]))
         self.app.setLabel("speedSetpointY", str(self.actualSpeedSetpoint[1]))
         self.app.setLabel("motorSetpointX", str(self.actualMotorSetpoint[0]))
         self.app.setLabel("motorSetpointY", str(self.actualMotorSetpoint[1]))
+        """
 
      def setMode(self):
          self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")]) 
@@ -110,7 +153,7 @@ class MyApplication():
 
 
      def Prepare(self, app):
-        
+        self.ax = []
         
         app.setTitle("Mouse treadmill GUI")
         app.setFont(16)
@@ -145,13 +188,28 @@ class MyApplication():
        
 
         # Showing values from STM32
+        """
         app.addLabel("speedSetpointLabel", "MCU Setpoint",POSITIONS["speedSetpointLabel"]["x"],POSITIONS["speedSetpointLabel"]["y"],POSITIONS["speedSetpointLabel"]["lx"],POSITIONS["speedSetpointLabel"]["ly"])
         app.addLabel("speedSetpointX", "0",POSITIONS["speedSetpointX"]["x"],POSITIONS["speedSetpointX"]["y"],POSITIONS["speedSetpointX"]["lx"],POSITIONS["speedSetpointX"]["ly"])
         app.addLabel("speedSetpointY", "0",POSITIONS["speedSetpointY"]["x"],POSITIONS["speedSetpointY"]["y"],POSITIONS["speedSetpointY"]["lx"],POSITIONS["speedSetpointY"]["ly"])
         app.addLabel("motorSetpointLabel", "Motors",POSITIONS["motorSetpointLabel"]["x"],POSITIONS["motorSetpointLabel"]["y"],POSITIONS["motorSetpointLabel"]["lx"],POSITIONS["motorSetpointLabel"]["ly"])
         app.addLabel("motorSetpointX", "0",POSITIONS["motorSetpointX"]["x"],POSITIONS["motorSetpointX"]["y"],POSITIONS["motorSetpointX"]["lx"],POSITIONS["motorSetpointX"]["ly"])
         app.addLabel("motorSetpointY", "0",POSITIONS["motorSetpointY"]["x"],POSITIONS["motorSetpointY"]["y"],POSITIONS["motorSetpointY"]["lx"],POSITIONS["motorSetpointY"]["ly"])
+        """
+
+        # Real-time data plotting
+        self.fig = app.addPlotFig("plot",row = None, column = 0,colspan = 4, showNav = True )
+        self.ax.append(self.fig.add_subplot(311)) 
+        self.ax.append(self.fig.add_subplot(312)) 
+        self.ax.append(self.fig.add_subplot(313)) 
         
+        # Define labels
+        self.ax[2].set_xlabel("Time")
+        self.ax[2].set_ylabel("Measured speed [m/s]")
+        self.ax[1].set_ylabel("Speed setpoint [m/s]")
+        self.ax[0].set_ylabel("Motor signal [ ]")
+        
+
         # Add status bar
         app.addStatusbar(fields = 2, side=None)
         app.setStatusbar("Time: 0", 0)

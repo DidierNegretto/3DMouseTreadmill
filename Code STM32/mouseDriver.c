@@ -43,8 +43,9 @@ void mouseDriver_sendMsg(uint32_t msgid){
 	static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
 	static uint16_t msg_size = 0;
 
-	if (tx_finish == 1){
-		switch(msgid){
+	while (tx_finish == 0){/*Wait for other messages to be sent*/}
+
+	switch(msgid){
 		case MAVLINK_MSG_ID_HEARTBEAT:
 			mavlink_msg_heartbeat_pack(SYS_ID,COMP_ID, &msg, actual_mode, actual_time);
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
@@ -61,13 +62,15 @@ void mouseDriver_sendMsg(uint32_t msgid){
 			main_transmit_buffer(outBuffer, msg_size);
 			break;
 		case MAVLINK_MSG_ID_SPEED_INFO:
+			/* DEMO CODE INIT*/
+				actual_speed_measure.time = actual_time;
+			/* DEMO CODE END*/
 			mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
 			main_transmit_buffer(outBuffer, msg_size);
 			break;
 		default:
 			break;
-		}
 	}
 }
 
@@ -126,8 +129,8 @@ void mouseDriver_idle (void){
 		break;
 	case MOUSE_MODE_SPEED:
 		/* BEGIN Code for DEMO */
-		actual_motor_signal.motor_x = actual_speed_setpoint.setpoint_x;
-		actual_motor_signal.motor_y = actual_speed_setpoint.setpoint_y;
+			actual_motor_signal.motor_x = actual_speed_setpoint.setpoint_x;
+			actual_motor_signal.motor_y = actual_speed_setpoint.setpoint_y;
 		/* END Code for DEMO */
 		main_set_motors_speed(actual_motor_signal);
 		break;
@@ -135,13 +138,13 @@ void mouseDriver_idle (void){
 		break;
 	}
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-	HAL_Delay(10);
+	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-	HAL_Delay(10);
+	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
-	HAL_Delay(10);
+	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-	HAL_Delay(10);
+	HAL_Delay(1);
 
 }
 
