@@ -98,19 +98,14 @@ class MyApplication():
                     pass
             m = None
      def refreshPlot(self):
-
         self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_x"], 'b')
         self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_y"], 'r')
         self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_x"],'b')
         self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_y"],'r')
-
         self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_x"],'b')
         self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_y"],'r')
-
-       
         self.ax[0].set_adjustable('box',True)
         self.app.refreshPlot("plot")
-        pass
 
      def refreshGUI(self):
         self.commSTM32()
@@ -118,8 +113,6 @@ class MyApplication():
         # Refresh status bar
         self.app.setStatusbar("Time: "+str(self.actualTime)+" [ms]", 0)
         self.app.setStatusbar("Modes: "+str(MODES[self.actualMode]), 1)
-        
-        # Refresh with data from STM32
         self.refreshPlot()
         """
         self.app.setLabel("speedSetpointX", str(self.actualSpeedSetpoint[0]))

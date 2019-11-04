@@ -62,12 +62,12 @@ void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define DT_HEART 5
+#define DT_HEART 8
 #define PRESCALER_HEART 1000
 #define CLOCK_FREQ 80000000
 #define COUNTER_PERIOD_HEART ((CLOCK_FREQ/(PRESCALER_HEART))*0.001*DT_HEART)
 #define DT_PWM 20
-#define PRESCALER_PWM 8000
+#define PRESCALER_PWM 800
 #define COUNTER_PERIOD_PWM ((CLOCK_FREQ/(PRESCALER_PWM))*0.001*DT_PWM)
 #define PULSE_PWM ((CLOCK_FREQ/(PRESCALER_PWM))*0.001)
 #define B1_Pin GPIO_PIN_13
