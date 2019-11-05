@@ -16,9 +16,9 @@ POSITIONS = {
     "Port": {"x":0,"y":0,"lx":1,"ly":1},
     "portEntry": {"x":0,"y":1,"lx":3,"ly":1},
     "Stop": {"x":1,"y":2,"lx":1,"ly":1},
-    "optionMode0": {"x":0,"y":1,"lx":3,"ly":1},
-    "optionMode1": {"x":0,"y":2,"lx":3,"ly":1},
-    "optionMode2": {"x":0,"y":3,"lx":1,"ly":1},
+    "optionMode0": {"x":0,"y":1,"lx":2,"ly":1},
+    "optionMode1": {"x":0,"y":3,"lx":2,"ly":1},
+    "optionMode2": {"x":0,"y":5,"lx":2,"ly":1},
     "optionModeLabel": {"x":0,"y":0,"lx":1,"ly":1},
     "speedXLabel": {"x":1,"y":0,"lx":1,"ly":1},
     "speedX": {"x":2,"y":0,"lx":1,"ly":1},
@@ -30,16 +30,18 @@ POSITIONS = {
     "motorSetpointLabel": {"x":4,"y":2,"lx":1,"ly":1},
     "motorSetpointX": {"x":4,"y":0,"lx":1,"ly":1},
     "motorSetpointY": {"x":4,"y":1,"lx":1,"ly":1},
-
-    "plot" : {"":4,"y":1,"lx":1,"ly":1},
+    "plot" : {"x":4,"y":1,"lx":1,"ly":1},
+    "resetPlot" : {"x":1,"y":3,"lx":2,"ly":1},
    
 }
 MODES = ["STOP", "SPEED", "AUTO"]
 MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2) }
 DATA = { "HEARTBEAT": {"time": [], "mode": []}, 
-         "SPEED_SETPOINT": {"time": [], "setpoint_x": [], "setpoint_y": []}, 
-         "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": []}, 
-         "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": []}, }
+         "SPEED_SETPOINT": {"time": [], "setpoint_x": [], "setpoint_y": [], "start": 0}, 
+         "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": [], "start": 0}, 
+         "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": [], "start": 0} 
+         }
+MAX_SAMPLES_ON_SCREEN = 800
 port = "/dev/cu.usbmodem14102"
  
 
@@ -64,7 +66,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                print(m)
+                #print(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -98,15 +100,29 @@ class MyApplication():
                     pass
             m = None
      def refreshPlot(self):
-        self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_x"], 'b')
-        self.ax[2].plot(DATA["SPEED_INFO"]["time"], DATA["SPEED_INFO"]["speed_y"], 'r')
-        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_x"],'b')
-        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"], DATA["SPEED_SETPOINT"]["setpoint_y"],'r')
-        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_x"],'b')
-        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"], DATA["MOTOR_SETPOINT"]["motor_y"],'r')
+       
+        for i in range(3):
+            self.ax[i].clear()
+        if len(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:])-1>MAX_SAMPLES_ON_SCREEN:
+            print("io")
+            DATA["SPEED_INFO"]["start"] = -MAX_SAMPLES_ON_SCREEN
+            DATA["SPEED_SETPOINT"]["start"] = -MAX_SAMPLES_ON_SCREEN
+            DATA["MOTOR_SETPOINT"]["start"] = -MAX_SAMPLES_ON_SCREEN
+            
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_x"][DATA["SPEED_INFO"]["start"]:], 'b')
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_y"][DATA["SPEED_INFO"]["start"]:], 'r')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_x"][DATA["SPEED_SETPOINT"]["start"]:],'b')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_y"][DATA["SPEED_SETPOINT"]["start"]:],'r')
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_x"][DATA["MOTOR_SETPOINT"]["start"]:],'b')
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_y"][DATA["MOTOR_SETPOINT"]["start"]:],'r')
         self.ax[0].set_adjustable('box',True)
         self.app.refreshPlot("plot")
-
+     
+     def resetPlot(self):
+        DATA["SPEED_INFO"]["start"] = len(DATA["SPEED_INFO"]["time"])-3
+        DATA["SPEED_SETPOINT"]["start"] = len(DATA["SPEED_SETPOINT"]["time"])-3
+        DATA["MOTOR_SETPOINT"]["start"] = len(DATA["MOTOR_SETPOINT"]["time"])-3
+        
      def refreshGUI(self):
         self.commSTM32()
         
@@ -202,7 +218,9 @@ class MyApplication():
         self.ax[1].set_ylabel("Speed setpoint [m/s]")
         self.ax[0].set_ylabel("Motor signal [ ]")
         
-
+        # Reset plot button
+        self.app.addButton("resetPlot", self.resetPlot, POSITIONS["resetPlot"]["x"],POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
+        
         # Add status bar
         app.addStatusbar(fields = 2, side=None)
         app.setStatusbar("Time: 0", 0)
