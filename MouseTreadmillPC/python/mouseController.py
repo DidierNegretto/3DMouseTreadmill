@@ -41,16 +41,16 @@ DATA = { "HEARTBEAT": {"time": [], "mode": []},
          "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": [], "start": 0}, 
          "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": [], "start": 0} 
          }
-MAX_SAMPLES_ON_SCREEN = 800
+MAX_SAMPLES_ON_SCREEN = 200
 port = "/dev/cu.usbmodem14102"
  
 
 class MyApplication():
      actualMode = 0 
      actualTime = 0 
-     actualSpeedSetpoint = [None, None, None]
-     actualMotorSetpoint = [None, None, None]
-     actualSpeedInfo = [None, None, None] 
+     actualSpeedSetpoint = [None, None]
+     actualMotorSetpoint = [None, None]
+     actualSpeedInfo = [None, None] 
      connection = serial.Serial(port, baudrate = 230400, timeout = 50)
      mavlink = mouseController.MAVLink(file = connection )
      setpointX = 0.0
@@ -66,7 +66,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                #print(m)
+                print(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -75,7 +75,6 @@ class MyApplication():
                 elif m.name == "SPEED_SETPOINT":
                     self.actualSpeedSetpoint[0] = m.setpoint_x
                     self.actualSpeedSetpoint[1] = m.setpoint_y
-                    self.actualSpeedSetpoint[2] = m.setpoint_z
                     DATA["SPEED_SETPOINT"]["time"].append(self.actualTime)
                     DATA["SPEED_SETPOINT"]["setpoint_x"].append(self.actualSpeedSetpoint[0])
                     DATA["SPEED_SETPOINT"]["setpoint_y"].append(self.actualSpeedSetpoint[1])
@@ -83,7 +82,6 @@ class MyApplication():
                 elif m.name == "MOTOR_SETPOINT":
                     self.actualMotorSetpoint[0] = m.motor_x
                     self.actualMotorSetpoint[1] = m.motor_y
-                    self.actualMotorSetpoint[2] = m.motor_z
                     DATA["MOTOR_SETPOINT"]["time"].append(m.time)
                     DATA["MOTOR_SETPOINT"]["motor_x"].append(self.actualMotorSetpoint[0])
                     DATA["MOTOR_SETPOINT"]["motor_y"].append(self.actualMotorSetpoint[1])
@@ -91,7 +89,6 @@ class MyApplication():
                 elif m.name == "SPEED_INFO":
                     self.actualSpeedInfo[0] = m.speed_x
                     self.actualSpeedInfo[1] = m.speed_y
-                    self.actualSpeedInfo[2] = m.speed_z
                     DATA["SPEED_INFO"]["time"].append(m.time)
                     DATA["SPEED_INFO"]["speed_x"].append(self.actualSpeedInfo[0])
                     DATA["SPEED_INFO"]["speed_y"].append(self.actualSpeedInfo[1])
@@ -101,20 +98,31 @@ class MyApplication():
             m = None
      def refreshPlot(self):
        
+        # Clear plot
         for i in range(3):
             self.ax[i].clear()
+        
+        # Define labels
+        """
+        self.ax[2].set_xlabel("Time")
+        self.ax[2].set_ylabel("Measured speed [m/s]")
+        self.ax[1].set_ylabel("Speed setpoint [m/s]")
+        self.ax[0].set_ylabel("Motor signal [ ]")
+        """
+        
+        # Limit max amout of points on one graph
         if len(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:])-1>MAX_SAMPLES_ON_SCREEN:
-            print("io")
             DATA["SPEED_INFO"]["start"] = -MAX_SAMPLES_ON_SCREEN
             DATA["SPEED_SETPOINT"]["start"] = -MAX_SAMPLES_ON_SCREEN
             DATA["MOTOR_SETPOINT"]["start"] = -MAX_SAMPLES_ON_SCREEN
-            
-        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_x"][DATA["SPEED_INFO"]["start"]:], 'b')
-        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_y"][DATA["SPEED_INFO"]["start"]:], 'r')
-        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_x"][DATA["SPEED_SETPOINT"]["start"]:],'b')
-        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_y"][DATA["SPEED_SETPOINT"]["start"]:],'r')
-        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_x"][DATA["MOTOR_SETPOINT"]["start"]:],'b')
-        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_y"][DATA["MOTOR_SETPOINT"]["start"]:],'r')
+
+        # Re-plot all graphs
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_x"][DATA["SPEED_INFO"]["start"]:], 'b.')
+        self.ax[2].plot(DATA["SPEED_INFO"]["time"][DATA["SPEED_INFO"]["start"]:], DATA["SPEED_INFO"]["speed_y"][DATA["SPEED_INFO"]["start"]:], 'r.')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_x"][DATA["SPEED_SETPOINT"]["start"]:],'b.')
+        self.ax[1].plot(DATA["SPEED_SETPOINT"]["time"][DATA["SPEED_SETPOINT"]["start"]:], DATA["SPEED_SETPOINT"]["setpoint_y"][DATA["SPEED_SETPOINT"]["start"]:],'r.')
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_x"][DATA["MOTOR_SETPOINT"]["start"]:],'b.')
+        self.ax[0].plot(DATA["MOTOR_SETPOINT"]["time"][DATA["MOTOR_SETPOINT"]["start"]:], DATA["MOTOR_SETPOINT"]["motor_y"][DATA["MOTOR_SETPOINT"]["start"]:],'r.')
         self.ax[0].set_adjustable('box',True)
         self.app.refreshPlot("plot")
      
@@ -211,12 +219,6 @@ class MyApplication():
         self.ax.append(self.fig.add_subplot(311)) 
         self.ax.append(self.fig.add_subplot(312)) 
         self.ax.append(self.fig.add_subplot(313)) 
-        
-        # Define labels
-        self.ax[2].set_xlabel("Time")
-        self.ax[2].set_ylabel("Measured speed [m/s]")
-        self.ax[1].set_ylabel("Speed setpoint [m/s]")
-        self.ax[0].set_ylabel("Motor signal [ ]")
         
         # Reset plot button
         self.app.addButton("resetPlot", self.resetPlot, POSITIONS["resetPlot"]["x"],POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])

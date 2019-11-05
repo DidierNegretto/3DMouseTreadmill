@@ -8,16 +8,15 @@ typedef struct __mavlink_speed_info_t {
  uint32_t time; /*<  Time from boot of system*/
  float speed_x; /*<  Speed in x direction*/
  float speed_y; /*<  Speed in y direction*/
- float speed_z; /*<  Speed in z direction*/
 }) mavlink_speed_info_t;
 
-#define MAVLINK_MSG_ID_SPEED_INFO_LEN 16
-#define MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN 16
-#define MAVLINK_MSG_ID_1_LEN 16
-#define MAVLINK_MSG_ID_1_MIN_LEN 16
+#define MAVLINK_MSG_ID_SPEED_INFO_LEN 12
+#define MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN 12
+#define MAVLINK_MSG_ID_1_LEN 12
+#define MAVLINK_MSG_ID_1_MIN_LEN 12
 
-#define MAVLINK_MSG_ID_SPEED_INFO_CRC 202
-#define MAVLINK_MSG_ID_1_CRC 202
+#define MAVLINK_MSG_ID_SPEED_INFO_CRC 76
+#define MAVLINK_MSG_ID_1_CRC 76
 
 
 
@@ -25,21 +24,19 @@ typedef struct __mavlink_speed_info_t {
 #define MAVLINK_MESSAGE_INFO_SPEED_INFO { \
     1, \
     "SPEED_INFO", \
-    4, \
+    3, \
     {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_speed_info_t, time) }, \
          { "speed_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_speed_info_t, speed_x) }, \
          { "speed_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_speed_info_t, speed_y) }, \
-         { "speed_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_speed_info_t, speed_z) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_SPEED_INFO { \
     "SPEED_INFO", \
-    4, \
+    3, \
     {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_speed_info_t, time) }, \
          { "speed_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_speed_info_t, speed_x) }, \
          { "speed_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_speed_info_t, speed_y) }, \
-         { "speed_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_speed_info_t, speed_z) }, \
          } \
 }
 #endif
@@ -53,18 +50,16 @@ typedef struct __mavlink_speed_info_t {
  * @param time  Time from boot of system
  * @param speed_x  Speed in x direction
  * @param speed_y  Speed in y direction
- * @param speed_z  Speed in z direction
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_speed_info_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t time, float speed_x, float speed_y, float speed_z)
+                               uint32_t time, float speed_x, float speed_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SPEED_INFO_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, speed_x);
     _mav_put_float(buf, 8, speed_y);
-    _mav_put_float(buf, 12, speed_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SPEED_INFO_LEN);
 #else
@@ -72,7 +67,6 @@ static inline uint16_t mavlink_msg_speed_info_pack(uint8_t system_id, uint8_t co
     packet.time = time;
     packet.speed_x = speed_x;
     packet.speed_y = speed_y;
-    packet.speed_z = speed_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SPEED_INFO_LEN);
 #endif
@@ -90,19 +84,17 @@ static inline uint16_t mavlink_msg_speed_info_pack(uint8_t system_id, uint8_t co
  * @param time  Time from boot of system
  * @param speed_x  Speed in x direction
  * @param speed_y  Speed in y direction
- * @param speed_z  Speed in z direction
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_speed_info_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t time,float speed_x,float speed_y,float speed_z)
+                                   uint32_t time,float speed_x,float speed_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SPEED_INFO_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, speed_x);
     _mav_put_float(buf, 8, speed_y);
-    _mav_put_float(buf, 12, speed_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SPEED_INFO_LEN);
 #else
@@ -110,7 +102,6 @@ static inline uint16_t mavlink_msg_speed_info_pack_chan(uint8_t system_id, uint8
     packet.time = time;
     packet.speed_x = speed_x;
     packet.speed_y = speed_y;
-    packet.speed_z = speed_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SPEED_INFO_LEN);
 #endif
@@ -129,7 +120,7 @@ static inline uint16_t mavlink_msg_speed_info_pack_chan(uint8_t system_id, uint8
  */
 static inline uint16_t mavlink_msg_speed_info_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_speed_info_t* speed_info)
 {
-    return mavlink_msg_speed_info_pack(system_id, component_id, msg, speed_info->time, speed_info->speed_x, speed_info->speed_y, speed_info->speed_z);
+    return mavlink_msg_speed_info_pack(system_id, component_id, msg, speed_info->time, speed_info->speed_x, speed_info->speed_y);
 }
 
 /**
@@ -143,7 +134,7 @@ static inline uint16_t mavlink_msg_speed_info_encode(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_speed_info_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_speed_info_t* speed_info)
 {
-    return mavlink_msg_speed_info_pack_chan(system_id, component_id, chan, msg, speed_info->time, speed_info->speed_x, speed_info->speed_y, speed_info->speed_z);
+    return mavlink_msg_speed_info_pack_chan(system_id, component_id, chan, msg, speed_info->time, speed_info->speed_x, speed_info->speed_y);
 }
 
 /**
@@ -153,18 +144,16 @@ static inline uint16_t mavlink_msg_speed_info_encode_chan(uint8_t system_id, uin
  * @param time  Time from boot of system
  * @param speed_x  Speed in x direction
  * @param speed_y  Speed in y direction
- * @param speed_z  Speed in z direction
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_speed_info_send(mavlink_channel_t chan, uint32_t time, float speed_x, float speed_y, float speed_z)
+static inline void mavlink_msg_speed_info_send(mavlink_channel_t chan, uint32_t time, float speed_x, float speed_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SPEED_INFO_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, speed_x);
     _mav_put_float(buf, 8, speed_y);
-    _mav_put_float(buf, 12, speed_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SPEED_INFO, buf, MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN, MAVLINK_MSG_ID_SPEED_INFO_LEN, MAVLINK_MSG_ID_SPEED_INFO_CRC);
 #else
@@ -172,7 +161,6 @@ static inline void mavlink_msg_speed_info_send(mavlink_channel_t chan, uint32_t 
     packet.time = time;
     packet.speed_x = speed_x;
     packet.speed_y = speed_y;
-    packet.speed_z = speed_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SPEED_INFO, (const char *)&packet, MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN, MAVLINK_MSG_ID_SPEED_INFO_LEN, MAVLINK_MSG_ID_SPEED_INFO_CRC);
 #endif
@@ -186,7 +174,7 @@ static inline void mavlink_msg_speed_info_send(mavlink_channel_t chan, uint32_t 
 static inline void mavlink_msg_speed_info_send_struct(mavlink_channel_t chan, const mavlink_speed_info_t* speed_info)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_speed_info_send(chan, speed_info->time, speed_info->speed_x, speed_info->speed_y, speed_info->speed_z);
+    mavlink_msg_speed_info_send(chan, speed_info->time, speed_info->speed_x, speed_info->speed_y);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SPEED_INFO, (const char *)speed_info, MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN, MAVLINK_MSG_ID_SPEED_INFO_LEN, MAVLINK_MSG_ID_SPEED_INFO_CRC);
 #endif
@@ -200,14 +188,13 @@ static inline void mavlink_msg_speed_info_send_struct(mavlink_channel_t chan, co
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_speed_info_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time, float speed_x, float speed_y, float speed_z)
+static inline void mavlink_msg_speed_info_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time, float speed_x, float speed_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, speed_x);
     _mav_put_float(buf, 8, speed_y);
-    _mav_put_float(buf, 12, speed_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SPEED_INFO, buf, MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN, MAVLINK_MSG_ID_SPEED_INFO_LEN, MAVLINK_MSG_ID_SPEED_INFO_CRC);
 #else
@@ -215,7 +202,6 @@ static inline void mavlink_msg_speed_info_send_buf(mavlink_message_t *msgbuf, ma
     packet->time = time;
     packet->speed_x = speed_x;
     packet->speed_y = speed_y;
-    packet->speed_z = speed_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SPEED_INFO, (const char *)packet, MAVLINK_MSG_ID_SPEED_INFO_MIN_LEN, MAVLINK_MSG_ID_SPEED_INFO_LEN, MAVLINK_MSG_ID_SPEED_INFO_CRC);
 #endif
@@ -258,16 +244,6 @@ static inline float mavlink_msg_speed_info_get_speed_y(const mavlink_message_t* 
 }
 
 /**
- * @brief Get field speed_z from speed_info message
- *
- * @return  Speed in z direction
- */
-static inline float mavlink_msg_speed_info_get_speed_z(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  12);
-}
-
-/**
  * @brief Decode a speed_info message into a struct
  *
  * @param msg The message to decode
@@ -279,7 +255,6 @@ static inline void mavlink_msg_speed_info_decode(const mavlink_message_t* msg, m
     speed_info->time = mavlink_msg_speed_info_get_time(msg);
     speed_info->speed_x = mavlink_msg_speed_info_get_speed_x(msg);
     speed_info->speed_y = mavlink_msg_speed_info_get_speed_y(msg);
-    speed_info->speed_z = mavlink_msg_speed_info_get_speed_z(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_SPEED_INFO_LEN? msg->len : MAVLINK_MSG_ID_SPEED_INFO_LEN;
         memset(speed_info, 0, MAVLINK_MSG_ID_SPEED_INFO_LEN);

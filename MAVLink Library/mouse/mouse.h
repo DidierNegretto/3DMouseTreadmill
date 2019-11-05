@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 202, 16, 16, 0, 0, 0}, {2, 129, 12, 12, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}, {4, 163, 16, 16, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 76, 12, 12, 0, 0, 0}, {2, 38, 8, 8, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}, {4, 112, 12, 12, 0, 0, 0}, {5, 155, 1, 1, 0, 0, 0}, {6, 75, 13, 13, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -41,8 +41,9 @@ typedef enum MOUSE_MODE
 {
    MOUSE_MODE_STOP=0, /* All motion of mouse treadmill is stopped | */
    MOUSE_MODE_SPEED=1, /* Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT. | */
-   MOUSE_MODE_AUTO=2, /* Predefined speed profile is applied | */
-   MOUSE_MODE_ENUM_END=3, /*  | */
+   MOUSE_MODE_AUTO_RUN=2, /* Predefined speed profile is applied | */
+   MOUSE_MODE_AUTO_LOAD=3, /* Predefined speed profile is loaded | */
+   MOUSE_MODE_ENUM_END=4, /*  | */
 } MOUSE_MODE;
 #endif
 
@@ -63,6 +64,8 @@ typedef enum MOUSE_MODE
 #include "./mavlink_msg_speed_setpoint.h"
 #include "./mavlink_msg_mode_selection.h"
 #include "./mavlink_msg_motor_setpoint.h"
+#include "./mavlink_msg_point_loaded.h"
+#include "./mavlink_msg_point.h"
 
 // base include
 
@@ -71,8 +74,8 @@ typedef enum MOUSE_MODE
 #define MAVLINK_THIS_XML_IDX 0
 
 #if MAVLINK_THIS_XML_IDX == MAVLINK_PRIMARY_XML_IDX
-# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO, MAVLINK_MESSAGE_INFO_SPEED_SETPOINT, MAVLINK_MESSAGE_INFO_MODE_SELECTION, MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT}
-# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }, { "MODE_SELECTION", 3 }, { "MOTOR_SETPOINT", 4 }, { "SPEED_INFO", 1 }, { "SPEED_SETPOINT", 2 }}
+# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO, MAVLINK_MESSAGE_INFO_SPEED_SETPOINT, MAVLINK_MESSAGE_INFO_MODE_SELECTION, MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT, MAVLINK_MESSAGE_INFO_POINT_LOADED, MAVLINK_MESSAGE_INFO_POINT}
+# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }, { "MODE_SELECTION", 3 }, { "MOTOR_SETPOINT", 4 }, { "POINT", 6 }, { "POINT_LOADED", 5 }, { "SPEED_INFO", 1 }, { "SPEED_SETPOINT", 2 }}
 # if MAVLINK_COMMAND_24BIT
 #  include "../mavlink_get_info.h"
 # endif

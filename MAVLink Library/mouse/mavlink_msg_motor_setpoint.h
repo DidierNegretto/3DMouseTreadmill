@@ -8,16 +8,15 @@ typedef struct __mavlink_motor_setpoint_t {
  uint32_t time; /*<  Time from boot of system*/
  float motor_x; /*<  Speed setpoint in x direction*/
  float motor_y; /*<  Speed setpoint in y direction*/
- float motor_z; /*<  Speed setpoint in z direction*/
 }) mavlink_motor_setpoint_t;
 
-#define MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN 16
-#define MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN 16
-#define MAVLINK_MSG_ID_4_LEN 16
-#define MAVLINK_MSG_ID_4_MIN_LEN 16
+#define MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN 12
+#define MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN 12
+#define MAVLINK_MSG_ID_4_LEN 12
+#define MAVLINK_MSG_ID_4_MIN_LEN 12
 
-#define MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC 163
-#define MAVLINK_MSG_ID_4_CRC 163
+#define MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC 112
+#define MAVLINK_MSG_ID_4_CRC 112
 
 
 
@@ -25,21 +24,19 @@ typedef struct __mavlink_motor_setpoint_t {
 #define MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT { \
     4, \
     "MOTOR_SETPOINT", \
-    4, \
+    3, \
     {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_motor_setpoint_t, time) }, \
          { "motor_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_motor_setpoint_t, motor_x) }, \
          { "motor_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_motor_setpoint_t, motor_y) }, \
-         { "motor_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_motor_setpoint_t, motor_z) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT { \
     "MOTOR_SETPOINT", \
-    4, \
+    3, \
     {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_motor_setpoint_t, time) }, \
          { "motor_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_motor_setpoint_t, motor_x) }, \
          { "motor_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_motor_setpoint_t, motor_y) }, \
-         { "motor_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_motor_setpoint_t, motor_z) }, \
          } \
 }
 #endif
@@ -53,18 +50,16 @@ typedef struct __mavlink_motor_setpoint_t {
  * @param time  Time from boot of system
  * @param motor_x  Speed setpoint in x direction
  * @param motor_y  Speed setpoint in y direction
- * @param motor_z  Speed setpoint in z direction
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_motor_setpoint_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t time, float motor_x, float motor_y, float motor_z)
+                               uint32_t time, float motor_x, float motor_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, motor_x);
     _mav_put_float(buf, 8, motor_y);
-    _mav_put_float(buf, 12, motor_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN);
 #else
@@ -72,7 +67,6 @@ static inline uint16_t mavlink_msg_motor_setpoint_pack(uint8_t system_id, uint8_
     packet.time = time;
     packet.motor_x = motor_x;
     packet.motor_y = motor_y;
-    packet.motor_z = motor_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN);
 #endif
@@ -90,19 +84,17 @@ static inline uint16_t mavlink_msg_motor_setpoint_pack(uint8_t system_id, uint8_
  * @param time  Time from boot of system
  * @param motor_x  Speed setpoint in x direction
  * @param motor_y  Speed setpoint in y direction
- * @param motor_z  Speed setpoint in z direction
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_motor_setpoint_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t time,float motor_x,float motor_y,float motor_z)
+                                   uint32_t time,float motor_x,float motor_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, motor_x);
     _mav_put_float(buf, 8, motor_y);
-    _mav_put_float(buf, 12, motor_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN);
 #else
@@ -110,7 +102,6 @@ static inline uint16_t mavlink_msg_motor_setpoint_pack_chan(uint8_t system_id, u
     packet.time = time;
     packet.motor_x = motor_x;
     packet.motor_y = motor_y;
-    packet.motor_z = motor_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN);
 #endif
@@ -129,7 +120,7 @@ static inline uint16_t mavlink_msg_motor_setpoint_pack_chan(uint8_t system_id, u
  */
 static inline uint16_t mavlink_msg_motor_setpoint_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_motor_setpoint_t* motor_setpoint)
 {
-    return mavlink_msg_motor_setpoint_pack(system_id, component_id, msg, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y, motor_setpoint->motor_z);
+    return mavlink_msg_motor_setpoint_pack(system_id, component_id, msg, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y);
 }
 
 /**
@@ -143,7 +134,7 @@ static inline uint16_t mavlink_msg_motor_setpoint_encode(uint8_t system_id, uint
  */
 static inline uint16_t mavlink_msg_motor_setpoint_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_motor_setpoint_t* motor_setpoint)
 {
-    return mavlink_msg_motor_setpoint_pack_chan(system_id, component_id, chan, msg, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y, motor_setpoint->motor_z);
+    return mavlink_msg_motor_setpoint_pack_chan(system_id, component_id, chan, msg, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y);
 }
 
 /**
@@ -153,18 +144,16 @@ static inline uint16_t mavlink_msg_motor_setpoint_encode_chan(uint8_t system_id,
  * @param time  Time from boot of system
  * @param motor_x  Speed setpoint in x direction
  * @param motor_y  Speed setpoint in y direction
- * @param motor_z  Speed setpoint in z direction
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_motor_setpoint_send(mavlink_channel_t chan, uint32_t time, float motor_x, float motor_y, float motor_z)
+static inline void mavlink_msg_motor_setpoint_send(mavlink_channel_t chan, uint32_t time, float motor_x, float motor_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN];
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, motor_x);
     _mav_put_float(buf, 8, motor_y);
-    _mav_put_float(buf, 12, motor_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MOTOR_SETPOINT, buf, MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC);
 #else
@@ -172,7 +161,6 @@ static inline void mavlink_msg_motor_setpoint_send(mavlink_channel_t chan, uint3
     packet.time = time;
     packet.motor_x = motor_x;
     packet.motor_y = motor_y;
-    packet.motor_z = motor_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MOTOR_SETPOINT, (const char *)&packet, MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC);
 #endif
@@ -186,7 +174,7 @@ static inline void mavlink_msg_motor_setpoint_send(mavlink_channel_t chan, uint3
 static inline void mavlink_msg_motor_setpoint_send_struct(mavlink_channel_t chan, const mavlink_motor_setpoint_t* motor_setpoint)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_motor_setpoint_send(chan, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y, motor_setpoint->motor_z);
+    mavlink_msg_motor_setpoint_send(chan, motor_setpoint->time, motor_setpoint->motor_x, motor_setpoint->motor_y);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MOTOR_SETPOINT, (const char *)motor_setpoint, MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC);
 #endif
@@ -200,14 +188,13 @@ static inline void mavlink_msg_motor_setpoint_send_struct(mavlink_channel_t chan
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_motor_setpoint_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time, float motor_x, float motor_y, float motor_z)
+static inline void mavlink_msg_motor_setpoint_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time, float motor_x, float motor_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint32_t(buf, 0, time);
     _mav_put_float(buf, 4, motor_x);
     _mav_put_float(buf, 8, motor_y);
-    _mav_put_float(buf, 12, motor_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MOTOR_SETPOINT, buf, MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC);
 #else
@@ -215,7 +202,6 @@ static inline void mavlink_msg_motor_setpoint_send_buf(mavlink_message_t *msgbuf
     packet->time = time;
     packet->motor_x = motor_x;
     packet->motor_y = motor_y;
-    packet->motor_z = motor_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MOTOR_SETPOINT, (const char *)packet, MAVLINK_MSG_ID_MOTOR_SETPOINT_MIN_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN, MAVLINK_MSG_ID_MOTOR_SETPOINT_CRC);
 #endif
@@ -258,16 +244,6 @@ static inline float mavlink_msg_motor_setpoint_get_motor_y(const mavlink_message
 }
 
 /**
- * @brief Get field motor_z from motor_setpoint message
- *
- * @return  Speed setpoint in z direction
- */
-static inline float mavlink_msg_motor_setpoint_get_motor_z(const mavlink_message_t* msg)
-{
-    return _MAV_RETURN_float(msg,  12);
-}
-
-/**
  * @brief Decode a motor_setpoint message into a struct
  *
  * @param msg The message to decode
@@ -279,7 +255,6 @@ static inline void mavlink_msg_motor_setpoint_decode(const mavlink_message_t* ms
     motor_setpoint->time = mavlink_msg_motor_setpoint_get_time(msg);
     motor_setpoint->motor_x = mavlink_msg_motor_setpoint_get_motor_x(msg);
     motor_setpoint->motor_y = mavlink_msg_motor_setpoint_get_motor_y(msg);
-    motor_setpoint->motor_z = mavlink_msg_motor_setpoint_get_motor_z(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN? msg->len : MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN;
         memset(motor_setpoint, 0, MAVLINK_MSG_ID_MOTOR_SETPOINT_LEN);

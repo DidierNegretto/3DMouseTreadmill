@@ -233,10 +233,12 @@ enums['MOUSE_MODE'][0] = EnumEntry('MOUSE_MODE_STOP', '''All motion of mouse tre
 MOUSE_MODE_SPEED = 1 # Constanst speed is applied. Speed selected by PC message
                         # SPEED_SETPOINT.
 enums['MOUSE_MODE'][1] = EnumEntry('MOUSE_MODE_SPEED', '''Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT.''')
-MOUSE_MODE_AUTO = 2 # Predefined speed profile is applied
-enums['MOUSE_MODE'][2] = EnumEntry('MOUSE_MODE_AUTO', '''Predefined speed profile is applied''')
-MOUSE_MODE_ENUM_END = 3 # 
-enums['MOUSE_MODE'][3] = EnumEntry('MOUSE_MODE_ENUM_END', '''''')
+MOUSE_MODE_AUTO_RUN = 2 # Predefined speed profile is applied
+enums['MOUSE_MODE'][2] = EnumEntry('MOUSE_MODE_AUTO_RUN', '''Predefined speed profile is applied''')
+MOUSE_MODE_AUTO_LOAD = 3 # Predefined speed profile is loaded
+enums['MOUSE_MODE'][3] = EnumEntry('MOUSE_MODE_AUTO_LOAD', '''Predefined speed profile is loaded''')
+MOUSE_MODE_ENUM_END = 4 # 
+enums['MOUSE_MODE'][4] = EnumEntry('MOUSE_MODE_ENUM_END', '''''')
 
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
@@ -245,6 +247,8 @@ MAVLINK_MSG_ID_SPEED_INFO = 1
 MAVLINK_MSG_ID_SPEED_SETPOINT = 2
 MAVLINK_MSG_ID_MODE_SELECTION = 3
 MAVLINK_MSG_ID_MOTOR_SETPOINT = 4
+MAVLINK_MSG_ID_POINT_LOADED = 5
+MAVLINK_MSG_ID_POINT = 6
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -283,30 +287,29 @@ class MAVLink_speed_info_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_SPEED_INFO
         name = 'SPEED_INFO'
-        fieldnames = ['time', 'speed_x', 'speed_y', 'speed_z']
-        ordered_fieldnames = ['time', 'speed_x', 'speed_y', 'speed_z']
-        fieldtypes = ['uint32_t', 'float', 'float', 'float']
+        fieldnames = ['time', 'speed_x', 'speed_y']
+        ordered_fieldnames = ['time', 'speed_x', 'speed_y']
+        fieldtypes = ['uint32_t', 'float', 'float']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<Ifff'
-        native_format = bytearray('<Ifff', 'ascii')
-        orders = [0, 1, 2, 3]
-        lengths = [1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0]
-        crc_extra = 202
-        unpacker = struct.Struct('<Ifff')
+        format = '<Iff'
+        native_format = bytearray('<Iff', 'ascii')
+        orders = [0, 1, 2]
+        lengths = [1, 1, 1]
+        array_lengths = [0, 0, 0]
+        crc_extra = 76
+        unpacker = struct.Struct('<Iff')
 
-        def __init__(self, time, speed_x, speed_y, speed_z):
+        def __init__(self, time, speed_x, speed_y):
                 MAVLink_message.__init__(self, MAVLink_speed_info_message.id, MAVLink_speed_info_message.name)
                 self._fieldnames = MAVLink_speed_info_message.fieldnames
                 self.time = time
                 self.speed_x = speed_x
                 self.speed_y = speed_y
-                self.speed_z = speed_z
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 202, struct.pack('<Ifff', self.time, self.speed_x, self.speed_y, self.speed_z), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 76, struct.pack('<Iff', self.time, self.speed_x, self.speed_y), force_mavlink1=force_mavlink1)
 
 class MAVLink_speed_setpoint_message(MAVLink_message):
         '''
@@ -315,29 +318,28 @@ class MAVLink_speed_setpoint_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_SPEED_SETPOINT
         name = 'SPEED_SETPOINT'
-        fieldnames = ['setpoint_x', 'setpoint_y', 'setpoint_z']
-        ordered_fieldnames = ['setpoint_x', 'setpoint_y', 'setpoint_z']
-        fieldtypes = ['float', 'float', 'float']
+        fieldnames = ['setpoint_x', 'setpoint_y']
+        ordered_fieldnames = ['setpoint_x', 'setpoint_y']
+        fieldtypes = ['float', 'float']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<fff'
-        native_format = bytearray('<fff', 'ascii')
-        orders = [0, 1, 2]
-        lengths = [1, 1, 1]
-        array_lengths = [0, 0, 0]
-        crc_extra = 129
-        unpacker = struct.Struct('<fff')
+        format = '<ff'
+        native_format = bytearray('<ff', 'ascii')
+        orders = [0, 1]
+        lengths = [1, 1]
+        array_lengths = [0, 0]
+        crc_extra = 38
+        unpacker = struct.Struct('<ff')
 
-        def __init__(self, setpoint_x, setpoint_y, setpoint_z):
+        def __init__(self, setpoint_x, setpoint_y):
                 MAVLink_message.__init__(self, MAVLink_speed_setpoint_message.id, MAVLink_speed_setpoint_message.name)
                 self._fieldnames = MAVLink_speed_setpoint_message.fieldnames
                 self.setpoint_x = setpoint_x
                 self.setpoint_y = setpoint_y
-                self.setpoint_z = setpoint_z
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 129, struct.pack('<fff', self.setpoint_x, self.setpoint_y, self.setpoint_z), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 38, struct.pack('<ff', self.setpoint_x, self.setpoint_y), force_mavlink1=force_mavlink1)
 
 class MAVLink_mode_selection_message(MAVLink_message):
         '''
@@ -376,30 +378,90 @@ class MAVLink_motor_setpoint_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_MOTOR_SETPOINT
         name = 'MOTOR_SETPOINT'
-        fieldnames = ['time', 'motor_x', 'motor_y', 'motor_z']
-        ordered_fieldnames = ['time', 'motor_x', 'motor_y', 'motor_z']
-        fieldtypes = ['uint32_t', 'float', 'float', 'float']
+        fieldnames = ['time', 'motor_x', 'motor_y']
+        ordered_fieldnames = ['time', 'motor_x', 'motor_y']
+        fieldtypes = ['uint32_t', 'float', 'float']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<Ifff'
-        native_format = bytearray('<Ifff', 'ascii')
-        orders = [0, 1, 2, 3]
-        lengths = [1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0]
-        crc_extra = 163
-        unpacker = struct.Struct('<Ifff')
+        format = '<Iff'
+        native_format = bytearray('<Iff', 'ascii')
+        orders = [0, 1, 2]
+        lengths = [1, 1, 1]
+        array_lengths = [0, 0, 0]
+        crc_extra = 112
+        unpacker = struct.Struct('<Iff')
 
-        def __init__(self, time, motor_x, motor_y, motor_z):
+        def __init__(self, time, motor_x, motor_y):
                 MAVLink_message.__init__(self, MAVLink_motor_setpoint_message.id, MAVLink_motor_setpoint_message.name)
                 self._fieldnames = MAVLink_motor_setpoint_message.fieldnames
                 self.time = time
                 self.motor_x = motor_x
                 self.motor_y = motor_y
-                self.motor_z = motor_z
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 163, struct.pack('<Ifff', self.time, self.motor_x, self.motor_y, self.motor_z), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 112, struct.pack('<Iff', self.time, self.motor_x, self.motor_y), force_mavlink1=force_mavlink1)
+
+class MAVLink_point_loaded_message(MAVLink_message):
+        '''
+        This message is used to acknowledge the receipt of one point
+        for auto mode Sender = STM32 Receiver = PC
+        '''
+        id = MAVLINK_MSG_ID_POINT_LOADED
+        name = 'POINT_LOADED'
+        fieldnames = ['point_id']
+        ordered_fieldnames = ['point_id']
+        fieldtypes = ['uint8_t']
+        fielddisplays_by_name = {}
+        fieldenums_by_name = {}
+        fieldunits_by_name = {}
+        format = '<B'
+        native_format = bytearray('<B', 'ascii')
+        orders = [0]
+        lengths = [1]
+        array_lengths = [0]
+        crc_extra = 155
+        unpacker = struct.Struct('<B')
+
+        def __init__(self, point_id):
+                MAVLink_message.__init__(self, MAVLink_point_loaded_message.id, MAVLink_point_loaded_message.name)
+                self._fieldnames = MAVLink_point_loaded_message.fieldnames
+                self.point_id = point_id
+
+        def pack(self, mav, force_mavlink1=False):
+                return MAVLink_message.pack(self, mav, 155, struct.pack('<B', self.point_id), force_mavlink1=force_mavlink1)
+
+class MAVLink_point_message(MAVLink_message):
+        '''
+        This message is used to send one point for auto mode. Sender =
+        PC Receiver = STM32
+        '''
+        id = MAVLINK_MSG_ID_POINT
+        name = 'POINT'
+        fieldnames = ['duration', 'point_id', 'setpoint_x', 'setpoint_y']
+        ordered_fieldnames = ['duration', 'setpoint_x', 'setpoint_y', 'point_id']
+        fieldtypes = ['uint32_t', 'uint8_t', 'float', 'float']
+        fielddisplays_by_name = {}
+        fieldenums_by_name = {}
+        fieldunits_by_name = {}
+        format = '<IffB'
+        native_format = bytearray('<IffB', 'ascii')
+        orders = [0, 3, 1, 2]
+        lengths = [1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0]
+        crc_extra = 75
+        unpacker = struct.Struct('<IffB')
+
+        def __init__(self, duration, point_id, setpoint_x, setpoint_y):
+                MAVLink_message.__init__(self, MAVLink_point_message.id, MAVLink_point_message.name)
+                self._fieldnames = MAVLink_point_message.fieldnames
+                self.duration = duration
+                self.point_id = point_id
+                self.setpoint_x = setpoint_x
+                self.setpoint_y = setpoint_y
+
+        def pack(self, mav, force_mavlink1=False):
+                return MAVLink_message.pack(self, mav, 75, struct.pack('<IffB', self.duration, self.setpoint_x, self.setpoint_y, self.point_id), force_mavlink1=force_mavlink1)
 
 
 mavlink_map = {
@@ -408,6 +470,8 @@ mavlink_map = {
         MAVLINK_MSG_ID_SPEED_SETPOINT : MAVLink_speed_setpoint_message,
         MAVLINK_MSG_ID_MODE_SELECTION : MAVLink_mode_selection_message,
         MAVLINK_MSG_ID_MOTOR_SETPOINT : MAVLink_motor_setpoint_message,
+        MAVLINK_MSG_ID_POINT_LOADED : MAVLink_point_loaded_message,
+        MAVLINK_MSG_ID_POINT : MAVLink_point_message,
 }
 
 class MAVError(Exception):
@@ -834,7 +898,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.heartbeat_encode(mode, time), force_mavlink1=force_mavlink1)
 
-        def speed_info_encode(self, time, speed_x, speed_y, speed_z):
+        def speed_info_encode(self, time, speed_x, speed_y):
                 '''
                 The message giving the actual speed of the motor. Sender = STM32
                 Receiver = PC
@@ -842,12 +906,11 @@ class MAVLink(object):
                 time                      : Time from boot of system (type:uint32_t)
                 speed_x                   : Speed in x direction (type:float)
                 speed_y                   : Speed in y direction (type:float)
-                speed_z                   : Speed in z direction (type:float)
 
                 '''
-                return MAVLink_speed_info_message(time, speed_x, speed_y, speed_z)
+                return MAVLink_speed_info_message(time, speed_x, speed_y)
 
-        def speed_info_send(self, time, speed_x, speed_y, speed_z, force_mavlink1=False):
+        def speed_info_send(self, time, speed_x, speed_y, force_mavlink1=False):
                 '''
                 The message giving the actual speed of the motor. Sender = STM32
                 Receiver = PC
@@ -855,34 +918,31 @@ class MAVLink(object):
                 time                      : Time from boot of system (type:uint32_t)
                 speed_x                   : Speed in x direction (type:float)
                 speed_y                   : Speed in y direction (type:float)
-                speed_z                   : Speed in z direction (type:float)
 
                 '''
-                return self.send(self.speed_info_encode(time, speed_x, speed_y, speed_z), force_mavlink1=force_mavlink1)
+                return self.send(self.speed_info_encode(time, speed_x, speed_y), force_mavlink1=force_mavlink1)
 
-        def speed_setpoint_encode(self, setpoint_x, setpoint_y, setpoint_z):
-                '''
-                The message is sent to send and validate the setpoint sent from
-                computer. Sender = PC/STM32 Receiver = STM32/PC
-
-                setpoint_x                : Speed setpoint in x direction (type:float)
-                setpoint_y                : Speed setpoint in y direction (type:float)
-                setpoint_z                : Speed setpoint in z direction (type:float)
-
-                '''
-                return MAVLink_speed_setpoint_message(setpoint_x, setpoint_y, setpoint_z)
-
-        def speed_setpoint_send(self, setpoint_x, setpoint_y, setpoint_z, force_mavlink1=False):
+        def speed_setpoint_encode(self, setpoint_x, setpoint_y):
                 '''
                 The message is sent to send and validate the setpoint sent from
                 computer. Sender = PC/STM32 Receiver = STM32/PC
 
                 setpoint_x                : Speed setpoint in x direction (type:float)
                 setpoint_y                : Speed setpoint in y direction (type:float)
-                setpoint_z                : Speed setpoint in z direction (type:float)
 
                 '''
-                return self.send(self.speed_setpoint_encode(setpoint_x, setpoint_y, setpoint_z), force_mavlink1=force_mavlink1)
+                return MAVLink_speed_setpoint_message(setpoint_x, setpoint_y)
+
+        def speed_setpoint_send(self, setpoint_x, setpoint_y, force_mavlink1=False):
+                '''
+                The message is sent to send and validate the setpoint sent from
+                computer. Sender = PC/STM32 Receiver = STM32/PC
+
+                setpoint_x                : Speed setpoint in x direction (type:float)
+                setpoint_y                : Speed setpoint in y direction (type:float)
+
+                '''
+                return self.send(self.speed_setpoint_encode(setpoint_x, setpoint_y), force_mavlink1=force_mavlink1)
 
         def mode_selection_encode(self, mode):
                 '''
@@ -904,7 +964,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.mode_selection_encode(mode), force_mavlink1=force_mavlink1)
 
-        def motor_setpoint_encode(self, time, motor_x, motor_y, motor_z):
+        def motor_setpoint_encode(self, time, motor_x, motor_y):
                 '''
                 This message defines the raw motor input values. This values defines
                 the Duty_Cycle up time for PWM signals. Sender = STM32
@@ -913,12 +973,11 @@ class MAVLink(object):
                 time                      : Time from boot of system (type:uint32_t)
                 motor_x                   : Speed setpoint in x direction (type:float)
                 motor_y                   : Speed setpoint in y direction (type:float)
-                motor_z                   : Speed setpoint in z direction (type:float)
 
                 '''
-                return MAVLink_motor_setpoint_message(time, motor_x, motor_y, motor_z)
+                return MAVLink_motor_setpoint_message(time, motor_x, motor_y)
 
-        def motor_setpoint_send(self, time, motor_x, motor_y, motor_z, force_mavlink1=False):
+        def motor_setpoint_send(self, time, motor_x, motor_y, force_mavlink1=False):
                 '''
                 This message defines the raw motor input values. This values defines
                 the Duty_Cycle up time for PWM signals. Sender = STM32
@@ -927,8 +986,53 @@ class MAVLink(object):
                 time                      : Time from boot of system (type:uint32_t)
                 motor_x                   : Speed setpoint in x direction (type:float)
                 motor_y                   : Speed setpoint in y direction (type:float)
-                motor_z                   : Speed setpoint in z direction (type:float)
 
                 '''
-                return self.send(self.motor_setpoint_encode(time, motor_x, motor_y, motor_z), force_mavlink1=force_mavlink1)
+                return self.send(self.motor_setpoint_encode(time, motor_x, motor_y), force_mavlink1=force_mavlink1)
+
+        def point_loaded_encode(self, point_id):
+                '''
+                This message is used to acknowledge the receipt of one point for auto
+                mode Sender = STM32 Receiver = PC
+
+                point_id                  : Last ID of point loaded (type:uint8_t)
+
+                '''
+                return MAVLink_point_loaded_message(point_id)
+
+        def point_loaded_send(self, point_id, force_mavlink1=False):
+                '''
+                This message is used to acknowledge the receipt of one point for auto
+                mode Sender = STM32 Receiver = PC
+
+                point_id                  : Last ID of point loaded (type:uint8_t)
+
+                '''
+                return self.send(self.point_loaded_encode(point_id), force_mavlink1=force_mavlink1)
+
+        def point_encode(self, duration, point_id, setpoint_x, setpoint_y):
+                '''
+                This message is used to send one point for auto mode. Sender = PC
+                Receiver = STM32
+
+                duration                  : Time during which the setpoint need to be kept (type:uint32_t)
+                point_id                  : point ID (type:uint8_t)
+                setpoint_x                : Speed setpoint in x direction (type:float)
+                setpoint_y                : Speed setpoint in y direction (type:float)
+
+                '''
+                return MAVLink_point_message(duration, point_id, setpoint_x, setpoint_y)
+
+        def point_send(self, duration, point_id, setpoint_x, setpoint_y, force_mavlink1=False):
+                '''
+                This message is used to send one point for auto mode. Sender = PC
+                Receiver = STM32
+
+                duration                  : Time during which the setpoint need to be kept (type:uint32_t)
+                point_id                  : point ID (type:uint8_t)
+                setpoint_x                : Speed setpoint in x direction (type:float)
+                setpoint_y                : Speed setpoint in y direction (type:float)
+
+                '''
+                return self.send(self.point_encode(duration, point_id, setpoint_x, setpoint_y), force_mavlink1=force_mavlink1)
 

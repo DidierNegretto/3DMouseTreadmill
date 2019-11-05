@@ -17,7 +17,7 @@ mavlink_helpers.h:969:24:mavlink_parse_char	40	static
 main.c:64:5:main_get_huart_tx_state	8	static
 main.c:67:6:main_transmit_buffer	16	static
 main.c:70:6:main_stop_motors	8	static
-main.c:75:6:main_set_motors_speed	32	static
+main.c:75:6:main_set_motors_speed	24	static
 main.c:97:6:TM7_IRQHandler	8	static
 main.c:102:6:HAL_UART_RxCpltCallback	624	static
 main.c:115:6:HAL_TIM_PeriodElapsedCallback	16	static

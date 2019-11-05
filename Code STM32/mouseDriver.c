@@ -11,7 +11,6 @@ static mavlink_motor_setpoint_t actual_motor_signal;
 void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_x = 0;
 	actual_speed_setpoint.setpoint_y = 0;
-	actual_speed_setpoint.setpoint_z = 0;
 }
 
 void mouseDriver_initTime(void){
@@ -25,7 +24,6 @@ void mouseDriver_initMode(void){
 void mouseDriver_getSpeedFromSensors(void){
 	actual_speed_measure.speed_x = 1;
 	actual_speed_measure.speed_y = 2;
-	actual_speed_measure.speed_z = 3;
 }
 
 /* Private set/get functions */
@@ -137,7 +135,9 @@ void mouseDriver_idle (void){
 		/* END Code for DEMO */
 		main_set_motors_speed(actual_motor_signal);
 		break;
-	case MOUSE_MODE_AUTO:
+	case MOUSE_MODE_AUTO_LOAD:
+		break;
+	default:
 		break;
 	}
 	/* Note: Delay needed between messages otherwise PC not able to follow */
