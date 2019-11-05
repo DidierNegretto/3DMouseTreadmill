@@ -43,7 +43,10 @@ void mouseDriver_sendMsg(uint32_t msgid){
 	static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
 	static uint16_t msg_size = 0;
 
-	while (tx_finish == 0){/*Wait for other messages to be sent*/}
+	while (main_get_huart_tx_state() == HAL_BUSY){
+		/*Wait for other messages to be sent*/
+		HAL_Delay(1);
+	}
 
 	switch(msgid){
 		case MAVLINK_MSG_ID_HEARTBEAT:
@@ -137,14 +140,11 @@ void mouseDriver_idle (void){
 	case MOUSE_MODE_AUTO:
 		break;
 	}
+	/* Note: Delay needed between messages otherwise PC not able to follow */
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
-	HAL_Delay(1);
 	mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-	HAL_Delay(1);
 
 }
 

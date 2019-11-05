@@ -59,6 +59,7 @@ void Error_Handler(void);
 void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size);
 void main_stop_motors(void);
 void main_set_motors_speed(mavlink_motor_setpoint_t motor );
+int main_get_huart_tx_state(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

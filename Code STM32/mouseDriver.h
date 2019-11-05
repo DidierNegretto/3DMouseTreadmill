@@ -18,10 +18,6 @@
 /* maximum size of the trasmit buffer */
 #define MAX_BYTE_BUFFER_SIZE 500
 
-
-/* Out buffer */
-static uint8_t tx_finish = 1;
-
 /* Function for initializing the mouseDriver*/
 void mouseDriver_init(void);
 

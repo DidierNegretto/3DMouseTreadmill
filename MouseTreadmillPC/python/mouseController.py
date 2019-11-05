@@ -64,7 +64,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                #print(m)
+                print(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode

@@ -61,8 +61,10 @@ static void MX_TIM7_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_DMA_Init(void);
 /* USER CODE BEGIN PFP */
+int main_get_huart_tx_state(void){
+	return HAL_DMA_GetState(&hdma_usart2_tx);
+}
 void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size){
-	tx_finish = 0;
 	HAL_UART_Transmit_DMA(&huart2, outBuffer,msg_size);
 }
 void main_stop_motors(void)
@@ -110,11 +112,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	}
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-	tx_finish = 1;
-}
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
     	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -138,7 +135,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   HAL_Init();
 
   /* USER CODE BEGIN Init */
 	mouseDriver_init();
@@ -161,14 +158,11 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_NVIC_SetPriority(USART2_IRQn,0,0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
-  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 1, 1);
-  HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
   HAL_NVIC_SetPriority(TIM7_IRQn,2,2);
   HAL_NVIC_EnableIRQ(TIM7_IRQn);
 
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
   HAL_TIM_Base_Start_IT(&htim7);
-  tx_finish = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
