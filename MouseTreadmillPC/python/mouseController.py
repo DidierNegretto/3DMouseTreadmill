@@ -66,7 +66,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                print(m)
+                #print(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -147,9 +147,12 @@ class MyApplication():
 
      def setMode(self):
          self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")]) 
+         while(self.connection.out_waiting > 0):
+                pass 
          if self.actualMode == mouseController.MOUSE_MODE_STOP:
              self.setpointX = 0
              self.setpointY = 0
+
      
      def setSpeedX(self):
         if self.actualMode == mouseController.MOUSE_MODE_SPEED:
@@ -157,7 +160,9 @@ class MyApplication():
             if self.setpointX is None or  self.setpointY is None :
                 pass
             else:
-                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
+                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY))
+                while(self.connection.out_waiting > 0):
+                    pass 
     
      def setSpeedY(self):
         if self.actualMode == mouseController.MOUSE_MODE_SPEED:
@@ -165,7 +170,9 @@ class MyApplication():
             if self.setpointX is None or  self.setpointY is None :
                 pass
             else:
-                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY), 0.0)
+                self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY))
+                while(self.connection.out_waiting > 0):
+                    pass 
                
 
 

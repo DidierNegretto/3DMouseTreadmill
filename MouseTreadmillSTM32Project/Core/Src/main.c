@@ -100,6 +100,7 @@ void TM7_IRQHandler(void){
 
 /* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	HAL_NVIC_DisableIRQ(USART2_IRQn);
 	mavlink_message_t inmsg;
 	mavlink_status_t msgStatus;
 	if (huart->Instance == USART2){
@@ -110,6 +111,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			mouseDriver_readMsg(inmsg);
 		}
 	}
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
@@ -135,7 +137,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-   HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 	mouseDriver_init();
