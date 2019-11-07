@@ -1,5 +1,15 @@
-#include "mouseDriver.h"
+/*! \file mouseDriver.c
+\brief Implementation of the driver for the mouse treadmil project.
 
+\author Didier Negretto
+*/
+#include "mouseDriver.h"
+/*!
+\var actual_time
+\brief Global variable for time keeping
+
+This value is periodically updated.
+*/
 static uint32_t actual_time = 0;
 static uint8_t actual_mode = MOUSE_MODE_STOP;
 static mavlink_speed_info_t actual_speed_measure;
@@ -8,6 +18,7 @@ static mavlink_motor_setpoint_t actual_motor_signal;
 
 /* Private functions for mouseDriver.c*/
 /* Private Init functions */
+
 void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_x = 0;
 	actual_speed_setpoint.setpoint_y = 0;

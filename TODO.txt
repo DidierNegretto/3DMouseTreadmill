@@ -1,0 +1,7 @@
+TODO:
+
+- Motor command should be uint8_t + direction, not float
+- Must use two pins to set directions of motors on driver
+- Specify the way the AUTO mode file should be written
+- Do documentation
+
