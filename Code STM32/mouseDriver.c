@@ -61,7 +61,7 @@ static uint8_t actual_point = 0;
 \var actual_point_start_time
 \brief Global variable for keeping track of the time when the last point in \ref points array started.
 */
-static uint8_t actual_point_start_time = 0;
+static uint32_t actual_point_start_time = 0;
 /*!
 \var actual_error
 \brief Global variable to store and send the last error occured
@@ -103,19 +103,6 @@ void mouseDriver_setSetpoint(const mavlink_speed_setpoint_t speed){
 	actual_speed_setpoint = speed;
 }
 
-void mouseDriver_setMode(uint8_t mode){
-	if (mode == MOUSE_MODE_STOP){
-		main_stop_motors();
-		actual_mode = MOUSE_MODE_STOP;
-	}
-	if (actual_mode == MOUSE_MODE_AUTO_LOAD && mode == MOUSE_MODE_AUTO_RUN ){
-		actual_point = 0;
-		actual_mode = mode;
-	}
-
-	if (actual_mode != MOUSE_MODE_AUTO_RUN)
-		actual_mode = mode;
-}
 
 /* Private message functions */
 void mouseDriver_sendMsg(uint32_t msgid){
@@ -156,9 +143,41 @@ void mouseDriver_sendMsg(uint32_t msgid){
 			mavlink_msg_error_encode(SYS_ID,COMP_ID,&msg,&actual_error);
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
 			main_transmit_buffer(outBuffer, msg_size);
+			break;
+		case MAVLINK_MSG_ID_POINT_LOADED:
+			mavlink_msg_point_loaded_pack(SYS_ID,COMP_ID,&msg,actual_point);
+			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+			main_transmit_buffer(outBuffer, msg_size);
+			break;
+		case MAVLINK_MSG_ID_POINT:
+			mavlink_msg_point_encode(SYS_ID,COMP_ID,&msg,&points[actual_point]);
+			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+			main_transmit_buffer(outBuffer, msg_size);
+			break;
 		default:
 			break;
 	}
+}
+void mouseDriver_setMode(uint8_t mode){
+	if (mode == MOUSE_MODE_STOP){
+		main_stop_motors();
+		actual_point = 0;
+		actual_mode = MOUSE_MODE_STOP;
+	}
+	if (mode == MOUSE_MODE_AUTO_LOAD){
+		actual_mode = mode;
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+	}
+	if (actual_mode == MOUSE_MODE_AUTO_LOAD && mode == MOUSE_MODE_AUTO_RUN ){
+		actual_point = 0;
+		actual_point_start_time = mouseDriver_getTime();
+		actual_speed_setpoint.setpoint_x = points[0].setpoint_x;
+		actual_speed_setpoint.setpoint_y = points[0].setpoint_y;
+		actual_mode = mode;
+	}
+
+	if (actual_mode != MOUSE_MODE_AUTO_RUN)
+		actual_mode = mode;
 }
 
 /* Private Idle functions */
@@ -179,7 +198,7 @@ void mouseDriver_setTime (const uint32_t time){
 }
 
 uint32_t mouseDriver_getTime (void){
-	return actual_time;
+	return (actual_time);
 }
 /* Message related functions */
 void mouseDriver_readMsg(const mavlink_message_t msg){
@@ -199,7 +218,19 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
 		if (actual_mode == MOUSE_MODE_SPEED)
 			mavlink_msg_speed_setpoint_decode(&msg, &actual_speed_setpoint);
 		break;
+	case MAVLINK_MSG_ID_POINT:
+		if(actual_mode == MOUSE_MODE_AUTO_LOAD){
+			mavlink_msg_point_decode(&msg, &points[actual_point]);
+			if (actual_point == 255){
+				actual_error.error = MOUSE_ROUTINE_TOO_LONG;
+				actual_error.time = mouseDriver_getTime();
+				mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
+			}
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_POINT_LOADED);
+			actual_point ++;
 
+		}
+		break;
 	default:
 		break;
 	};
@@ -207,6 +238,7 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
 
 /* Idle functions */
 void mouseDriver_idle (void){
+	uint64_t difference = 0;
 	/* DEMO CODE INIT*/
 		actual_motor_signal.time = mouseDriver_getTime();
 	/* DEMO CODE END*/
@@ -220,6 +252,8 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+
 		break;
 	case MOUSE_MODE_SPEED:
 		/* BEGIN Code for DEMO */
@@ -230,24 +264,43 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+
 		break;
 	case MOUSE_MODE_AUTO_LOAD:
 		if (actual_point == 255){
 			actual_error.error = MOUSE_ROUTINE_TOO_LONG;
 			actual_error.time = mouseDriver_getTime();
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
 		}
 		break;
 	case MOUSE_MODE_AUTO_RUN:
+		difference = mouseDriver_getTime()-actual_point_start_time;
+		if (difference >= points[actual_point].duration){
+			if (actual_point < 255){
+				actual_point++;
 
-		if ((points[actual_point].duration == 0) || (actual_point == 255)){
-			actual_mode = MOUSE_MODE_AUTO_LOAD;
-			actual_point = 0;
+				if(points[actual_point].duration == 0){
+					main_stop_motors();
+					mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
+				}
+				actual_speed_setpoint.setpoint_x = points[actual_point].setpoint_x;
+				actual_speed_setpoint.setpoint_y = points[actual_point].setpoint_y;
+				actual_point_start_time = mouseDriver_getTime();
+			}
 		}
+
+		if (actual_point == 255){
+			mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
+		}
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
 		break;
 	default:
 		break;
 	}
-	mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
 
 
 }

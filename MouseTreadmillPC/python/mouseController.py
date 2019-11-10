@@ -5,6 +5,8 @@ import numpy as np
 #import matplotlib as plt
 from appJar import gui
 import time
+from tqdm import tqdm
+import routine as mouseRoutine
 from pymavlink.dialects.v20 import mouse as mouseController
 
 """
@@ -93,6 +95,8 @@ class MyApplication():
                     DATA["SPEED_INFO"]["speed_x"].append(self.actualSpeedInfo[0])
                     DATA["SPEED_INFO"]["speed_y"].append(self.actualSpeedInfo[1])
                     #DATA["SPEED_SETPOINT"]["speed_z"].append(self.actualSpeedInfo[2])
+                elif m.name == "POINT":
+                    print(m)
                 else:
                     pass
             m = None
@@ -148,7 +152,8 @@ class MyApplication():
      def setMode(self):
          self.mavlink.mode_selection_send(MODES_NUM[self.app.getRadioButton("optionMode")]) 
          while(self.connection.out_waiting > 0):
-                pass 
+            time.sleep(0.001)
+         time.sleep(0.001)
          if self.actualMode == mouseController.MOUSE_MODE_STOP:
              self.setpointX = 0
              self.setpointY = 0
@@ -162,7 +167,8 @@ class MyApplication():
             else:
                 self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY))
                 while(self.connection.out_waiting > 0):
-                    pass 
+                    time.sleep(0.001)
+                time.sleep(0.001)
     
      def setSpeedY(self):
         if self.actualMode == mouseController.MOUSE_MODE_SPEED:
@@ -171,14 +177,49 @@ class MyApplication():
                 pass
             else:
                 self.mavlink.speed_setpoint_send(float(self.setpointX), float(self.setpointY))
-                while(self.connection.out_waiting > 0):
-                    pass 
+            while(self.connection.out_waiting > 0):
+                time.sleep(0.001)
+            time.sleep(0.001)
+
+     def loadRoutine(self):
+        if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:
+            if (len(mouseRoutine.ROUTINE["duration"])>254 or len(mouseRoutine.ROUTINE["setpoint_x"])>254 or len(mouseRoutine.ROUTINE["setpoint_y"])>254):
+                raise ValueError("mouseRoutine too long")
+            if not (len(mouseRoutine.ROUTINE["duration"]) == len(mouseRoutine.ROUTINE["setpoint_x"]) == len(mouseRoutine.ROUTINE["setpoint_y"])):
+                raise ValueError("not all components of mouseRoutine have the same lenght")
+            
+            
+            # TODO add verification on max speed and min speed
+            
+            
+            for i in tqdm(range(len(mouseRoutine.ROUTINE["duration"]))):
+                self.mavlink.point_send(mouseRoutine.ROUTINE["duration"][i],i,mouseRoutine.ROUTINE["setpoint_x"][i], mouseRoutine.ROUTINE["setpoint_y"][i])
+                stop = True
+                while(self.connection.in_waiting>0 or stop):
+                    # Recive messages
+                    try:
+                        m = self.mavlink.parse_char(self.connection.read())
+                    except:
+                        pass
+                    if m:
+                        #print(m)
+                        if m.name == "POINT_LOADED":
+                            if m.point_id == i:
+                                stop = False
+                            else:
+                                raise Exception("ERROR LOADING DATA, wrong msg_id received")
+                
+
+
+
+            
                
      def runRoutine(self):
         if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:
             self.mavlink.mode_selection_send(mouseController.MOUSE_MODE_AUTO_RUN)
-        while(self.connection.out_waiting > 0):
-            pass 
+            while(self.connection.out_waiting > 0):
+                time.sleep(0.001)
+            time.sleep(0.001)
 
      def Prepare(self, app):
         self.ax = []
@@ -233,7 +274,7 @@ class MyApplication():
         
         # Reset plot button
         self.app.addButton("resetPlot", self.resetPlot, POSITIONS["resetPlot"]["x"],POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
-        self.app.addButton("loadData", self.resetPlot, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
+        self.app.addButton("loadData", self.loadRoutine, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
         self.app.addButton("RUN", self.runRoutine, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"]+1,POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
        
         # Add status bar

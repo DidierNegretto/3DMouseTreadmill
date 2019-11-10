@@ -62,7 +62,7 @@ static void MX_TIM1_Init(void);
 static void MX_DMA_Init(void);
 /* USER CODE BEGIN PFP */
 int main_get_huart_tx_state(void){
-	return HAL_DMA_GetState(&hdma_usart2_tx);
+	return (HAL_DMA_GetState(&hdma_usart2_tx));
 }
 void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size){
 	HAL_UART_Transmit_DMA(&huart2, outBuffer,msg_size);
@@ -116,7 +116,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    	/*HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);*/
     	mouseDriver_setTime(mouseDriver_getTime()+DT_HEART);
     	mouseDriver_controlISR();
     }
@@ -176,7 +176,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
