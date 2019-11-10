@@ -17,6 +17,7 @@ Code STM32/mouseDriver.o: \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_motor_setpoint.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_point_loaded.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_point.h \
+ /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_error.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h \
  ../Core/Inc/main.h ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
@@ -85,6 +86,8 @@ Code STM32/mouseDriver.o: \
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_point_loaded.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_point.h:
+
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_error.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h:
 

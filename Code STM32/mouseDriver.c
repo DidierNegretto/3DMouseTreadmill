@@ -62,6 +62,11 @@ static uint8_t actual_point = 0;
 \brief Global variable for keeping track of the time when the last point in \ref points array started.
 */
 static uint8_t actual_point_start_time = 0;
+/*!
+\var actual_error
+\brief Global variable to store and send the last error occured
+*/
+static mavlink_error_t actual_error;
 
 /* Private functions for mouseDriver.c*/
 /* Private Init functions */
@@ -125,7 +130,7 @@ void mouseDriver_sendMsg(uint32_t msgid){
 
 	switch(msgid){
 		case MAVLINK_MSG_ID_HEARTBEAT:
-			mavlink_msg_heartbeat_pack(SYS_ID,COMP_ID, &msg, actual_mode, actual_time);
+			mavlink_msg_heartbeat_pack(SYS_ID,COMP_ID, &msg, actual_mode, mouseDriver_getTime());
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
 			main_transmit_buffer(outBuffer, msg_size);
 			break;
@@ -147,7 +152,10 @@ void mouseDriver_sendMsg(uint32_t msgid){
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
 			main_transmit_buffer(outBuffer, msg_size);
 			break;
-
+		case MAVLINK_MSG_ID_ERROR:
+			mavlink_msg_error_encode(SYS_ID,COMP_ID,&msg,&actual_error);
+			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+			main_transmit_buffer(outBuffer, msg_size);
 		default:
 			break;
 	}
@@ -199,7 +207,9 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
 
 /* Idle functions */
 void mouseDriver_idle (void){
-	actual_motor_signal.time = actual_time;
+	/* DEMO CODE INIT*/
+		actual_motor_signal.time = mouseDriver_getTime();
+	/* DEMO CODE END*/
 
 	switch(actual_mode){
 	case MOUSE_MODE_STOP:
@@ -222,7 +232,10 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 		break;
 	case MOUSE_MODE_AUTO_LOAD:
-
+		if (actual_point == 255){
+			actual_error.error = MOUSE_ROUTINE_TOO_LONG;
+			actual_error.time = mouseDriver_getTime();
+		}
 		break;
 	case MOUSE_MODE_AUTO_RUN:
 

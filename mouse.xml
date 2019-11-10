@@ -82,6 +82,7 @@
         <message id="7" name="ERROR">
             <description>This message is used to send errors Sender = STM32 Receiver = PC
             </description>
+            <field type="uint32_t" name="time">Time from boot of system</field>
             <field type="uint8_t" name="error" enum="MOUSE_ERROR">error ID</field>
         </message>
     </messages>

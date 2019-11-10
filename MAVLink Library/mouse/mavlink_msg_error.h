@@ -5,16 +5,17 @@
 
 MAVPACKED(
 typedef struct __mavlink_error_t {
+ uint32_t time; /*<  Time from boot of system*/
  uint8_t error; /*<  error ID*/
 }) mavlink_error_t;
 
-#define MAVLINK_MSG_ID_ERROR_LEN 1
-#define MAVLINK_MSG_ID_ERROR_MIN_LEN 1
-#define MAVLINK_MSG_ID_7_LEN 1
-#define MAVLINK_MSG_ID_7_MIN_LEN 1
+#define MAVLINK_MSG_ID_ERROR_LEN 5
+#define MAVLINK_MSG_ID_ERROR_MIN_LEN 5
+#define MAVLINK_MSG_ID_7_LEN 5
+#define MAVLINK_MSG_ID_7_MIN_LEN 5
 
-#define MAVLINK_MSG_ID_ERROR_CRC 124
-#define MAVLINK_MSG_ID_7_CRC 124
+#define MAVLINK_MSG_ID_ERROR_CRC 22
+#define MAVLINK_MSG_ID_7_CRC 22
 
 
 
@@ -22,15 +23,17 @@ typedef struct __mavlink_error_t {
 #define MAVLINK_MESSAGE_INFO_ERROR { \
     7, \
     "ERROR", \
-    1, \
-    {  { "error", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_error_t, error) }, \
+    2, \
+    {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_error_t, time) }, \
+         { "error", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_error_t, error) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_ERROR { \
     "ERROR", \
-    1, \
-    {  { "error", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_error_t, error) }, \
+    2, \
+    {  { "time", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_error_t, time) }, \
+         { "error", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_error_t, error) }, \
          } \
 }
 #endif
@@ -41,19 +44,22 @@ typedef struct __mavlink_error_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
+ * @param time  Time from boot of system
  * @param error  error ID
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_error_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t error)
+                               uint32_t time, uint8_t error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ERROR_LEN];
-    _mav_put_uint8_t(buf, 0, error);
+    _mav_put_uint32_t(buf, 0, time);
+    _mav_put_uint8_t(buf, 4, error);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ERROR_LEN);
 #else
     mavlink_error_t packet;
+    packet.time = time;
     packet.error = error;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ERROR_LEN);
@@ -69,20 +75,23 @@ static inline uint16_t mavlink_msg_error_pack(uint8_t system_id, uint8_t compone
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
+ * @param time  Time from boot of system
  * @param error  error ID
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_error_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t error)
+                                   uint32_t time,uint8_t error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ERROR_LEN];
-    _mav_put_uint8_t(buf, 0, error);
+    _mav_put_uint32_t(buf, 0, time);
+    _mav_put_uint8_t(buf, 4, error);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ERROR_LEN);
 #else
     mavlink_error_t packet;
+    packet.time = time;
     packet.error = error;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ERROR_LEN);
@@ -102,7 +111,7 @@ static inline uint16_t mavlink_msg_error_pack_chan(uint8_t system_id, uint8_t co
  */
 static inline uint16_t mavlink_msg_error_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_error_t* error)
 {
-    return mavlink_msg_error_pack(system_id, component_id, msg, error->error);
+    return mavlink_msg_error_pack(system_id, component_id, msg, error->time, error->error);
 }
 
 /**
@@ -116,26 +125,29 @@ static inline uint16_t mavlink_msg_error_encode(uint8_t system_id, uint8_t compo
  */
 static inline uint16_t mavlink_msg_error_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_error_t* error)
 {
-    return mavlink_msg_error_pack_chan(system_id, component_id, chan, msg, error->error);
+    return mavlink_msg_error_pack_chan(system_id, component_id, chan, msg, error->time, error->error);
 }
 
 /**
  * @brief Send a error message
  * @param chan MAVLink channel to send the message
  *
+ * @param time  Time from boot of system
  * @param error  error ID
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_error_send(mavlink_channel_t chan, uint8_t error)
+static inline void mavlink_msg_error_send(mavlink_channel_t chan, uint32_t time, uint8_t error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ERROR_LEN];
-    _mav_put_uint8_t(buf, 0, error);
+    _mav_put_uint32_t(buf, 0, time);
+    _mav_put_uint8_t(buf, 4, error);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ERROR, buf, MAVLINK_MSG_ID_ERROR_MIN_LEN, MAVLINK_MSG_ID_ERROR_LEN, MAVLINK_MSG_ID_ERROR_CRC);
 #else
     mavlink_error_t packet;
+    packet.time = time;
     packet.error = error;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ERROR, (const char *)&packet, MAVLINK_MSG_ID_ERROR_MIN_LEN, MAVLINK_MSG_ID_ERROR_LEN, MAVLINK_MSG_ID_ERROR_CRC);
@@ -150,7 +162,7 @@ static inline void mavlink_msg_error_send(mavlink_channel_t chan, uint8_t error)
 static inline void mavlink_msg_error_send_struct(mavlink_channel_t chan, const mavlink_error_t* error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_error_send(chan, error->error);
+    mavlink_msg_error_send(chan, error->time, error->error);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ERROR, (const char *)error, MAVLINK_MSG_ID_ERROR_MIN_LEN, MAVLINK_MSG_ID_ERROR_LEN, MAVLINK_MSG_ID_ERROR_CRC);
 #endif
@@ -164,15 +176,17 @@ static inline void mavlink_msg_error_send_struct(mavlink_channel_t chan, const m
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_error_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t error)
+static inline void mavlink_msg_error_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time, uint8_t error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, error);
+    _mav_put_uint32_t(buf, 0, time);
+    _mav_put_uint8_t(buf, 4, error);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ERROR, buf, MAVLINK_MSG_ID_ERROR_MIN_LEN, MAVLINK_MSG_ID_ERROR_LEN, MAVLINK_MSG_ID_ERROR_CRC);
 #else
     mavlink_error_t *packet = (mavlink_error_t *)msgbuf;
+    packet->time = time;
     packet->error = error;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ERROR, (const char *)packet, MAVLINK_MSG_ID_ERROR_MIN_LEN, MAVLINK_MSG_ID_ERROR_LEN, MAVLINK_MSG_ID_ERROR_CRC);
@@ -186,13 +200,23 @@ static inline void mavlink_msg_error_send_buf(mavlink_message_t *msgbuf, mavlink
 
 
 /**
+ * @brief Get field time from error message
+ *
+ * @return  Time from boot of system
+ */
+static inline uint32_t mavlink_msg_error_get_time(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint32_t(msg,  0);
+}
+
+/**
  * @brief Get field error from error message
  *
  * @return  error ID
  */
 static inline uint8_t mavlink_msg_error_get_error(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  4);
 }
 
 /**
@@ -204,6 +228,7 @@ static inline uint8_t mavlink_msg_error_get_error(const mavlink_message_t* msg)
 static inline void mavlink_msg_error_decode(const mavlink_message_t* msg, mavlink_error_t* error)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    error->time = mavlink_msg_error_get_time(msg);
     error->error = mavlink_msg_error_get_error(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_ERROR_LEN? msg->len : MAVLINK_MSG_ID_ERROR_LEN;

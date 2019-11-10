@@ -485,27 +485,28 @@ class MAVLink_error_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_ERROR
         name = 'ERROR'
-        fieldnames = ['error']
-        ordered_fieldnames = ['error']
-        fieldtypes = ['uint8_t']
+        fieldnames = ['time', 'error']
+        ordered_fieldnames = ['time', 'error']
+        fieldtypes = ['uint32_t', 'uint8_t']
         fielddisplays_by_name = {}
         fieldenums_by_name = {"error": "MOUSE_ERROR"}
         fieldunits_by_name = {}
-        format = '<B'
-        native_format = bytearray('<B', 'ascii')
-        orders = [0]
-        lengths = [1]
-        array_lengths = [0]
-        crc_extra = 124
-        unpacker = struct.Struct('<B')
+        format = '<IB'
+        native_format = bytearray('<IB', 'ascii')
+        orders = [0, 1]
+        lengths = [1, 1]
+        array_lengths = [0, 0]
+        crc_extra = 22
+        unpacker = struct.Struct('<IB')
 
-        def __init__(self, error):
+        def __init__(self, time, error):
                 MAVLink_message.__init__(self, MAVLink_error_message.id, MAVLink_error_message.name)
                 self._fieldnames = MAVLink_error_message.fieldnames
+                self.time = time
                 self.error = error
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 124, struct.pack('<B', self.error), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 22, struct.pack('<IB', self.time, self.error), force_mavlink1=force_mavlink1)
 
 
 mavlink_map = {
@@ -1081,21 +1082,23 @@ class MAVLink(object):
                 '''
                 return self.send(self.point_encode(duration, point_id, setpoint_x, setpoint_y), force_mavlink1=force_mavlink1)
 
-        def error_encode(self, error):
+        def error_encode(self, time, error):
                 '''
                 This message is used to send errors Sender = STM32 Receiver = PC
 
+                time                      : Time from boot of system (type:uint32_t)
                 error                     : error ID (type:uint8_t, values:MOUSE_ERROR)
 
                 '''
-                return MAVLink_error_message(error)
+                return MAVLink_error_message(time, error)
 
-        def error_send(self, error, force_mavlink1=False):
+        def error_send(self, time, error, force_mavlink1=False):
                 '''
                 This message is used to send errors Sender = STM32 Receiver = PC
 
+                time                      : Time from boot of system (type:uint32_t)
                 error                     : error ID (type:uint8_t, values:MOUSE_ERROR)
 
                 '''
-                return self.send(self.error_encode(error), force_mavlink1=force_mavlink1)
+                return self.send(self.error_encode(time, error), force_mavlink1=force_mavlink1)
 

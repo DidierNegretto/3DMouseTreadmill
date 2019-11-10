@@ -424,10 +424,11 @@ static void mavlink_test_error(uint8_t system_id, uint8_t component_id, mavlink_
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_error_t packet_in = {
-        5
+        963497464,17
     };
     mavlink_error_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
+        packet1.time = packet_in.time;
         packet1.error = packet_in.error;
         
         
@@ -443,12 +444,12 @@ static void mavlink_test_error(uint8_t system_id, uint8_t component_id, mavlink_
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_error_pack(system_id, component_id, &msg , packet1.error );
+    mavlink_msg_error_pack(system_id, component_id, &msg , packet1.time , packet1.error );
     mavlink_msg_error_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_error_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.error );
+    mavlink_msg_error_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time , packet1.error );
     mavlink_msg_error_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -461,7 +462,7 @@ static void mavlink_test_error(uint8_t system_id, uint8_t component_id, mavlink_
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_error_send(MAVLINK_COMM_1 , packet1.error );
+    mavlink_msg_error_send(MAVLINK_COMM_1 , packet1.time , packet1.error );
     mavlink_msg_error_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
