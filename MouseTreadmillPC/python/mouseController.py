@@ -34,8 +34,8 @@ POSITIONS = {
     "resetPlot" : {"x":1,"y":3,"lx":2,"ly":1},
    
 }
-MODES = ["STOP", "SPEED", "AUTO"]
-MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2) }
+MODES = ["STOP", "SPEED","AUTO","RUNNING"]
+MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2),"RUNNING": int(3) }
 DATA = { "HEARTBEAT": {"time": [], "mode": []}, 
          "SPEED_SETPOINT": {"time": [], "setpoint_x": [], "setpoint_y": [], "start": 0}, 
          "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": [], "start": 0}, 
@@ -174,7 +174,11 @@ class MyApplication():
                 while(self.connection.out_waiting > 0):
                     pass 
                
-
+     def runRoutine(self):
+        if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:
+            self.mavlink.mode_selection_send(mouseController.MOUSE_MODE_AUTO_RUN)
+        while(self.connection.out_waiting > 0):
+            pass 
 
      def Prepare(self, app):
         self.ax = []
@@ -229,7 +233,9 @@ class MyApplication():
         
         # Reset plot button
         self.app.addButton("resetPlot", self.resetPlot, POSITIONS["resetPlot"]["x"],POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
-        
+        self.app.addButton("loadData", self.resetPlot, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
+        self.app.addButton("RUN", self.runRoutine, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"]+1,POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
+       
         # Add status bar
         app.addStatusbar(fields = 2, side=None)
         app.setStatusbar("Time: 0", 0)

@@ -11,13 +11,27 @@
             <entry value="1" name="MOUSE_MODE_SPEED">
                 <description>Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT.</description>
             </entry>
-            <entry value="2" name="MOUSE_MODE_AUTO_RUN">
-                <description>Predefined speed profile is applied</description>
-            </entry>
-            <entry value="3" name="MOUSE_MODE_AUTO_LOAD">
+            <entry value="2" name="MOUSE_MODE_AUTO_LOAD">
                 <description>Predefined speed profile is loaded</description>
             </entry>
-            
+            <entry value="3" name="MOUSE_MODE_AUTO_RUN">
+                <description>Predefined speed profile is applied</description>
+            </entry>
+        </enum>
+        <enum name="MOUSE_ERROR">
+            <description>This enum defines the possible errors</description>
+            <entry value="0" name="MOTOR_ERROR">
+                <description>The motor driver flaged an error, this might be due to many sources, see datasheet of motor driver.</description>
+            </entry>
+            <entry value="1" name="MOTOR_LOW_SPEED">
+                <description>The speed setpoint chosen is too low to be achieved.</description>
+            </entry>
+            <entry value="2" name="MOTOR_HIGH_SPEED">
+                <description>The speed setpoint chosen is too high to be achieved.</description>
+            </entry>
+            <entry value="3" name="MOUSE_ROUTINE_TOO_LONG">
+                <description>More than 255 points have been defined in the mouse routine.</description>
+            </entry>
         </enum>
     </enums>
     <messages>
@@ -64,6 +78,11 @@
             <field type="uint8_t" name="point_id">point ID</field>
             <field type="float" name="setpoint_x">Speed setpoint in x direction</field>
             <field type="float" name="setpoint_y">Speed setpoint in y direction</field>
+        </message>
+        <message id="7" name="ERROR">
+            <description>This message is used to send errors Sender = STM32 Receiver = PC
+            </description>
+            <field type="uint8_t" name="error" enum="MOUSE_ERROR">error ID</field>
         </message>
     </messages>
 </mavlink>

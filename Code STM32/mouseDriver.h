@@ -41,6 +41,13 @@
 */
 #define MAX_BYTE_BUFFER_SIZE 500
 
+/*!
+\def MAX_POINTS
+\brief MAX amount of points that can be defined in AUTO mode
+*/
+#define MAX_POINTS 255
+
+
 
 /*!
  \brief Function for initializing the mouseDriver

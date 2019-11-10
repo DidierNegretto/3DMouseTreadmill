@@ -233,12 +233,26 @@ enums['MOUSE_MODE'][0] = EnumEntry('MOUSE_MODE_STOP', '''All motion of mouse tre
 MOUSE_MODE_SPEED = 1 # Constanst speed is applied. Speed selected by PC message
                         # SPEED_SETPOINT.
 enums['MOUSE_MODE'][1] = EnumEntry('MOUSE_MODE_SPEED', '''Constanst speed is applied. Speed selected by PC message SPEED_SETPOINT.''')
-MOUSE_MODE_AUTO_RUN = 2 # Predefined speed profile is applied
-enums['MOUSE_MODE'][2] = EnumEntry('MOUSE_MODE_AUTO_RUN', '''Predefined speed profile is applied''')
-MOUSE_MODE_AUTO_LOAD = 3 # Predefined speed profile is loaded
-enums['MOUSE_MODE'][3] = EnumEntry('MOUSE_MODE_AUTO_LOAD', '''Predefined speed profile is loaded''')
+MOUSE_MODE_AUTO_LOAD = 2 # Predefined speed profile is loaded
+enums['MOUSE_MODE'][2] = EnumEntry('MOUSE_MODE_AUTO_LOAD', '''Predefined speed profile is loaded''')
+MOUSE_MODE_AUTO_RUN = 3 # Predefined speed profile is applied
+enums['MOUSE_MODE'][3] = EnumEntry('MOUSE_MODE_AUTO_RUN', '''Predefined speed profile is applied''')
 MOUSE_MODE_ENUM_END = 4 # 
 enums['MOUSE_MODE'][4] = EnumEntry('MOUSE_MODE_ENUM_END', '''''')
+
+# MOUSE_ERROR
+enums['MOUSE_ERROR'] = {}
+MOTOR_ERROR = 0 # The motor driver flaged an error, this might be due to many sources,
+                        # see datasheet of motor driver.
+enums['MOUSE_ERROR'][0] = EnumEntry('MOTOR_ERROR', '''The motor driver flaged an error, this might be due to many sources, see datasheet of motor driver.''')
+MOTOR_LOW_SPEED = 1 # The speed setpoint chosen is too low to be achieved.
+enums['MOUSE_ERROR'][1] = EnumEntry('MOTOR_LOW_SPEED', '''The speed setpoint chosen is too low to be achieved.''')
+MOTOR_HIGH_SPEED = 2 # The speed setpoint chosen is too high to be achieved.
+enums['MOUSE_ERROR'][2] = EnumEntry('MOTOR_HIGH_SPEED', '''The speed setpoint chosen is too high to be achieved.''')
+MOUSE_ROUTINE_TOO_LONG = 3 # More than 255 points have been defined in the mouse routine.
+enums['MOUSE_ERROR'][3] = EnumEntry('MOUSE_ROUTINE_TOO_LONG', '''More than 255 points have been defined in the mouse routine.''')
+MOUSE_ERROR_ENUM_END = 4 # 
+enums['MOUSE_ERROR'][4] = EnumEntry('MOUSE_ERROR_ENUM_END', '''''')
 
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
@@ -249,6 +263,7 @@ MAVLINK_MSG_ID_MODE_SELECTION = 3
 MAVLINK_MSG_ID_MOTOR_SETPOINT = 4
 MAVLINK_MSG_ID_POINT_LOADED = 5
 MAVLINK_MSG_ID_POINT = 6
+MAVLINK_MSG_ID_ERROR = 7
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -463,6 +478,35 @@ class MAVLink_point_message(MAVLink_message):
         def pack(self, mav, force_mavlink1=False):
                 return MAVLink_message.pack(self, mav, 75, struct.pack('<IffB', self.duration, self.setpoint_x, self.setpoint_y, self.point_id), force_mavlink1=force_mavlink1)
 
+class MAVLink_error_message(MAVLink_message):
+        '''
+        This message is used to send errors Sender = STM32 Receiver =
+        PC
+        '''
+        id = MAVLINK_MSG_ID_ERROR
+        name = 'ERROR'
+        fieldnames = ['error']
+        ordered_fieldnames = ['error']
+        fieldtypes = ['uint8_t']
+        fielddisplays_by_name = {}
+        fieldenums_by_name = {"error": "MOUSE_ERROR"}
+        fieldunits_by_name = {}
+        format = '<B'
+        native_format = bytearray('<B', 'ascii')
+        orders = [0]
+        lengths = [1]
+        array_lengths = [0]
+        crc_extra = 124
+        unpacker = struct.Struct('<B')
+
+        def __init__(self, error):
+                MAVLink_message.__init__(self, MAVLink_error_message.id, MAVLink_error_message.name)
+                self._fieldnames = MAVLink_error_message.fieldnames
+                self.error = error
+
+        def pack(self, mav, force_mavlink1=False):
+                return MAVLink_message.pack(self, mav, 124, struct.pack('<B', self.error), force_mavlink1=force_mavlink1)
+
 
 mavlink_map = {
         MAVLINK_MSG_ID_HEARTBEAT : MAVLink_heartbeat_message,
@@ -472,6 +516,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_MOTOR_SETPOINT : MAVLink_motor_setpoint_message,
         MAVLINK_MSG_ID_POINT_LOADED : MAVLink_point_loaded_message,
         MAVLINK_MSG_ID_POINT : MAVLink_point_message,
+        MAVLINK_MSG_ID_ERROR : MAVLink_error_message,
 }
 
 class MAVError(Exception):
@@ -1035,4 +1080,22 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.point_encode(duration, point_id, setpoint_x, setpoint_y), force_mavlink1=force_mavlink1)
+
+        def error_encode(self, error):
+                '''
+                This message is used to send errors Sender = STM32 Receiver = PC
+
+                error                     : error ID (type:uint8_t, values:MOUSE_ERROR)
+
+                '''
+                return MAVLink_error_message(error)
+
+        def error_send(self, error, force_mavlink1=False):
+                '''
+                This message is used to send errors Sender = STM32 Receiver = PC
+
+                error                     : error ID (type:uint8_t, values:MOUSE_ERROR)
+
+                '''
+                return self.send(self.error_encode(error), force_mavlink1=force_mavlink1)
 

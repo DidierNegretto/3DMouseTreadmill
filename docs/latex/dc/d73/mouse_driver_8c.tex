@@ -17,6 +17,8 @@ void \mbox{\hyperlink{mouse_driver_8c_ae21a55ca0039131ed41b563efbb81ddb}{mouse\+
 \item 
 void \mbox{\hyperlink{mouse_driver_8c_ad79b2fdfdd673bb416b89de2bd80927d}{mouse\+Driver\+\_\+get\+Speed\+From\+Sensors}} (void)
 \item 
+void \mbox{\hyperlink{mouse_driver_8c_af61cee7281dc576f567ed8aabb6665e8}{mouse\+Driver\+\_\+init\+Points}} (void)
+\item 
 void \mbox{\hyperlink{mouse_driver_8c_aa5609bff60e6d530873ab05bb4dc8e97}{mouse\+Driver\+\_\+set\+Setpoint}} (const mavlink\+\_\+speed\+\_\+setpoint\+\_\+t speed)
 \item 
 void \mbox{\hyperlink{mouse_driver_8c_a237f0960175af336ca81667d7eb9ef2e}{mouse\+Driver\+\_\+set\+Mode}} (uint8\+\_\+t mode)
@@ -40,14 +42,20 @@ void \mbox{\hyperlink{mouse_driver_8c_ae148c84e3642827c8d5c34a675d65739}{mouse\+
 \item 
 static uint32\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a8e8611558b7ab767b1685a6a350aee53}{actual\+\_\+time}} = 0
 \begin{DoxyCompactList}\small\item\em Global variable for time keeping. \end{DoxyCompactList}\item 
-static uint8\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a7e2c75a51747c0c5f00ad6c672bc3024}{actual\+\_\+mode}} = M\+O\+U\+S\+E\+\_\+\+M\+O\+D\+E\+\_\+\+S\+T\+OP
-\item 
-static mavlink\+\_\+speed\+\_\+info\+\_\+t \mbox{\hyperlink{mouse_driver_8c_aa5490b06dbe7d61f3661c8afbd10d317}{actual\+\_\+speed\+\_\+measure}}
-\item 
-static mavlink\+\_\+speed\+\_\+setpoint\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a2ed2ab5427f1ccd8753023817343ac75}{actual\+\_\+speed\+\_\+setpoint}}
-\item 
-static mavlink\+\_\+motor\+\_\+setpoint\+\_\+t \mbox{\hyperlink{mouse_driver_8c_ad6abb9303429a23fb0456e5b155cc37c}{actual\+\_\+motor\+\_\+signal}}
-\end{DoxyCompactItemize}
+static uint8\+\_\+t \mbox{\hyperlink{mouse_driver_8c_af983d549f680a082169af6c1d7f9313d}{actual\+\_\+mode}} = M\+O\+U\+S\+E\+\_\+\+M\+O\+D\+E\+\_\+\+S\+T\+OP
+\begin{DoxyCompactList}\small\item\em Global variable defining the mode of the machine. \end{DoxyCompactList}\item 
+static mavlink\+\_\+speed\+\_\+info\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a5f871c565c79ae3266f7ef49f07026ff}{actual\+\_\+speed\+\_\+measure}}
+\begin{DoxyCompactList}\small\item\em Global variable for the measured speed. \end{DoxyCompactList}\item 
+static mavlink\+\_\+speed\+\_\+setpoint\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a1e17900ac8f557571308c3dd4a1ee9fb}{actual\+\_\+speed\+\_\+setpoint}}
+\begin{DoxyCompactList}\small\item\em Global variable for the speed setpoint. \end{DoxyCompactList}\item 
+static mavlink\+\_\+motor\+\_\+setpoint\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a91ae382a0ee2ef82955a38ec1cda6b67}{actual\+\_\+motor\+\_\+signal}}
+\begin{DoxyCompactList}\small\item\em Global variable for the speed motor signal. \end{DoxyCompactList}\item 
+static mavlink\+\_\+point\+\_\+t \mbox{\hyperlink{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}{points}} \mbox{[}\mbox{\hyperlink{mouse_driver_8h_a3b8cb7c2cda80c18f333c00601c6905b}{M\+A\+X\+\_\+\+P\+O\+I\+N\+TS}}\mbox{]}
+\begin{DoxyCompactList}\small\item\em Global variable for storing the points to be followed in A\+U\+TO mode. \end{DoxyCompactList}\item 
+static uint8\+\_\+t \mbox{\hyperlink{mouse_driver_8c_ad60cc3331550ea0dead3f4db091ddd74}{actual\+\_\+point}} = 0
+\begin{DoxyCompactList}\small\item\em Global variable for keeping track of the index in the \mbox{\hyperlink{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}{points}} array. \end{DoxyCompactList}\item 
+static uint8\+\_\+t \mbox{\hyperlink{mouse_driver_8c_a363aab5bc9ef25825a7975e67b5919bf}{actual\+\_\+point\+\_\+start\+\_\+time}} = 0
+\begin{DoxyCompactList}\small\item\em Global variable for keeping track of the time when the last point in \mbox{\hyperlink{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}{points}} array started. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -99,6 +107,12 @@ This function initializes \mbox{\Hypertarget{mouse_driver_8c_ae21a55ca0039131ed4
 \doxysubsubsection{\texorpdfstring{mouseDriver\_initMode()}{mouseDriver\_initMode()}}
 {\footnotesize\ttfamily void mouse\+Driver\+\_\+init\+Mode (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
+\mbox{\Hypertarget{mouse_driver_8c_af61cee7281dc576f567ed8aabb6665e8}\label{mouse_driver_8c_af61cee7281dc576f567ed8aabb6665e8}} 
+\index{mouseDriver.c@{mouseDriver.c}!mouseDriver\_initPoints@{mouseDriver\_initPoints}}
+\index{mouseDriver\_initPoints@{mouseDriver\_initPoints}!mouseDriver.c@{mouseDriver.c}}
+\doxysubsubsection{\texorpdfstring{mouseDriver\_initPoints()}{mouseDriver\_initPoints()}}
+{\footnotesize\ttfamily void mouse\+Driver\+\_\+init\+Points (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
 \mbox{\Hypertarget{mouse_driver_8c_a78891a5c0a9ff59e8de3479cef3dd708}\label{mouse_driver_8c_a78891a5c0a9ff59e8de3479cef3dd708}} 
 \index{mouseDriver.c@{mouseDriver.c}!mouseDriver\_initSetpoint@{mouseDriver\_initSetpoint}}
 \index{mouseDriver\_initSetpoint@{mouseDriver\_initSetpoint}!mouseDriver.c@{mouseDriver.c}}
@@ -144,31 +158,67 @@ This function initializes \mbox{\Hypertarget{mouse_driver_8c_ae21a55ca0039131ed4
 
 
 \doxysubsection{Variable Documentation}
-\mbox{\Hypertarget{mouse_driver_8c_a7e2c75a51747c0c5f00ad6c672bc3024}\label{mouse_driver_8c_a7e2c75a51747c0c5f00ad6c672bc3024}} 
+\mbox{\Hypertarget{mouse_driver_8c_af983d549f680a082169af6c1d7f9313d}\label{mouse_driver_8c_af983d549f680a082169af6c1d7f9313d}} 
 \index{mouseDriver.c@{mouseDriver.c}!actual\_mode@{actual\_mode}}
 \index{actual\_mode@{actual\_mode}!mouseDriver.c@{mouseDriver.c}}
 \doxysubsubsection{\texorpdfstring{actual\_mode}{actual\_mode}}
-{\footnotesize\ttfamily uint8\+\_\+t actual\+\_\+mode = M\+O\+U\+S\+E\+\_\+\+M\+O\+D\+E\+\_\+\+S\+T\+OP\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily actual\+\_\+mode = M\+O\+U\+S\+E\+\_\+\+M\+O\+D\+E\+\_\+\+S\+T\+OP\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{mouse_driver_8c_ad6abb9303429a23fb0456e5b155cc37c}\label{mouse_driver_8c_ad6abb9303429a23fb0456e5b155cc37c}} 
+
+
+Global variable defining the mode of the machine. 
+
+This value is updated based on the received messages. \mbox{\Hypertarget{mouse_driver_8c_a91ae382a0ee2ef82955a38ec1cda6b67}\label{mouse_driver_8c_a91ae382a0ee2ef82955a38ec1cda6b67}} 
 \index{mouseDriver.c@{mouseDriver.c}!actual\_motor\_signal@{actual\_motor\_signal}}
 \index{actual\_motor\_signal@{actual\_motor\_signal}!mouseDriver.c@{mouseDriver.c}}
 \doxysubsubsection{\texorpdfstring{actual\_motor\_signal}{actual\_motor\_signal}}
-{\footnotesize\ttfamily mavlink\+\_\+motor\+\_\+setpoint\+\_\+t actual\+\_\+motor\+\_\+signal\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily actual\+\_\+motor\+\_\+signal\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{mouse_driver_8c_aa5490b06dbe7d61f3661c8afbd10d317}\label{mouse_driver_8c_aa5490b06dbe7d61f3661c8afbd10d317}} 
+
+
+Global variable for the speed motor signal. 
+
+This value is updated based on closed-\/loop control and the value provided in \mbox{\hyperlink{mouse_driver_8c_a1e17900ac8f557571308c3dd4a1ee9fb}{actual\+\_\+speed\+\_\+setpoint}} and \mbox{\hyperlink{mouse_driver_8c_a5f871c565c79ae3266f7ef49f07026ff}{actual\+\_\+speed\+\_\+measure}}. It is also possible to overwrite it by sending a mavlink\+\_\+motor\+\_\+setpoint\+\_\+t message if the mode is set to S\+P\+E\+ED. \mbox{\Hypertarget{mouse_driver_8c_ad60cc3331550ea0dead3f4db091ddd74}\label{mouse_driver_8c_ad60cc3331550ea0dead3f4db091ddd74}} 
+\index{mouseDriver.c@{mouseDriver.c}!actual\_point@{actual\_point}}
+\index{actual\_point@{actual\_point}!mouseDriver.c@{mouseDriver.c}}
+\doxysubsubsection{\texorpdfstring{actual\_point}{actual\_point}}
+{\footnotesize\ttfamily actual\+\_\+point = 0\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Global variable for keeping track of the index in the \mbox{\hyperlink{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}{points}} array. 
+
+\mbox{\Hypertarget{mouse_driver_8c_a363aab5bc9ef25825a7975e67b5919bf}\label{mouse_driver_8c_a363aab5bc9ef25825a7975e67b5919bf}} 
+\index{mouseDriver.c@{mouseDriver.c}!actual\_point\_start\_time@{actual\_point\_start\_time}}
+\index{actual\_point\_start\_time@{actual\_point\_start\_time}!mouseDriver.c@{mouseDriver.c}}
+\doxysubsubsection{\texorpdfstring{actual\_point\_start\_time}{actual\_point\_start\_time}}
+{\footnotesize\ttfamily actual\+\_\+point\+\_\+start\+\_\+time = 0\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Global variable for keeping track of the time when the last point in \mbox{\hyperlink{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}{points}} array started. 
+
+\mbox{\Hypertarget{mouse_driver_8c_a5f871c565c79ae3266f7ef49f07026ff}\label{mouse_driver_8c_a5f871c565c79ae3266f7ef49f07026ff}} 
 \index{mouseDriver.c@{mouseDriver.c}!actual\_speed\_measure@{actual\_speed\_measure}}
 \index{actual\_speed\_measure@{actual\_speed\_measure}!mouseDriver.c@{mouseDriver.c}}
 \doxysubsubsection{\texorpdfstring{actual\_speed\_measure}{actual\_speed\_measure}}
-{\footnotesize\ttfamily mavlink\+\_\+speed\+\_\+info\+\_\+t actual\+\_\+speed\+\_\+measure\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily actual\+\_\+speed\+\_\+measure\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{mouse_driver_8c_a2ed2ab5427f1ccd8753023817343ac75}\label{mouse_driver_8c_a2ed2ab5427f1ccd8753023817343ac75}} 
+
+
+Global variable for the measured speed. 
+
+This value is updated based on sensor. \mbox{\Hypertarget{mouse_driver_8c_a1e17900ac8f557571308c3dd4a1ee9fb}\label{mouse_driver_8c_a1e17900ac8f557571308c3dd4a1ee9fb}} 
 \index{mouseDriver.c@{mouseDriver.c}!actual\_speed\_setpoint@{actual\_speed\_setpoint}}
 \index{actual\_speed\_setpoint@{actual\_speed\_setpoint}!mouseDriver.c@{mouseDriver.c}}
 \doxysubsubsection{\texorpdfstring{actual\_speed\_setpoint}{actual\_speed\_setpoint}}
-{\footnotesize\ttfamily mavlink\+\_\+speed\+\_\+setpoint\+\_\+t actual\+\_\+speed\+\_\+setpoint\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily actual\+\_\+speed\+\_\+setpoint\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{mouse_driver_8c_a8e8611558b7ab767b1685a6a350aee53}\label{mouse_driver_8c_a8e8611558b7ab767b1685a6a350aee53}} 
+
+
+Global variable for the speed setpoint. 
+
+This value is updated based on messages when the mode is set to S\+P\+E\+ED. \mbox{\Hypertarget{mouse_driver_8c_a8e8611558b7ab767b1685a6a350aee53}\label{mouse_driver_8c_a8e8611558b7ab767b1685a6a350aee53}} 
 \index{mouseDriver.c@{mouseDriver.c}!actual\_time@{actual\_time}}
 \index{actual\_time@{actual\_time}!mouseDriver.c@{mouseDriver.c}}
 \doxysubsubsection{\texorpdfstring{actual\_time}{actual\_time}}
@@ -178,3 +228,14 @@ This function initializes \mbox{\Hypertarget{mouse_driver_8c_ae21a55ca0039131ed4
 
 Global variable for time keeping. 
 
+This value is periodically updated. \mbox{\Hypertarget{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}\label{mouse_driver_8c_ac17f726498dcef5f5decdb00ef330d68}} 
+\index{mouseDriver.c@{mouseDriver.c}!points@{points}}
+\index{points@{points}!mouseDriver.c@{mouseDriver.c}}
+\doxysubsubsection{\texorpdfstring{points}{points}}
+{\footnotesize\ttfamily points\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Global variable for storing the points to be followed in A\+U\+TO mode. 
+
+The maximum amout of points is defined by \mbox{\hyperlink{mouse_driver_8h_a3b8cb7c2cda80c18f333c00601c6905b}{M\+A\+X\+\_\+\+P\+O\+I\+N\+TS}}. This array is emptied after every reset of the system. If not all the points are defined the routine is interrupted as soon as a point with duration == 0 is detected. 

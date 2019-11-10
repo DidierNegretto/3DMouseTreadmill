@@ -2,6 +2,7 @@ var mouse_driver_8h =
 [
     [ "COMP_ID", "dd/db8/mouse_driver_8h.html#aa19769bda119cf558920e5dec5fa14e4", null ],
     [ "MAX_BYTE_BUFFER_SIZE", "dd/db8/mouse_driver_8h.html#a65047cd34a58a8af1c45a2c351719d5a", null ],
+    [ "MAX_POINTS", "dd/db8/mouse_driver_8h.html#a3b8cb7c2cda80c18f333c00601c6905b", null ],
     [ "MOUSEDRIVER_N_H", "dd/db8/mouse_driver_8h.html#af58d9cc17ad70894852d288b932ff239", null ],
     [ "SYS_ID", "dd/db8/mouse_driver_8h.html#a0b05aa8a80586053068bbe54f0b17f99", null ],
     [ "mouseDriver_controlISR", "dd/db8/mouse_driver_8h.html#ae148c84e3642827c8d5c34a675d65739", null ],
