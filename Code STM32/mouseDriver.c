@@ -180,6 +180,9 @@ void mouseDriver_init(void){
 	mouseDriver_getSpeedFromSensors();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
+
+	/* Init sensor as well */
+	sensorDriver_init();
 }
 uint32_t mouseDriver_getTime (void){
 	return (HAL_GetTick());

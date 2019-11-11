@@ -21,6 +21,7 @@
 #include "mavlink.h"
 #include "main.h"
 #include "utils.h"
+#include "sensorDriver.h"
 
 /* Constants for MALINK functions*/
 
