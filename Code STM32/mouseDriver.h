@@ -67,7 +67,6 @@ void mouseDriver_idle (void);
 void mouseDriver_controlISR(void);
 
 /* Functions for setting/getting time */
-void mouseDriver_setTime (const uint32_t time);
 uint32_t mouseDriver_getTime (void);
 
 #endif

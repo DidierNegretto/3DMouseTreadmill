@@ -99,9 +99,7 @@ uint8_t main_read_sensor (uint8_t adress){
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi2, &adress_read, 1, 10);
 	HAL_SPI_Receive(&hspi2, &value, 1, 10);
-	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_Delay(1);
 	return value;
 }
 
@@ -112,9 +110,7 @@ void main_write_sensor (uint8_t adress, uint8_t data){
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi2, &adress_write, 1, 10);
 	HAL_SPI_Transmit(&hspi2, &value, 1, 10);
-	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_Delay(1);
 }
 void main_transmit_spi(uint8_t data){
 	uint8_t data_out = data;
