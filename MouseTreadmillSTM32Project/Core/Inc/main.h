@@ -62,6 +62,7 @@ void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 int main_get_huart_tx_state(void);
 void main_write_sensor (uint8_t adress, uint8_t data);
 uint8_t main_read_sensor (uint8_t adress);
+void main_transmit_spi(uint8_t data);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

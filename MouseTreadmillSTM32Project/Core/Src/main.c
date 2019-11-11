@@ -98,10 +98,10 @@ uint8_t main_read_sensor (uint8_t adress){
 
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi2, &adress_read, 1, 10);
-	HAL_Delay(1);
 	HAL_SPI_Receive(&hspi2, &value, 1, 10);
 	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_Delay(1);
 	return value;
 }
 
@@ -114,6 +114,11 @@ void main_write_sensor (uint8_t adress, uint8_t data){
 	HAL_SPI_Transmit(&hspi2, &value, 1, 10);
 	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_Delay(1);
+}
+void main_transmit_spi(uint8_t data){
+	uint8_t data_out = data;
+	HAL_SPI_Transmit(&hspi2, &data_out, 1, 10);
 }
 /* USER CODE END PFP */
 
@@ -164,7 +169,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-	mouseDriver_init();
 
   /* USER CODE END Init */
 
@@ -191,6 +195,7 @@ int main(void)
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+  mouseDriver_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
