@@ -5,13 +5,6 @@
 */
 #include "mouseDriver.h"
 /*!
-\var actual_time
-\brief Global variable for time keeping
-
-This value is periodically updated.
-*/
-static uint32_t actual_time = 0;
-/*!
 \var actual_mode
 \brief Global variable defining the mode of the machine
 
@@ -51,7 +44,7 @@ The maximum amout of points is defined by \ref MAX_POINTS. This array is emptied
 every reset of the system. If not all the points are defined the routine is interrupted as
 soon as a point with duration == 0 is detected.
 */
-static mavlink_point_t points[MAX_POINTS];
+static mavlink_point_t points[7000];
 /*!
 \var actual_point
 \brief Global variable for keeping track of the index in the \ref points array.
@@ -76,9 +69,6 @@ void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_y = 0;
 }
 
-void mouseDriver_initTime(void){
-	actual_time = 0;
-}
 
 void mouseDriver_initMode(void){
 	actual_mode = MOUSE_MODE_STOP;
@@ -133,7 +123,7 @@ void mouseDriver_sendMsg(uint32_t msgid){
 			break;
 		case MAVLINK_MSG_ID_SPEED_INFO:
 			/* DEMO CODE INIT*/
-				actual_speed_measure.time = actual_time;
+				actual_speed_measure.time = mouseDriver_getTime();
 			/* DEMO CODE END*/
 			mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
@@ -186,19 +176,13 @@ void mouseDriver_setMode(uint8_t mode){
 
 /* Init functions */
 void mouseDriver_init(void){
-	mouseDriver_initTime();
 	mouseDriver_initMode();
 	mouseDriver_getSpeedFromSensors();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
 }
-/* Function set/get */
-void mouseDriver_setTime (const uint32_t time){
-	actual_time = time;
-}
-
 uint32_t mouseDriver_getTime (void){
-	return (actual_time);
+	return (HAL_GetTick());
 }
 /* Message related functions */
 void mouseDriver_readMsg(const mavlink_message_t msg){

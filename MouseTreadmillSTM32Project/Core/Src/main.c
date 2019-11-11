@@ -43,6 +43,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi2;
+
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim7;
 
@@ -60,6 +62,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_DMA_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 int main_get_huart_tx_state(void){
 	return (HAL_DMA_GetState(&hdma_usart2_tx));
@@ -89,6 +92,17 @@ void main_set_motors_speed(mavlink_motor_setpoint_t motor )
 		HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
 }
+uint8_t main_read_sensor (uint8_t adress){
+	uint8_t value = 0;
+	uint8_t adress_read = adress & 0x7F;
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, &adress_read, 1, 10);
+	HAL_Delay(1);
+	HAL_SPI_Receive(&hspi2, &value, 1, 10);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	return value;
+}
 
 /* USER CODE END PFP */
 
@@ -117,7 +131,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
     	/*HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);*/
-    	mouseDriver_setTime(mouseDriver_getTime()+DT_HEART);
     	mouseDriver_controlISR();
     }
 }
@@ -157,6 +170,7 @@ int main(void)
   MX_TIM7_Init();
   MX_TIM1_Init();
   MX_DMA_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   HAL_NVIC_SetPriority(USART2_IRQn,0,0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
@@ -165,6 +179,7 @@ int main(void)
 
   HAL_UART_Receive_IT(&huart2, &inByte, 1);
   HAL_TIM_Base_Start_IT(&htim7);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -231,6 +246,47 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+  __HAL_RCC_SPI2_CLK_ENABLE();
+  __SPI2_CLK_ENABLE();
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 7;
+  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
 }
 
 /**
@@ -435,6 +491,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
@@ -442,6 +501,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CS_1_Pin */
+  GPIO_InitStruct.Pin = CS_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(CS_1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
