@@ -42,7 +42,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#define SENSOR_X 0
+#define SENSOR_Y 1
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -60,9 +61,19 @@ void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size);
 void main_stop_motors(void);
 void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 int main_get_huart_tx_state(void);
-void main_write_sensor (uint8_t adress, uint8_t data);
-uint8_t main_read_sensor (uint8_t adress);
+void main_write_sensor (uint8_t sensor, uint8_t adress, uint8_t data);
+uint8_t main_read_sensor (uint8_t sensor, uint8_t adress );
 void main_transmit_spi(uint8_t data);
+void main_wait_160us(void);
+void main_wait_20us(void);
+void main_write_sensor_burst(uint8_t data);
+/*
+ * PW_0 is power pin for sensor X	(PB_0)
+ * PW_1 is the power pin for sensor Y (PA_4)
+ * CS_0 is the chip select for sensor X (PC_0)
+ * CS_1 is the chip select for sensor Y (PC_1)
+ */
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -75,14 +86,20 @@ void main_transmit_spi(uint8_t data);
 #define PULSE_PWM 10
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define CS_1_Pin GPIO_PIN_0
+#define CS_0_Pin GPIO_PIN_0
+#define CS_0_GPIO_Port GPIOC
+#define CS_1_Pin GPIO_PIN_1
 #define CS_1_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
+#define PW_1_Pin GPIO_PIN_4
+#define PW_1_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
+#define PW_0_Pin GPIO_PIN_0
+#define PW_0_GPIO_Port GPIOB
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

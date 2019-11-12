@@ -175,14 +175,14 @@ void mouseDriver_setMode(uint8_t mode){
 /* END of private functions */
 
 /* Init functions */
-void mouseDriver_init(void){
+uint8_t mouseDriver_init(void){
 	mouseDriver_initMode();
 	mouseDriver_getSpeedFromSensors();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
 
 	/* Init sensor as well */
-	sensorDriver_init();
+	return sensorDriver_powerup();
 }
 uint32_t mouseDriver_getTime (void){
 	return (HAL_GetTick());

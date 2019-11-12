@@ -55,7 +55,7 @@
 
  This function initializes
  */
-void mouseDriver_init(void);
+uint8_t mouseDriver_init(void);
 
 /* Function for decoding a message */
 void mouseDriver_readMsg(const mavlink_message_t msg);

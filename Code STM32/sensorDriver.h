@@ -58,7 +58,7 @@
 #define LiftCutoff_Tune2  0x65
 /* END DEFINES FOR SENSOR INTERNAL REGISTERS */
 
-void sensorDriver_init(void);
+uint8_t sensorDriver_powerup(void);
 
 
 #endif
