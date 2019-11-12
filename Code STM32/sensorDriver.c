@@ -49,10 +49,11 @@ uint8_t sensorDriver_powerup(void){
 	HAL_Delay(10);
 	main_write_sensor(SENSOR_X,SROM_Enable, 0x18);
 	main_wait_160us();
+	main_wait_20us();
 
 	/* Burst start with adress */
 	HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_RESET);
-	main_write_sensor_burst(SROM_Load_Burst);
+	main_write_sensor_burst(SROM_Load_Burst|0x80);
 	for (int i = 0; i < firmware_length; i++ ){
 		main_write_sensor_burst(firmware_data[i]);
 	}
