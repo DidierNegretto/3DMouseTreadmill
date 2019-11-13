@@ -35,6 +35,7 @@ Code STM32/sensorDriver.o: \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
+ /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/mouseDriver.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/version.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mouse.h \
@@ -53,6 +54,7 @@ Code STM32/sensorDriver.o: \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_point.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_error.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h \
+ /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/utils.h \
  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/sensorSROM.h
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/sensorDriver.h:
@@ -127,6 +129,8 @@ Code STM32/sensorDriver.o: \
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/mouseDriver.h:
+
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/version.h:
@@ -162,5 +166,7 @@ Code STM32/sensorDriver.o: \
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_error.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h:
+
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/utils.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/Code\ STM32/sensorSROM.h:

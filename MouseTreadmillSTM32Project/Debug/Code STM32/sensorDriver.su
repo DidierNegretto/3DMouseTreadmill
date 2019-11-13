@@ -1,2 +1,3 @@
 sensorDriver.c:10:9:sensorDriver_powerup	16	static
-sensorDriver.c:72:6:sensorDriver_init	8	static
+sensorDriver.c:73:6:sensorDrive_motion_read	32	static
+sensorDriver.c:102:6:sensorDriver_init	8	static

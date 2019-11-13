@@ -69,6 +69,36 @@ uint8_t sensorDriver_powerup(void){
 	main_write_sensor(SENSOR_X, Config2, 0x00);
 	return value;
 }
+
+void sensorDrive_motion_read(sensor_data_t * sensor_data){
+	uint8_t data[12];
+	uint8_t temp_l = 0;
+	uint8_t temp_h = 0;
+
+	/* write to motion burst adress */
+	main_write_sensor(SENSOR_X, Motion_Burst, 0xbb);
+
+	/* Prepare for burst */
+	HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_RESET);
+	main_write_sensor_burst(Motion_Burst);
+	/* Start burst */
+	main_read_sensor_motion_burst(data);
+	HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_SET);
+	/* END of burst */
+	main_wait_20us();
+
+	/* Read other register for stopping burst mode */
+	main_read_sensor(SENSOR_X,  Observation);
+
+	/* TWO's Complement */
+	temp_l = ~(data[DELTA_X_L]) + 1;
+	temp_h = ~(data[DELTA_X_H]) + 1;
+	sensor_data->delta[0] = (temp_h<<8) | (temp_l);
+	temp_l = ~(data[DELTA_Y_L]) + 1;
+	temp_h = ~(data[DELTA_Y_H]) + 1;
+	sensor_data->delta[1] = (temp_h<<8) | (temp_l);
+	sensor_data->squal = data[SQUAL_READ];
+}
 void sensorDriver_init(void){
 	sensorDriver_powerup();
 	/*main_write_sensor(Config2, 0x20);

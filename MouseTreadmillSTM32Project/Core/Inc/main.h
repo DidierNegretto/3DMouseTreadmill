@@ -32,7 +32,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "mouseDriver.h"
 #include "mavlink.h"
+/* Include to be REMOVED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+#include "sensorDriver.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -67,6 +70,7 @@ void main_transmit_spi(uint8_t data);
 void main_wait_160us(void);
 void main_wait_20us(void);
 void main_write_sensor_burst(uint8_t data);
+void main_read_sensor_motion_burst(uint8_t *data );
 /*
  * PW_0 is power pin for sensor X	(PB_0)
  * PW_1 is the power pin for sensor Y (PA_4)

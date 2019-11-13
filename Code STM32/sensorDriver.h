@@ -58,7 +58,24 @@
 #define LiftCutoff_Tune2  0x65
 /* END DEFINES FOR SENSOR INTERNAL REGISTERS */
 
-uint8_t sensorDriver_powerup(void);
+/* DEFINES FOR BURST READ (only usefull data) */
+#define MOTION 0
+#define OBSERVATION 1
+#define DELTA_X_L 2
+#define DELTA_X_H 3
+#define DELTA_Y_L 4
+#define DELTA_Y_H 5
+#define SQUAL_READ 6
 
+/* TYPEDEF */
+typedef struct SENSOR_DATA{
+	uint16_t delta[2];
+	uint8_t squal;
+} sensor_data_t;
+
+
+/* Public functions */
+uint8_t sensorDriver_powerup(void);
+void sensorDrive_motion_read (sensor_data_t * sensor_data);
 
 #endif

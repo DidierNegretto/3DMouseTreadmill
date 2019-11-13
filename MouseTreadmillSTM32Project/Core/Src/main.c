@@ -23,8 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "mouseDriver.h"
-#include "mavlink.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -137,7 +136,7 @@ uint8_t main_read_sensor (uint8_t sensor, uint8_t adress ){
 		main_wait_160us();
 		HAL_SPI_Receive(&hspi2, &value, 1, 100);
 		main_wait_1us();
-		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_SET);
 		main_wait_20us();
 		return (value);
 	break;
@@ -177,6 +176,10 @@ void main_write_sensor (uint8_t sensor, uint8_t adress, uint8_t data){
 void main_write_sensor_burst(uint8_t data){
 	HAL_SPI_Transmit(&hspi2, &data, 1, 10);
 	main_wait_20us();
+}
+void main_read_sensor_motion_burst(uint8_t *data ){
+	HAL_SPI_Receive(&hspi2,data,12,100);
+	main_wait_1us();
 }
 void main_transmit_spi(uint8_t data){
 	uint8_t data_out = data;
@@ -272,14 +275,22 @@ int main(void)
 
   while (1)
   {
-	 uint8_t value = 0;
-	 main_write_sensor(SENSOR_X, Control, 0xc0);
-	 value = main_read_sensor(SENSOR_X, Control);
-	 HAL_UART_Transmit(&huart2, &value, 1, 100);
-	 main_write_sensor(SENSOR_X, Control, 0x60);
-	 value = main_read_sensor(SENSOR_X, Control);
-	 HAL_UART_Transmit(&huart2, &value, 1, 100);
-	 /*mouseDriver_idle();*/
+	  char buffer[1000];
+	  uint16_t len  = 0;
+	  sensor_data_t data;
+	  uint16_t dx = 0;
+	  uint16_t dy = 0;
+
+
+	  sensorDrive_motion_read (&data);
+	  dx = data.delta[0];
+	  dy = data.delta[1];
+
+
+	  len=sprintf(buffer, "DELTA_X = %d, DELTA_Y = %d, SQUAL = %d\n", dx, dy, (int)data.squal);
+	  HAL_UART_Transmit(&huart2, buffer, len, 1000);
+
+	  /* mouseDriver_idle(); */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
