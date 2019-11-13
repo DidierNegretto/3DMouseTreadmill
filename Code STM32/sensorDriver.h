@@ -69,7 +69,7 @@
 
 /* TYPEDEF */
 typedef struct SENSOR_DATA{
-	uint16_t delta[2];
+	int16_t delta[2];
 	uint8_t squal;
 } sensor_data_t;
 

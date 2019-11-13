@@ -72,8 +72,7 @@ uint8_t sensorDriver_powerup(void){
 
 void sensorDrive_motion_read(sensor_data_t * sensor_data){
 	uint8_t data[12];
-	uint8_t temp_l = 0;
-	uint8_t temp_h = 0;
+	int16_t temp = 0;
 
 	/* write to motion burst adress */
 	main_write_sensor(SENSOR_X, Motion_Burst, 0xbb);
@@ -91,12 +90,13 @@ void sensorDrive_motion_read(sensor_data_t * sensor_data){
 	main_read_sensor(SENSOR_X,  Observation);
 
 	/* TWO's Complement */
-	temp_l = ~(data[DELTA_X_L]) + 1;
-	temp_h = ~(data[DELTA_X_H]) + 1;
-	sensor_data->delta[0] = (temp_h<<8) | (temp_l);
-	temp_l = ~(data[DELTA_Y_L]) + 1;
-	temp_h = ~(data[DELTA_Y_H]) + 1;
-	sensor_data->delta[1] = (temp_h<<8) | (temp_l);
+	temp = (data[DELTA_X_H]<<8) | (data[DELTA_X_L]);
+	temp = ~temp + 1;
+	sensor_data->delta[0] = temp;
+	temp = (data[DELTA_Y_H]<<8) | (data[DELTA_Y_L]);
+	temp = ~temp +1;
+	sensor_data->delta[1] = temp;
+
 	sensor_data->squal = data[SQUAL_READ];
 }
 void sensorDriver_init(void){

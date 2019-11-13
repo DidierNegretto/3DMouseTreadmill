@@ -278,16 +278,8 @@ int main(void)
 	  char buffer[1000];
 	  uint16_t len  = 0;
 	  sensor_data_t data;
-	  uint16_t dx = 0;
-	  uint16_t dy = 0;
-
-
 	  sensorDrive_motion_read (&data);
-	  dx = data.delta[0];
-	  dy = data.delta[1];
-
-
-	  len=sprintf(buffer, "DELTA_X = %d, DELTA_Y = %d, SQUAL = %d\n", dx, dy, (int)data.squal);
+	  len=sprintf(buffer, "DELTA_X = %d, DELTA_Y = %d, SQUAL = %d\n", data.delta[0], data.delta[1], (int)data.squal);
 	  HAL_UART_Transmit(&huart2, buffer, len, 1000);
 
 	  /* mouseDriver_idle(); */
