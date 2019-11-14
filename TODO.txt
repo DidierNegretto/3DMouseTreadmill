@@ -4,4 +4,14 @@ TODO:
 - Must use two pins to set directions of motors on driver
 - Specify the way the AUTO mode file should be written
 - Do documentation
-
+- JST Connectors
+- Motor short list + Power supply
+- Integrate code sensor to rest of project
+- Unit test on GUI for SENSOR (SENSOR are working correctly?) --> Message of status of electronics.
+- Hardware DIGNOSIS Protocol
+- Reduce number of global variables !!!!
+- Use DMA for SPI Read to reduce CPU time usage
+- Set Priority for uTick to avoid nesting
+- Give access to git repository to other team members
+- Add lift status (Motion register) in raw_sensor message to know if the sensor detects the surface.
+- In future set independent CPI on X and Y
