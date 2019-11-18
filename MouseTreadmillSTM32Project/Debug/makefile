@@ -39,7 +39,7 @@ all: MouseTreadmillSTM32Project.elf secondary-outputs
 
 # Tool invocations
 MouseTreadmillSTM32Project.elf: $(OBJS) $(USER_OBJS) /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillSTM32Project/STM32L476RGTX_FLASH.ld
-	arm-none-eabi-gcc -o "MouseTreadmillSTM32Project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillSTM32Project/STM32L476RGTX_FLASH.ld" -Wl,-Map="MouseTreadmillSTM32Project.map" -Wl,--cref -Wl,--gc-sections -Wl,--verbose -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "MouseTreadmillSTM32Project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillSTM32Project/STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MouseTreadmillSTM32Project.map" -Wl,--cref -Wl,--verbose -static  -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
