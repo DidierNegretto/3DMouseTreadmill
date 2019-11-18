@@ -88,9 +88,10 @@ class MyApplication():
                     DATA["MOTOR_SETPOINT"]["motor_x"].append(self.actualMotorSetpoint[0])
                     DATA["MOTOR_SETPOINT"]["motor_y"].append(self.actualMotorSetpoint[1])
                     #DATA["SPEED_SETPOINT"]["motor_z"].append(self.actualMotorSetpoint[2])
-                elif m.name == "SPEED_INFO":
-                    self.actualSpeedInfo[0] = m.speed_x
-                    self.actualSpeedInfo[1] = m.speed_y
+                elif m.name == "RAW_SENSOR":
+                    #print(m)
+                    self.actualSpeedInfo[0] = m.delta_x
+                    self.actualSpeedInfo[1] = m.delta_y
                     DATA["SPEED_INFO"]["time"].append(m.time)
                     DATA["SPEED_INFO"]["speed_x"].append(self.actualSpeedInfo[0])
                     DATA["SPEED_INFO"]["speed_y"].append(self.actualSpeedInfo[1])
