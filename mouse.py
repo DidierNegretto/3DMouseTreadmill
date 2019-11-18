@@ -251,8 +251,19 @@ MOTOR_HIGH_SPEED = 2 # The speed setpoint chosen is too high to be achieved.
 enums['MOUSE_ERROR'][2] = EnumEntry('MOTOR_HIGH_SPEED', '''The speed setpoint chosen is too high to be achieved.''')
 MOUSE_ROUTINE_TOO_LONG = 3 # More than 255 points have been defined in the mouse routine.
 enums['MOUSE_ERROR'][3] = EnumEntry('MOUSE_ROUTINE_TOO_LONG', '''More than 255 points have been defined in the mouse routine.''')
-MOUSE_ERROR_ENUM_END = 4 # 
-enums['MOUSE_ERROR'][4] = EnumEntry('MOUSE_ERROR_ENUM_END', '''''')
+SENSOR_NOT_RESPONDING = 4 # One sensor is not responding correctly.
+enums['MOUSE_ERROR'][4] = EnumEntry('SENSOR_NOT_RESPONDING', '''One sensor is not responding correctly.''')
+MOUSE_ERROR_ENUM_END = 5 # 
+enums['MOUSE_ERROR'][5] = EnumEntry('MOUSE_ERROR_ENUM_END', '''''')
+
+# SENSOR_ID
+enums['SENSOR_ID'] = {}
+SENSOR_X = 0 # Sensor ID for X direction.
+enums['SENSOR_ID'][0] = EnumEntry('SENSOR_X', '''Sensor ID for X direction.''')
+SENSOR_Y = 1 # Sensor ID for Y direction.
+enums['SENSOR_ID'][1] = EnumEntry('SENSOR_Y', '''Sensor ID for Y direction.''')
+SENSOR_ID_ENUM_END = 2 # 
+enums['SENSOR_ID'][2] = EnumEntry('SENSOR_ID_ENUM_END', '''''')
 
 # message IDs
 MAVLINK_MSG_ID_BAD_DATA = -1
@@ -264,6 +275,7 @@ MAVLINK_MSG_ID_MOTOR_SETPOINT = 4
 MAVLINK_MSG_ID_POINT_LOADED = 5
 MAVLINK_MSG_ID_POINT = 6
 MAVLINK_MSG_ID_ERROR = 7
+MAVLINK_MSG_ID_RAW_SENSOR = 8
 
 class MAVLink_heartbeat_message(MAVLink_message):
         '''
@@ -508,6 +520,41 @@ class MAVLink_error_message(MAVLink_message):
         def pack(self, mav, force_mavlink1=False):
                 return MAVLink_message.pack(self, mav, 22, struct.pack('<IB', self.time, self.error), force_mavlink1=force_mavlink1)
 
+class MAVLink_raw_sensor_message(MAVLink_message):
+        '''
+        This message contains raw sensor values Sender = STM32
+        Receiver = PC
+        '''
+        id = MAVLINK_MSG_ID_RAW_SENSOR
+        name = 'RAW_SENSOR'
+        fieldnames = ['time', 'sensor_id', 'delta_x', 'delta_y', 'squal', 'lift', 'product_id']
+        ordered_fieldnames = ['time', 'delta_x', 'delta_y', 'sensor_id', 'squal', 'lift', 'product_id']
+        fieldtypes = ['uint32_t', 'uint8_t', 'int16_t', 'int16_t', 'uint8_t', 'uint8_t', 'uint8_t']
+        fielddisplays_by_name = {}
+        fieldenums_by_name = {}
+        fieldunits_by_name = {}
+        format = '<IhhBBBB'
+        native_format = bytearray('<IhhBBBB', 'ascii')
+        orders = [0, 3, 1, 2, 4, 5, 6]
+        lengths = [1, 1, 1, 1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0, 0, 0, 0]
+        crc_extra = 246
+        unpacker = struct.Struct('<IhhBBBB')
+
+        def __init__(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id):
+                MAVLink_message.__init__(self, MAVLink_raw_sensor_message.id, MAVLink_raw_sensor_message.name)
+                self._fieldnames = MAVLink_raw_sensor_message.fieldnames
+                self.time = time
+                self.sensor_id = sensor_id
+                self.delta_x = delta_x
+                self.delta_y = delta_y
+                self.squal = squal
+                self.lift = lift
+                self.product_id = product_id
+
+        def pack(self, mav, force_mavlink1=False):
+                return MAVLink_message.pack(self, mav, 246, struct.pack('<IhhBBBB', self.time, self.delta_x, self.delta_y, self.sensor_id, self.squal, self.lift, self.product_id), force_mavlink1=force_mavlink1)
+
 
 mavlink_map = {
         MAVLINK_MSG_ID_HEARTBEAT : MAVLink_heartbeat_message,
@@ -518,6 +565,7 @@ mavlink_map = {
         MAVLINK_MSG_ID_POINT_LOADED : MAVLink_point_loaded_message,
         MAVLINK_MSG_ID_POINT : MAVLink_point_message,
         MAVLINK_MSG_ID_ERROR : MAVLink_error_message,
+        MAVLINK_MSG_ID_RAW_SENSOR : MAVLink_raw_sensor_message,
 }
 
 class MAVError(Exception):
@@ -1101,4 +1149,34 @@ class MAVLink(object):
 
                 '''
                 return self.send(self.error_encode(time, error), force_mavlink1=force_mavlink1)
+
+        def raw_sensor_encode(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id):
+                '''
+                This message contains raw sensor values Sender = STM32 Receiver = PC
+
+                time                      : Time from boot of system (type:uint32_t)
+                sensor_id                 : 0 for X, 1 for Y. (type:uint8_t)
+                delta_x                   : Displacement along sensor's x in counts per inch. (type:int16_t)
+                delta_y                   : Displacement along sensor's y in counts per inch. (type:int16_t)
+                squal                     : Quality of the surface. For white paper is around 30. (type:uint8_t)
+                lift                      : 1 if the sensor is lifted (not measuring). 0 otherwise (type:uint8_t)
+                product_id                : 0x42 if the serial communication with the sensor works correctly. (type:uint8_t)
+
+                '''
+                return MAVLink_raw_sensor_message(time, sensor_id, delta_x, delta_y, squal, lift, product_id)
+
+        def raw_sensor_send(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id, force_mavlink1=False):
+                '''
+                This message contains raw sensor values Sender = STM32 Receiver = PC
+
+                time                      : Time from boot of system (type:uint32_t)
+                sensor_id                 : 0 for X, 1 for Y. (type:uint8_t)
+                delta_x                   : Displacement along sensor's x in counts per inch. (type:int16_t)
+                delta_y                   : Displacement along sensor's y in counts per inch. (type:int16_t)
+                squal                     : Quality of the surface. For white paper is around 30. (type:uint8_t)
+                lift                      : 1 if the sensor is lifted (not measuring). 0 otherwise (type:uint8_t)
+                product_id                : 0x42 if the serial communication with the sensor works correctly. (type:uint8_t)
+
+                '''
+                return self.send(self.raw_sensor_encode(time, sensor_id, delta_x, delta_y, squal, lift, product_id), force_mavlink1=force_mavlink1)
 

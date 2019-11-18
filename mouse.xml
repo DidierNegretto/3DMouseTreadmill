@@ -32,6 +32,18 @@
             <entry value="3" name="MOUSE_ROUTINE_TOO_LONG">
                 <description>More than 255 points have been defined in the mouse routine.</description>
             </entry>
+            <entry value="4" name="SENSOR_NOT_RESPONDING">
+                <description>One sensor is not responding correctly.</description>
+            </entry>
+        </enum>
+            <enum name="SENSOR_ID">
+            <description>This enum defines the sensors directions</description>
+            <entry value="0" name="SENSOR_X">
+                <description>Sensor ID for X direction.</description>
+            </entry>
+            <entry value="1" name="SENSOR_Y">
+                <description>Sensor ID for Y direction.</description>
+            </entry>
         </enum>
     </enums>
     <messages>
@@ -85,5 +97,16 @@
             <field type="uint32_t" name="time">Time from boot of system</field>
             <field type="uint8_t" name="error" enum="MOUSE_ERROR">error ID</field>
         </message>
+        <message id="8" name="RAW_SENSOR">
+	        <description>This message contains raw sensor values Sender = STM32 Receiver = PC
+	        </description>
+	        <field type="uint32_t" name="time">Time from boot of system</field>
+	        <field type="uint8_t" name="sensor_id">0 for X, 1 for Y.</field>	
+	        <field type="int16_t" name="delta_x">Displacement along sensor's x in counts per inch.</field>
+	   		<field type="int16_t" name="delta_y">Displacement along sensor's y in counts per inch.</field>
+	 		<field type="uint8_t" name="squal">Quality of the surface. For white paper is around 30.</field>
+	 		<field type="uint8_t" name="lift">1 if the sensor is lifted (not measuring). 0 otherwise</field>	
+	    	<field type="uint8_t" name="product_id">0x42 if the serial communication with the sensor works correctly.</field>	
+	    </message>   
     </messages>
 </mavlink>
