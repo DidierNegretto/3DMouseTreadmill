@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 76, 12, 12, 0, 0, 0}, {2, 38, 8, 8, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}, {4, 112, 12, 12, 0, 0, 0}, {5, 155, 1, 1, 0, 0, 0}, {6, 75, 13, 13, 0, 0, 0}, {7, 22, 5, 5, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 137, 5, 5, 0, 0, 0}, {1, 76, 12, 12, 0, 0, 0}, {2, 38, 8, 8, 0, 0, 0}, {3, 188, 1, 1, 0, 0, 0}, {4, 112, 12, 12, 0, 0, 0}, {5, 155, 1, 1, 0, 0, 0}, {6, 75, 13, 13, 0, 0, 0}, {7, 22, 5, 5, 0, 0, 0}, {8, 246, 12, 12, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -56,8 +56,20 @@ typedef enum MOUSE_ERROR
    MOTOR_LOW_SPEED=1, /* The speed setpoint chosen is too low to be achieved. | */
    MOTOR_HIGH_SPEED=2, /* The speed setpoint chosen is too high to be achieved. | */
    MOUSE_ROUTINE_TOO_LONG=3, /* More than 255 points have been defined in the mouse routine. | */
-   MOUSE_ERROR_ENUM_END=4, /*  | */
+   SENSOR_NOT_RESPONDING=4, /* One sensor is not responding correctly. | */
+   MOUSE_ERROR_ENUM_END=5, /*  | */
 } MOUSE_ERROR;
+#endif
+
+/** @brief This enum defines the sensors directions */
+#ifndef HAVE_ENUM_SENSOR_ID
+#define HAVE_ENUM_SENSOR_ID
+typedef enum SENSOR_ID
+{
+   SENSOR_X=0, /* Sensor ID for X direction. | */
+   SENSOR_Y=1, /* Sensor ID for Y direction. | */
+   SENSOR_ID_ENUM_END=2, /*  | */
+} SENSOR_ID;
 #endif
 
 // MAVLINK VERSION
@@ -80,6 +92,7 @@ typedef enum MOUSE_ERROR
 #include "./mavlink_msg_point_loaded.h"
 #include "./mavlink_msg_point.h"
 #include "./mavlink_msg_error.h"
+#include "./mavlink_msg_raw_sensor.h"
 
 // base include
 
@@ -88,8 +101,8 @@ typedef enum MOUSE_ERROR
 #define MAVLINK_THIS_XML_IDX 0
 
 #if MAVLINK_THIS_XML_IDX == MAVLINK_PRIMARY_XML_IDX
-# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO, MAVLINK_MESSAGE_INFO_SPEED_SETPOINT, MAVLINK_MESSAGE_INFO_MODE_SELECTION, MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT, MAVLINK_MESSAGE_INFO_POINT_LOADED, MAVLINK_MESSAGE_INFO_POINT, MAVLINK_MESSAGE_INFO_ERROR}
-# define MAVLINK_MESSAGE_NAMES {{ "ERROR", 7 }, { "HEARTBEAT", 0 }, { "MODE_SELECTION", 3 }, { "MOTOR_SETPOINT", 4 }, { "POINT", 6 }, { "POINT_LOADED", 5 }, { "SPEED_INFO", 1 }, { "SPEED_SETPOINT", 2 }}
+# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_SPEED_INFO, MAVLINK_MESSAGE_INFO_SPEED_SETPOINT, MAVLINK_MESSAGE_INFO_MODE_SELECTION, MAVLINK_MESSAGE_INFO_MOTOR_SETPOINT, MAVLINK_MESSAGE_INFO_POINT_LOADED, MAVLINK_MESSAGE_INFO_POINT, MAVLINK_MESSAGE_INFO_ERROR, MAVLINK_MESSAGE_INFO_RAW_SENSOR}
+# define MAVLINK_MESSAGE_NAMES {{ "ERROR", 7 }, { "HEARTBEAT", 0 }, { "MODE_SELECTION", 3 }, { "MOTOR_SETPOINT", 4 }, { "POINT", 6 }, { "POINT_LOADED", 5 }, { "RAW_SENSOR", 8 }, { "SPEED_INFO", 1 }, { "SPEED_SETPOINT", 2 }}
 # if MAVLINK_COMMAND_24BIT
 #  include "../mavlink_get_info.h"
 # endif
