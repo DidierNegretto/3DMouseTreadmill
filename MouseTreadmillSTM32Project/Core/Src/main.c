@@ -115,63 +115,33 @@ void main_set_motors_speed(mavlink_motor_setpoint_t motor )
 		HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
 }
-uint8_t main_read_sensor (uint8_t sensor, uint8_t adress ){
+uint8_t main_read_sensor (const sensor_t sensor, uint8_t adress ){
 	uint8_t value = 0;
 	uint8_t adress_read = adress & 0x7F;
 
-	switch(sensor){
-	case SENSOR_X:
-		HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi2, &adress_read, 1, 100);
-		main_wait_160us();
-		HAL_SPI_Receive(&hspi2, &value, 1, 100);
-		main_wait_1us();
-		HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_SET);
-		main_wait_20us();
-		return (value);
-	break;
-	case SENSOR_Y:
-		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi2, &adress_read, 1, 100);
-		main_wait_160us();
-		HAL_SPI_Receive(&hspi2, &value, 1, 100);
-		main_wait_1us();
-		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_SET);
-		main_wait_20us();
-		return (value);
-	break;
-	default:
-		return (0);
-	}
+	HAL_GPIO_WritePin(sensor.cs_port, sensor.cs_pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, &adress_read, 1, 100);
+	main_wait_160us();
+	HAL_SPI_Receive(&hspi2, &value, 1, 100);
+	main_wait_1us();
+	HAL_GPIO_WritePin(sensor.cs_port, sensor.cs_pin, GPIO_PIN_SET);
+	main_wait_20us();
+	return (value);
 }
 
-void main_write_sensor (uint8_t sensor, uint8_t adress, uint8_t data){
+void main_write_sensor (const sensor_t sensor, uint8_t adress, uint8_t data){
 	uint8_t value = data;
 	uint8_t adress_write = adress | 0x80;
 	uint8_t pack[2];
 	pack[0] = adress_write;
 	pack[1] = value;
 
-	switch(sensor){
-	case(SENSOR_X):
-		HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi2, pack, 2, 10);
-		main_wait_20us();
-		HAL_GPIO_WritePin(CS_0_GPIO_Port, CS_0_Pin, GPIO_PIN_SET);
-		main_wait_160us();
-		main_wait_20us();
-	break;
-	case(SENSOR_Y):
-		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi2, pack, 2, 10);
-		main_wait_20us();
-		HAL_GPIO_WritePin(CS_1_GPIO_Port, CS_1_Pin, GPIO_PIN_SET);
-		main_wait_160us();
-		main_wait_20us();
-	break;
-	default:
-		return;
-	}
+	HAL_GPIO_WritePin(sensor.cs_port, sensor.cs_pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, pack, 2, 10);
+	main_wait_20us();
+	HAL_GPIO_WritePin(sensor.cs_port, sensor.cs_pin, GPIO_PIN_SET);
+	main_wait_160us();
+	main_wait_20us();
 }
 void main_write_sensor_burst(uint8_t data){
 	HAL_SPI_Transmit(&hspi2, &data, 1, 10);
@@ -264,9 +234,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 
-  uint8_t value = 0;
-  value = mouseDriver_init();
-  HAL_UART_Transmit(&huart2, &value, 1, 100);
+  mouseDriver_init();
 
   /* USER CODE END 2 */
 
@@ -275,14 +243,7 @@ int main(void)
 
   while (1)
   {
-	  char buffer[1000];
-	  uint16_t len  = 0;
-	  sensor_data_t data;
-	  sensorDrive_motion_read (&data);
-	  len=sprintf(buffer, "DELTA_X = %d, DELTA_Y = %d, SQUAL = %d\n", data.delta[0], data.delta[1], (int)data.squal);
-	  HAL_UART_Transmit(&huart2, buffer, len, 1000);
-
-	  /* mouseDriver_idle(); */
+	 mouseDriver_idle();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

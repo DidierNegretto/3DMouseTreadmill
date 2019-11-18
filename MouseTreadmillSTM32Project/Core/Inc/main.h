@@ -34,19 +34,22 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "mouseDriver.h"
 #include "mavlink.h"
-/* Include to be REMOVED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-#include "sensorDriver.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+typedef struct SENSOR{
+	GPIO_TypeDef * cs_port;
+	uint8_t cs_pin;
+	GPIO_TypeDef * pw_port;
+	uint8_t pw_pin;
+	uint8_t status;
+} sensor_t;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define SENSOR_X 0
-#define SENSOR_Y 1
+
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -64,8 +67,8 @@ void main_transmit_buffer(uint8_t *outBuffer, uint16_t msg_size);
 void main_stop_motors(void);
 void main_set_motors_speed(mavlink_motor_setpoint_t motor );
 int main_get_huart_tx_state(void);
-void main_write_sensor (uint8_t sensor, uint8_t adress, uint8_t data);
-uint8_t main_read_sensor (uint8_t sensor, uint8_t adress );
+void main_write_sensor (sensor_t sensor, uint8_t adress, uint8_t data);
+uint8_t main_read_sensor (sensor_t sensor, uint8_t adress );
 void main_transmit_spi(uint8_t data);
 void main_wait_160us(void);
 void main_wait_20us(void);
