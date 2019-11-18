@@ -19,9 +19,9 @@
 #define MOUSEDRIVER_N_H
 
 #include "mavlink.h"
-#include "main.h"
 #include "utils.h"
 #include "sensorDriver.h"
+
 
 /* Constants for MALINK functions*/
 
@@ -49,13 +49,12 @@
 #define MAX_POINTS 255
 
 
-
 /*!
  \brief Function for initializing the mouseDriver
 
  This function initializes
  */
-uint8_t mouseDriver_init(void);
+void mouseDriver_init(void);
 
 /* Function for decoding a message */
 void mouseDriver_readMsg(const mavlink_message_t msg);

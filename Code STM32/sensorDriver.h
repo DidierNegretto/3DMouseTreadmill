@@ -4,7 +4,9 @@
 #define SENSORDRIVER_H_
 
 #include "main.h"
+#include "mavlink.h"
 #include "sensorSROM.h"
+
 
 /* BEGIN DEFINES FOR SENSOR INTERNAL REGISTERS */
 #define Product_ID  0x00
@@ -67,15 +69,8 @@
 #define DELTA_Y_H 5
 #define SQUAL_READ 6
 
-/* TYPEDEF */
-typedef struct SENSOR_DATA{
-	int16_t delta[2];
-	uint8_t squal;
-} sensor_data_t;
-
-
 /* Public functions */
-uint8_t sensorDriver_powerup(void);
-void sensorDrive_motion_read (sensor_data_t * sensor_data);
+void sensorDriver_init(void);
+void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data);
 
 #endif

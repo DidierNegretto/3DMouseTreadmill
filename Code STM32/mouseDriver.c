@@ -44,7 +44,7 @@ The maximum amout of points is defined by \ref MAX_POINTS. This array is emptied
 every reset of the system. If not all the points are defined the routine is interrupted as
 soon as a point with duration == 0 is detected.
 */
-static mavlink_point_t points[7000];
+static mavlink_point_t points[255];
 /*!
 \var actual_point
 \brief Global variable for keeping track of the index in the \ref points array.
@@ -60,6 +60,8 @@ static uint32_t actual_point_start_time = 0;
 \brief Global variable to store and send the last error occured
 */
 static mavlink_error_t actual_error;
+
+static mavlink_raw_sensor_t actual_raw_sensor[2];
 
 /* Private functions for mouseDriver.c*/
 /* Private Init functions */
@@ -102,7 +104,7 @@ void mouseDriver_sendMsg(uint32_t msgid){
 
 	while (main_get_huart_tx_state() == HAL_BUSY){
 		/*Wait for other messages to be sent*/
-		HAL_Delay(1);
+		main_wait_160us();
 	}
 
 	switch(msgid){
@@ -144,6 +146,14 @@ void mouseDriver_sendMsg(uint32_t msgid){
 			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
 			main_transmit_buffer(outBuffer, msg_size);
 			break;
+		case MAVLINK_MSG_ID_RAW_SENSOR:
+			mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[0]);
+			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+			main_transmit_buffer(outBuffer, msg_size);
+			mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[1]);
+			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+			main_transmit_buffer(outBuffer, msg_size);
+			break;
 		default:
 			break;
 	}
@@ -175,14 +185,14 @@ void mouseDriver_setMode(uint8_t mode){
 /* END of private functions */
 
 /* Init functions */
-uint8_t mouseDriver_init(void){
+void mouseDriver_init(void){
 	mouseDriver_initMode();
 	mouseDriver_getSpeedFromSensors();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
 
 	/* Init sensor as well */
-	return sensorDriver_powerup();
+	sensorDriver_init();
 }
 uint32_t mouseDriver_getTime (void){
 	return (HAL_GetTick());
@@ -229,7 +239,8 @@ void mouseDriver_idle (void){
 	/* DEMO CODE INIT*/
 		actual_motor_signal.time = mouseDriver_getTime();
 	/* DEMO CODE END*/
-
+	sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
+	sensorDrive_motion_read(SENSOR_Y,&actual_raw_sensor[SENSOR_Y]);
 	switch(actual_mode){
 	case MOUSE_MODE_STOP:
 		mouseDriver_initSetpoint();
@@ -240,6 +251,7 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
 
 		break;
 	case MOUSE_MODE_SPEED:
@@ -252,6 +264,7 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
 
 		break;
 	case MOUSE_MODE_AUTO_LOAD:
@@ -284,6 +297,7 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
 		break;
 	default:
 		break;

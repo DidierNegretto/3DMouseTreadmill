@@ -9,6 +9,4 @@
 #define UTILS_H_
 
 
-
-
 #endif /* UTILS_H_ */
