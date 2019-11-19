@@ -14,28 +14,7 @@ PATH
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillPC/python
 """
-POSITIONS = {
-    "Port": {"x":0,"y":0,"lx":1,"ly":1},
-    "portEntry": {"x":0,"y":1,"lx":3,"ly":1},
-    "Stop": {"x":1,"y":2,"lx":1,"ly":1},
-    "optionMode0": {"x":0,"y":1,"lx":2,"ly":1},
-    "optionMode1": {"x":0,"y":3,"lx":2,"ly":1},
-    "optionMode2": {"x":0,"y":5,"lx":2,"ly":1},
-    "optionModeLabel": {"x":0,"y":0,"lx":1,"ly":1},
-    "speedXLabel": {"x":1,"y":0,"lx":1,"ly":1},
-    "speedX": {"x":2,"y":0,"lx":1,"ly":1},
-    "speedYLabel": {"x":1,"y":1,"lx":1,"ly":1},
-    "speedY": {"x":2,"y":1,"lx":1,"ly":1},
-    "speedSetpointLabel": {"x":3,"y":2,"lx":1,"ly":1},
-    "speedSetpointX": {"x":3,"y":0,"lx":1,"ly":1},
-    "speedSetpointY": {"x":3,"y":1,"lx":1,"ly":1},
-    "motorSetpointLabel": {"x":4,"y":2,"lx":1,"ly":1},
-    "motorSetpointX": {"x":4,"y":0,"lx":1,"ly":1},
-    "motorSetpointY": {"x":4,"y":1,"lx":1,"ly":1},
-    "plot" : {"x":4,"y":1,"lx":1,"ly":1},
-    "resetPlot" : {"x":1,"y":3,"lx":2,"ly":1},
-   
-}
+SENSOR_STATUS_MSG = ["SENSOR STATUS", "ID = ", "LIFT = ", "SQUAL = ", "ROM = "]
 MODES = ["STOP", "SPEED","AUTO","RUNNING"]
 MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2),"RUNNING": int(3) }
 DATA = { "HEARTBEAT": {"time": [], "mode": []}, 
@@ -224,58 +203,59 @@ class MyApplication():
         self.ax = []
         
         app.setTitle("Mouse treadmill GUI")
-        app.setFont(16)
-
-        """
-        # Entry for port. Set to default value 
-        app.addLabel("Port","Port",POSITIONS["Port"]["x"],POSITIONS["Port"]["y"],POSITIONS["Port"]["lx"],POSITIONS["Port"]["ly"])
-        app.addEntry("portEntry",POSITIONS["portEntry"]["x"],POSITIONS["portEntry"]["y"],POSITIONS["portEntry"]["lx"],POSITIONS["portEntry"]["ly"])
-        app.setEntry("portEntry", "/dev/cu.usbmodem14102")
-
-
-        # Button for stop mode
-        app.addButton("Stop", self.stopMode, POSITIONS["Stop"]["x"],POSITIONS["Stop"]["y"],POSITIONS["Stop"]["lx"],POSITIONS["Stop"]["ly"])
-        """
+        app.setFont(12)
+        row = 0
+        column = 0
 
         # Mode Selection
-        app.addLabel("optionModeLabel","Mode",POSITIONS["optionModeLabel"]["x"],POSITIONS["optionModeLabel"]["y"],POSITIONS["optionModeLabel"]["lx"],POSITIONS["optionModeLabel"]["ly"])
-        app.addRadioButton("optionMode",MODES[0],POSITIONS["optionMode0"]["x"],POSITIONS["optionMode0"]["y"],POSITIONS["optionMode0"]["lx"],POSITIONS["optionMode0"]["ly"])
-        app.addRadioButton("optionMode",MODES[1],POSITIONS["optionMode1"]["x"],POSITIONS["optionMode1"]["y"],POSITIONS["optionMode1"]["lx"],POSITIONS["optionMode1"]["ly"])
-        app.addRadioButton("optionMode",MODES[2],POSITIONS["optionMode2"]["x"],POSITIONS["optionMode2"]["y"],POSITIONS["optionMode2"]["lx"],POSITIONS["optionMode2"]["ly"])
+        app.startFrame("modeSelection",row = row, column = column, colspan=4, rowspan = 1)
+        app.addLabel("optionModeLabel","Mode",0,0,1,1)
+        app.addRadioButton("optionMode",MODES[0],0,1,1,1)
+        app.addRadioButton("optionMode",MODES[1],0,2,1,1)
+        app.addRadioButton("optionMode",MODES[2],0,3,1,1)
         app.setRadioButtonChangeFunction("optionMode",self.setMode)
+        app.stopFrame()
+        row = row+1
 
         # Speed entry
-        app.addLabel("speedXLabel", "Speed X", POSITIONS["speedXLabel"]["x"],POSITIONS["speedXLabel"]["y"],POSITIONS["speedXLabel"]["lx"],POSITIONS["speedXLabel"]["ly"])
-        app.addNumericEntry("speedX",POSITIONS["speedX"]["x"],POSITIONS["speedX"]["y"],POSITIONS["speedX"]["lx"],POSITIONS["speedX"]["ly"])
+        app.startFrame("speedEntry",row = row, column = column, colspan=4, rowspan=2)
+        app.addLabel("speedXLabel", "Speed X", 0,0,2,1)
+        app.addNumericEntry("speedX",1,0,2,2)
         app.setEntry("speedX", 0.0)
         app.setEntryChangeFunction("speedX", self.setSpeedX)
-        app.addLabel("speedYLabel", "Speed Y",POSITIONS["speedYLabel"]["x"],POSITIONS["speedYLabel"]["y"],POSITIONS["speedYLabel"]["lx"],POSITIONS["speedYLabel"]["ly"])
-        app.addNumericEntry("speedY",POSITIONS["speedY"]["x"],POSITIONS["speedY"]["y"],POSITIONS["speedY"]["lx"],POSITIONS["speedY"]["ly"])
+        app.addLabel("speedYLabel", "Speed Y",0,2,2,1)
+        app.addNumericEntry("speedY",1,2,2,2)
         app.setEntry("speedY", 0.0)
         app.setEntryChangeFunction("speedY", self.setSpeedY)
-       
+        app.stopFrame()
+        row = row+2
 
-        # Showing values from STM32
-        """
-        app.addLabel("speedSetpointLabel", "MCU Setpoint",POSITIONS["speedSetpointLabel"]["x"],POSITIONS["speedSetpointLabel"]["y"],POSITIONS["speedSetpointLabel"]["lx"],POSITIONS["speedSetpointLabel"]["ly"])
-        app.addLabel("speedSetpointX", "0",POSITIONS["speedSetpointX"]["x"],POSITIONS["speedSetpointX"]["y"],POSITIONS["speedSetpointX"]["lx"],POSITIONS["speedSetpointX"]["ly"])
-        app.addLabel("speedSetpointY", "0",POSITIONS["speedSetpointY"]["x"],POSITIONS["speedSetpointY"]["y"],POSITIONS["speedSetpointY"]["lx"],POSITIONS["speedSetpointY"]["ly"])
-        app.addLabel("motorSetpointLabel", "Motors",POSITIONS["motorSetpointLabel"]["x"],POSITIONS["motorSetpointLabel"]["y"],POSITIONS["motorSetpointLabel"]["lx"],POSITIONS["motorSetpointLabel"]["ly"])
-        app.addLabel("motorSetpointX", "0",POSITIONS["motorSetpointX"]["x"],POSITIONS["motorSetpointX"]["y"],POSITIONS["motorSetpointX"]["lx"],POSITIONS["motorSetpointX"]["ly"])
-        app.addLabel("motorSetpointY", "0",POSITIONS["motorSetpointY"]["x"],POSITIONS["motorSetpointY"]["y"],POSITIONS["motorSetpointY"]["lx"],POSITIONS["motorSetpointY"]["ly"])
-        """
+        # Reset plot button
+        app.startFrame("GUIButtons", row = row, column = column, colspan=2, rowspan=2)
+        self.app.addButton("RESET PLOTS", self.resetPlot, 0,0,1,1)
+        self.app.addButton("LOAD POINTS", self.loadRoutine, 1,0,1,1)
+        self.app.addButton("RUN ROUTINE", self.runRoutine,1,1,1,1 )
+        row = row+1
+
+        # Sensor Status
+        app.startFrame("sensorStatus", row = row, column = 0)
+        self.app.addLabel("sensorStatus0",SENSOR_STATUS_MSG[0], 0,0,1,1)
+        self.app.addLabel("sensorStatus1",SENSOR_STATUS_MSG[1], 1,0,3,1)
+        self.app.addLabel("sensorStatus2",SENSOR_STATUS_MSG[2], 2,0,3,1)
+        self.app.addLabel("sensorStatus3",SENSOR_STATUS_MSG[3], 3,0,3,1)
+        self.app.addLabel("sensorStatus4",SENSOR_STATUS_MSG[4], 4,0,3,1)
+        row = row+4
 
         # Real-time data plotting
-        self.fig = app.addPlotFig("plot",row = None, column = 0,colspan = 4, showNav = True )
+        app.startFrame("realTimePlot", row = row, column = column, colspan = 4, rowspan = 4)
+        self.fig = app.addPlotFig("plot",0,0,4,4, showNav = True )
         self.ax.append(self.fig.add_subplot(311)) 
         self.ax.append(self.fig.add_subplot(312)) 
         self.ax.append(self.fig.add_subplot(313)) 
+        app.stopFrame()
+        row = row+4
         
-        # Reset plot button
-        self.app.addButton("resetPlot", self.resetPlot, POSITIONS["resetPlot"]["x"],POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
-        self.app.addButton("loadData", self.loadRoutine, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"],POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
-        self.app.addButton("RUN", self.runRoutine, POSITIONS["resetPlot"]["x"]+1,POSITIONS["resetPlot"]["y"]+1,POSITIONS["resetPlot"]["lx"],POSITIONS["resetPlot"]["ly"])
-       
+
         # Add status bar
         app.addStatusbar(fields = 2, side=None)
         app.setStatusbar("Time: 0", 0)
@@ -284,9 +264,13 @@ class MyApplication():
         # refresh funciton
         app.setPollTime(100)
         app.registerEvent(self.refreshGUI)
+        
+        # Window for sensor status
+        app.startSubWindow("sensorStatus")
+        app.addLabel("status", "SENSOR_X")
+        app.stopSubWindow()
+        app.openSubWindow("sensorStatus")
 
-        # Thread for communication
-        #app.thread(self.commSTM32)
         return app
      # Build and Start your application
      def Start(self):
@@ -296,7 +280,7 @@ class MyApplication():
         
         # Run the prebuild method that adds items to the UI
         self.app = self.Prepare(self.app)
-                
+        self.app.showAllSubWindow()
         # Start appJar
         self.app.go()
 
@@ -307,6 +291,7 @@ if __name__ == '__main__':
 
     # Create an instance of your application
     App = MyApplication()
+    
     # Start your app !
     App.Start()
 
