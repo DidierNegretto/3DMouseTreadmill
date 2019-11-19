@@ -104,7 +104,7 @@ void mouseDriver_sendMsg(uint32_t msgid){
 
 	while (main_get_huart_tx_state() == HAL_BUSY){
 		/*Wait for other messages to be sent*/
-		main_wait_160us();
+		HAL_Delay(1);
 	}
 
 	switch(msgid){

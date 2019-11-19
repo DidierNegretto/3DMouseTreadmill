@@ -224,9 +224,10 @@ int main(void)
   MX_DMA_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_NVIC_SetPriority(USART2_IRQn,0,0);
+  HAL_InitTick(0);
+  HAL_NVIC_SetPriority(USART2_IRQn,1,0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
-  HAL_NVIC_SetPriority(TIM7_IRQn,2,2);
+  HAL_NVIC_SetPriority(TIM7_IRQn,2,0);
   HAL_NVIC_EnableIRQ(TIM7_IRQn);
   HAL_GPIO_WritePin(GPIOC, CS_0_Pin|CS_1_Pin, GPIO_PIN_SET);
 
