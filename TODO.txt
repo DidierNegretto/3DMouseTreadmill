@@ -21,4 +21,4 @@ IMPORTANT for LATEX output of DOXYGEN
 - Compile refman.tex using texstudio.
 
 FOR ERROR:
-dv = v_+-v_- = (x+dx)/(t-dt)+(x-dx)/(t+dt)
+dv = v_+-v_- = (x+dx)/(t-dt)-(x-dx)/(t+dt)

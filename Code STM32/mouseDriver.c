@@ -4,6 +4,9 @@
 \author Didier Negretto
 */
 #include "mouseDriver.h"
+#define RESOLUTION 5000 /* Resolution in Count per Inch */
+#define INCH2METER 0.0254 /* Conversion inches->meters */
+#define K 10 /* P-control constant */
 /*!
 \var actual_mode
 \brief Global variable defining the mode of the machine
@@ -63,6 +66,7 @@ static mavlink_error_t actual_error;
 
 static mavlink_raw_sensor_t actual_raw_sensor[2];
 
+static int send_msg = 1;
 /* Private functions for mouseDriver.c*/
 /* Private Init functions */
 
@@ -236,10 +240,20 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
 /* Idle functions */
 void mouseDriver_idle (void){
 	uint64_t difference = 0;
+	uint32_t old_time = 0;
 	/* DEMO CODE INIT*/
-		actual_motor_signal.time = mouseDriver_getTime();
+
 	/* DEMO CODE END*/
+	old_time = actual_raw_sensor[SENSOR_X].time;
 	sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
+
+	/* DEMO CODE USING ONLY ONE SENSOR */
+		actual_speed_measure.speed_x = (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
+		actual_speed_measure.speed_y = (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
+		actual_speed_measure.speed_x /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
+		actual_speed_measure.speed_y /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
+	/* DEMO CODE USING ONLY ONE SENSOR END*/
+
 	sensorDrive_motion_read(SENSOR_Y,&actual_raw_sensor[SENSOR_Y]);
 	switch(actual_mode){
 	case MOUSE_MODE_STOP:
@@ -247,24 +261,15 @@ void mouseDriver_idle (void){
 		actual_motor_signal.motor_x = 0;
 		actual_motor_signal.motor_y = 0;
 		main_stop_motors();
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
 
 		break;
 	case MOUSE_MODE_SPEED:
-		/* BEGIN Code for DEMO */
-			actual_motor_signal.motor_x = actual_speed_setpoint.setpoint_x;
-			actual_motor_signal.motor_y = actual_speed_setpoint.setpoint_y;
-		/* END Code for DEMO */
+		actual_motor_signal.time = mouseDriver_getTime();
+		actual_motor_signal.motor_x = actual_speed_setpoint.setpoint_x;
+		actual_motor_signal.motor_y = actual_speed_setpoint.setpoint_y;
 		main_set_motors_speed(actual_motor_signal);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
 
 		break;
 	case MOUSE_MODE_AUTO_LOAD:
@@ -293,19 +298,27 @@ void mouseDriver_idle (void){
 		if (actual_point == 255){
 			mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
 		}
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
+
 		break;
 	default:
 		break;
 	}
-
+	if (send_msg == 1){
+		send_msg = 0;
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+		if(actual_mode != MOUSE_MODE_AUTO_LOAD){
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
+		}
+	}
 
 }
-
+/* Sometime called for sending status messages */
+void mouseDriver_send_status_msg(void){
+	send_msg = 1;
+}
 /* ISR Functions */
 void mouseDriver_controlISR(void){
 

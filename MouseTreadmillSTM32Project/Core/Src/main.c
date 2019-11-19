@@ -183,8 +183,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
-    	/*HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);*/
-    	mouseDriver_controlISR();
+    	mouseDriver_send_status_msg();
     }
 }
 /* USER CODE END 0 */

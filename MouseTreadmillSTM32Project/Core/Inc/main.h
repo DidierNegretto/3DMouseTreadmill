@@ -84,7 +84,7 @@ void main_read_sensor_motion_burst(uint8_t *data );
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define DT_HEART 8
+#define DT_HEART 200
 #define PRESCALER_HEART 1000
 #define CLOCK_FREQ 80000000
 #define COUNTER_PERIOD_HEART ((CLOCK_FREQ/(PRESCALER_HEART))*0.001*DT_HEART)

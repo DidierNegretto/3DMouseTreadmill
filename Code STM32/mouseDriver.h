@@ -68,4 +68,7 @@ void mouseDriver_controlISR(void);
 /* Functions for setting/getting time */
 uint32_t mouseDriver_getTime (void);
 
+/* Function for sending status messages regularly */
+void mouseDriver_send_status_msg(void);
+
 #endif
