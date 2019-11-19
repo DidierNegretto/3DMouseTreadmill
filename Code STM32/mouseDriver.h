@@ -63,7 +63,7 @@ void mouseDriver_readMsg(const mavlink_message_t msg);
 void mouseDriver_idle (void);
 
 /* Function called every DT for updating the control signals to motors */
-void mouseDriver_controlISR(void);
+void mouseDriver_control_idle(void);
 
 /* Functions for setting/getting time */
 uint32_t mouseDriver_getTime (void);

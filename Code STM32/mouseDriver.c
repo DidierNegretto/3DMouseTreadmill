@@ -263,10 +263,7 @@ void mouseDriver_idle (void){
 
 		break;
 	case MOUSE_MODE_SPEED:
-		actual_motor_signal.time = mouseDriver_getTime();
-		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
-		actual_motor_signal.motor_y = (float)K*(actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y);
-		main_set_motors_speed(actual_motor_signal);
+		mouseDriver_control_idle();
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 
@@ -279,6 +276,7 @@ void mouseDriver_idle (void){
 		}
 		break;
 	case MOUSE_MODE_AUTO_RUN:
+		mouseDriver_control_idle();
 		difference = mouseDriver_getTime()-actual_point_start_time;
 		if (difference >= points[actual_point].duration){
 			if (actual_point < 255){
@@ -298,7 +296,7 @@ void mouseDriver_idle (void){
 			mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
 		}
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		break;
 	default:
 		break;
@@ -319,7 +317,17 @@ void mouseDriver_send_status_msg(void){
 	send_msg = 1;
 }
 /* ISR Functions */
-void mouseDriver_controlISR(void){
-
+void mouseDriver_control_idle(void){
+	if (actual_mode == MOUSE_MODE_SPEED || actual_mode == MOUSE_MODE_AUTO_RUN){
+		actual_motor_signal.time = mouseDriver_getTime();
+		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
+		actual_motor_signal.motor_y = (float)K*(actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y);
+		main_set_motors_speed(actual_motor_signal);
+	}
+	else{
+		actual_motor_signal.motor_x = 0;
+		actual_motor_signal.motor_y = 0;
+		main_stop_motors();
+	}
 }
 
