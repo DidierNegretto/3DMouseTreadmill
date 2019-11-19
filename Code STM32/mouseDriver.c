@@ -241,9 +241,6 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
 void mouseDriver_idle (void){
 	uint64_t difference = 0;
 	uint32_t old_time = 0;
-	/* DEMO CODE INIT*/
-
-	/* DEMO CODE END*/
 	old_time = actual_raw_sensor[SENSOR_X].time;
 	sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
 
@@ -258,6 +255,7 @@ void mouseDriver_idle (void){
 	switch(actual_mode){
 	case MOUSE_MODE_STOP:
 		mouseDriver_initSetpoint();
+		actual_motor_signal.time = mouseDriver_getTime();
 		actual_motor_signal.motor_x = 0;
 		actual_motor_signal.motor_y = 0;
 		main_stop_motors();
@@ -266,10 +264,11 @@ void mouseDriver_idle (void){
 		break;
 	case MOUSE_MODE_SPEED:
 		actual_motor_signal.time = mouseDriver_getTime();
-		actual_motor_signal.motor_x = actual_speed_setpoint.setpoint_x;
-		actual_motor_signal.motor_y = actual_speed_setpoint.setpoint_y;
+		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
+		actual_motor_signal.motor_y = (float)K*(actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y);
 		main_set_motors_speed(actual_motor_signal);
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 
 		break;
 	case MOUSE_MODE_AUTO_LOAD:
@@ -309,8 +308,8 @@ void mouseDriver_idle (void){
 		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
 		if(actual_mode != MOUSE_MODE_AUTO_LOAD){
 			mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 			mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
+			mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
 		}
 	}
 

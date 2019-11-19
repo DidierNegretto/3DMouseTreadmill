@@ -89,7 +89,7 @@ class MyApplication():
                     DATA["MOTOR_SETPOINT"]["motor_y"].append(self.actualMotorSetpoint[1])
                     #DATA["SPEED_SETPOINT"]["motor_z"].append(self.actualMotorSetpoint[2])
                 elif m.name == "SPEED_INFO":
-                    print(m)
+                    #print(m)
                     DATA["SPEED_INFO"]["time"].append(m.time)
                     DATA["SPEED_INFO"]["speed_x"].append(m.speed_x)
                     DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
