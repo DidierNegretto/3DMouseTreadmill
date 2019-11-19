@@ -72,7 +72,11 @@ class MyApplication():
                     DATA["SPEED_INFO"]["time"].append(m.time)
                     DATA["SPEED_INFO"]["speed_x"].append(m.speed_x)
                     DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
-                    #DATA["SPEED_SETPOINT"]["speed_z"].append(self.actualSpeedInfo[2])
+                elif m.name == "RAW_SENSOR":
+                    #print(m)
+                    self.app.setLabel("sensorStatus1",SENSOR_STATUS_MSG[1]+str(m.product_id))
+                    self.app.setLabel("sensorStatus2",SENSOR_STATUS_MSG[2]+str(m.lift))
+                    self.app.setLabel("sensorStatus3",SENSOR_STATUS_MSG[3]+str(m.squal))
                 elif m.name == "POINT":
                     print(m)
                 else:
