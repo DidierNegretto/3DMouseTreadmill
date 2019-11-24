@@ -23,6 +23,8 @@
 #include "utils.h"
 #include "sensorDriver.h"
 #endif
+
+#include <math.h>
 /* Constants for MALINK functions*/
 
 /*!

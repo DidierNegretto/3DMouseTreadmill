@@ -10,6 +10,9 @@
 
 static int stop_motor = 0;
 static int sensor_init = 0;
+static int sensor_read_x = 0;
+static int sensor_read_y = 0;
+
 
 /* Define mock functions */
 void sensorDriver_init(void){sensor_init = 1; };
@@ -21,7 +24,17 @@ uint32_t HAL_GetTick(void){
 
 void main_set_motors_speed(mavlink_motor_setpoint_t actual_motor_signal){stop_motor = 0;};
 void main_stop_motors(void){stop_motor = 1;};
-void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){};
+void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
+    if (sensor_id == SENSOR_X){
+        sensor_read_x = 1;
+    }
+    if (sensor_id == SENSOR_Y){
+        sensor_read_y = 1;
+    }
+    actual_raw_sensor->delta_x = 1;
+    actual_raw_sensor->delta_y = 1;
+
+};
 void mouseDriver_sendMsg(uint32_t msgid){};
 
 

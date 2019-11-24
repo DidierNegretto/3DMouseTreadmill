@@ -219,6 +219,12 @@ to avoid damaging or destroing them !!
 This function is called periodially to update the control signal for the motors.
 */
 void mouseDriver_control_idle(void){
+    if (isnan(actual_motor_signal.motor_x) || isnan(actual_motor_signal.motor_y)){
+        actual_motor_signal.motor_x = 0;
+        actual_motor_signal.motor_y = 0;
+        main_stop_motors();
+        return;
+    }
 	if (actual_mode == MOUSE_MODE_SPEED || actual_mode == MOUSE_MODE_AUTO_RUN){
 		actual_motor_signal.time = mouseDriver_getTime();
 		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
@@ -357,8 +363,8 @@ void mouseDriver_idle (void){
     sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
 
     /* DEMO CODE USING ONLY ONE SENSOR */
-        actual_speed_measure.speed_x = (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
-        actual_speed_measure.speed_y = (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
+        actual_speed_measure.speed_x =  (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
+        actual_speed_measure.speed_y =  (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
         actual_speed_measure.speed_x /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
         actual_speed_measure.speed_y /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
     /* DEMO CODE USING ONLY ONE SENSOR END*/
@@ -367,9 +373,8 @@ void mouseDriver_idle (void){
     switch(actual_mode){
     case MOUSE_MODE_STOP:
         mouseDriver_initSetpoint();
+        mouseDriver_initMotorSignal();
         actual_motor_signal.time = mouseDriver_getTime();
-        actual_motor_signal.motor_x = 0;
-        actual_motor_signal.motor_y = 0;
         main_stop_motors();
         mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 
@@ -388,7 +393,6 @@ void mouseDriver_idle (void){
         }
         break;
     case MOUSE_MODE_AUTO_RUN:
-        mouseDriver_control_idle();
         difference = mouseDriver_getTime()-actual_point_start_time;
         if (difference >= points[actual_point].duration){
             if (actual_point < 255){
@@ -403,6 +407,7 @@ void mouseDriver_idle (void){
                 actual_point_start_time = mouseDriver_getTime();
             }
         }
+        mouseDriver_control_idle();
 
         if (actual_point == 255){
             mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
