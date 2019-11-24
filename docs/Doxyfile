@@ -829,14 +829,12 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../ \
-                         "../MAVLink Library" \
-                         "../MAVLink Library/mouse" \
-                         "../Code STM32" \
-                         ../MouseTreadmillSTM32Project/Core/Inc/main.h \
+INPUT                  = ../MouseTreadmillSTM32Project/Core/Inc/main.h \
                          ../MouseTreadmillSTM32Project/Core/Src/main.c \
                          ../mouse.py \
-                         ../MouseTreadmillPC/python
+                         ../MouseTreadmillPC/python \
+                         ../MouseTreadmillSTM32Project/Core/Inc/main.h \
+                         ../CodeSTM32/src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1865,7 +1863,7 @@ LATEX_EXTRA_FILES      =
 # The default value is: YES.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-PDF_HYPERLINKS         = YES
+PDF_HYPERLINKS         = NO
 
 # If the USE_PDFLATEX tag is set to YES, doxygen will use pdflatex to generate
 # the PDF file directly from the LaTeX files. Set this option to YES, to get a
@@ -2481,7 +2479,7 @@ INTERACTIVE_SVG        = YES
 # found. If left blank, it is assumed the dot tool can be found in the path.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_PATH               = " /usr/local/Cellar/graphviz/2.42.2/bin"
+DOT_PATH               = /usr/local/Cellar/graphviz/2.42.2/bin
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that
 # contain dot files that are included in the documentation (see the \dotfile

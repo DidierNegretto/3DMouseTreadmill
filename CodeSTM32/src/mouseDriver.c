@@ -21,6 +21,11 @@ This value is used to convert the raw sensor value in couts to meter per second.
 \def K 
 \brief Proportional coefficient for motor control.
 */
+#define K 10
+/*!
+\def K
+\brief Proportional coefficient for motor control.
+*/
 #define I 10 
 /*!
 \def I 
@@ -264,7 +269,6 @@ This functions initialites the mouse treadmill driver. It initializes the sensor
 */
 void mouseDriver_init(void){
 	mouseDriver_initMode();
-	mouseDriver_getSpeedFromSensors();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
 
