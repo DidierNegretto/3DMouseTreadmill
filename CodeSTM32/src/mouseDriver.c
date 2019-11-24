@@ -38,7 +38,7 @@ This value is used to convert the raw sensor value in couts to meter per second.
 \def I 
 \brief Integral coefficient for motor control.
 */
-#define MAX_MOTOR_SIGNAL 10
+#define MAX_MOTOR_SIGNAL 100
 /*!
 \def MAX_MOTOR_SIGNAL
 \brief Max value for the motor signal
@@ -157,6 +157,10 @@ void mouseDriver_initPoints(void){
 	actual_point = 0;
 	actual_point_start_time = 0;
 }
+void mouseDriver_initMotorSignal(void){
+    actual_motor_signal.motor_x = 0;
+    actual_motor_signal.motor_y = 0;
+}
 /* Private set/get functions 
 void mouseDriver_setSetpoint(const mavlink_speed_setpoint_t speed){
 	actual_speed_setpoint = speed;
@@ -180,6 +184,7 @@ void mouseDriver_init(void){
 	mouseDriver_initMode();
 	mouseDriver_initSetpoint();
 	mouseDriver_initPoints();
+	mouseDriver_initMotorSignal();
 
 	/* Init sensor as well */
 	sensorDriver_init();
@@ -218,6 +223,14 @@ void mouseDriver_control_idle(void){
 		actual_motor_signal.time = mouseDriver_getTime();
 		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
 		actual_motor_signal.motor_y = (float)K*(actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y);
+
+		if (actual_motor_signal.motor_x > MAX_MOTOR_SIGNAL){
+		    actual_motor_signal.motor_x = MAX_MOTOR_SIGNAL;
+		}
+		if(actual_motor_signal.motor_y  > MAX_MOTOR_SIGNAL){
+            actual_motor_signal.motor_y = MAX_MOTOR_SIGNAL;
+        }
+
 		main_set_motors_speed(actual_motor_signal);
 	}
 	else{

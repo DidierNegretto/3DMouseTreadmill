@@ -30,6 +30,9 @@ bool test_mouseDriver_init(void){
     actual_point_start_time = 10;
     actual_speed_setpoint.setpoint_x = 10;
     actual_speed_setpoint.setpoint_y = 10;
+    actual_motor_signal.motor_x = 10;
+    actual_motor_signal.motor_y = 10;
+
     sensor_init = 0;
     stop_motor = 0;
 
@@ -45,6 +48,7 @@ bool test_mouseDriver_init(void){
     }
     test &= display(sensor_init == 1, "sensor_init initialization");
     test &= display(stop_motor == 1, "stop_motor initialization");
+    test &= display((actual_motor_signal.motor_x  == 0)&& (actual_motor_signal.motor_y  == 0), "actual_motor_signal initialization");
 
     return test;
 }
@@ -74,6 +78,81 @@ bool test_mouseDriver_send_status_msg(void){
 
     test = send_msg;
     display(test, "status message send request");
+    return test;
+}
+bool test_mouseDriver_control_idle(void){
+    bool test = false;
+    stop_motor = 0;
+    actual_motor_signal.motor_x = 10;
+    actual_motor_signal.motor_y = 10;
+    actual_mode = MOUSE_MODE_STOP;
+
+    /* Case actual mode == STOP */
+    printf("if (actual_mode ==  MOUSE_MODE_STOP)\n");
+    mouseDriver_control_idle();
+    test &= display((actual_motor_signal.motor_x  == 0)&& (actual_motor_signal.motor_y  == 0), "actual_motor_signal reset");
+    test &= display(stop_motor == 1, "motor stop");
+
+    /* Case actual mode == SPEED */
+    actual_mode = MOUSE_MODE_SPEED;
+    stop_motor = 1;
+    actual_speed_setpoint.setpoint_y = 0;
+    actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
+    printf("if (actual_mode ==  MOUSE_MODE_SPEED)\n");
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_x speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display(actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL, "motor_x with MAX_MOTOR_SIGNAL limit");
+
+    stop_motor = 1;
+    actual_speed_setpoint.setpoint_x = 0;
+    actual_speed_setpoint.setpoint_y = MAX_MOTOR_SIGNAL * 1000;
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_y speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display(actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL, "motor_y with MAX_MOTOR_SIGNAL limit");
+
+    actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
+    actual_speed_setpoint.setpoint_y = MAX_MOTOR_SIGNAL * 1000;
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_y and motor_x speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display((actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL) && (actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL), "motor_y and motor_x with MAX_MOTOR_SIGNAL limit");
+
+    /* Case actual mode == SPEED */
+    actual_mode = MOUSE_MODE_AUTO_RUN;
+    stop_motor = 1;
+    actual_speed_setpoint.setpoint_y = 0;
+    actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
+    printf("if (actual_mode ==  MOUSE_MODE_AUTO_RUN)\n");
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_x speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display(actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL, "motor_x with MAX_MOTOR_SIGNAL limit");
+
+    stop_motor = 1;
+    actual_speed_setpoint.setpoint_x = 0;
+    actual_speed_setpoint.setpoint_y = MAX_MOTOR_SIGNAL * 1000;
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_y speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display(actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL, "motor_y with MAX_MOTOR_SIGNAL limit");
+
+    actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
+    actual_speed_setpoint.setpoint_y = MAX_MOTOR_SIGNAL * 1000;
+    mouseDriver_control_idle();
+    test &= display(stop_motor == 0, "motor_y and motor_x speed changed");
+    for(int i = 0; i < 100; i++)
+        mouseDriver_control_idle();
+    test &= display((actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL) && (actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL), "motor_y and motor_x with MAX_MOTOR_SIGNAL limit");
+
+
+
     return test;
 }
 

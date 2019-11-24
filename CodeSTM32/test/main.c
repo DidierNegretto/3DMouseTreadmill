@@ -7,12 +7,6 @@
 
 #include "test_mouseDriver.h"
 
-#define RED     "\x1b[31m"
-#define GREEN   "\x1b[32m"
-#define END   "\x1b[0m"
-
-
-
 int main(void){
 
     bool test = false;
@@ -30,6 +24,8 @@ int main(void){
     test &= test_mouseDriver_getTime();
     printf("TESTING mouseDriver_send_status_msg()\n");
     test &= test_mouseDriver_send_status_msg();
+    printf("TESTING mouseDriver_control_idle()\n");
+    test &= test_mouseDriver_control_idle();
 
 
     /*printf("-----------------------------------------------------\n");

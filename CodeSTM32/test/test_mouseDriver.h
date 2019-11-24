@@ -35,5 +35,6 @@ bool test_mouseDriver_init(void);
 bool test_mouseDriver_idle(void);
 bool test_mouseDriver_getTime(void);
 bool test_mouseDriver_send_status_msg(void);
+bool test_mouseDriver_control_idle(void);
 
 #endif /* TEST_MOUSEDRIVER_H_ */
