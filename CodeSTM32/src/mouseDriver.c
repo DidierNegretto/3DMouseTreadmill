@@ -3,7 +3,14 @@
 
 \author Didier Negretto
 */
+#ifndef MOUSEDRIVER_C_
+#define MOUSEDRIVER_C_
+
+#ifndef TEST
 #include "mouseDriver.h"
+#else
+#include "../test/test_mouseDriver.h"
+#endif
 /*!
 \def RESOLUTION 
 \brief Resolution of the sensor in Count per Inch (CPI)
@@ -46,6 +53,7 @@ needs to be taken if this value is modified.
 \def MIN_MOTOR_SIGNAL
 \brief Min value for the motor signal. Any value lower than that will cause the motor to stop
 */
+#ifndef TEST
 /*!
 \var actual_mode
 \brief Global variable defining the mode of the machine
@@ -118,6 +126,8 @@ static int send_msg = 1;
 
 This function modifies \ref actual_speed_setpoint by setting it to 0.
 */
+#endif
+
 void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_x = 0;
 	actual_speed_setpoint.setpoint_y = 0;
@@ -154,107 +164,6 @@ void mouseDriver_setSetpoint(const mavlink_speed_setpoint_t speed){
 */
 
 /* Private message functions */
-/*!
-\fn mouseDriver_sendMsg(uint32_t msgid)
-\param msgid is the ID of the message to be sent. 
-\brief Function that sends a message given its ID.
-\attention This function can be called in interrupts whith a priority lower than 0 (1,2,3,...), 
-otherwise the HAL_Delay() function stall and the STM32 crashes.
-
-This function access global variables to send information to the computer.
-Given one message ID the functions reads the information from a global variable and
-sends it using the DMA as soon as the previous messages are sent.
-*/
-void mouseDriver_sendMsg(uint32_t msgid){
-	mavlink_message_t msg;
-	static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
-	static uint16_t msg_size = 0;
-
-	while (main_get_huart_tx_state() == HAL_BUSY){
-		/*Wait for other messages to be sent*/
-		HAL_Delay(1);
-	}
-
-	switch(msgid){
-		case MAVLINK_MSG_ID_HEARTBEAT:
-			mavlink_msg_heartbeat_pack(SYS_ID,COMP_ID, &msg, actual_mode, mouseDriver_getTime());
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_SPEED_SETPOINT:
-			mavlink_msg_speed_setpoint_encode(SYS_ID,COMP_ID, &msg, &actual_speed_setpoint);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_MOTOR_SETPOINT:
-			mavlink_msg_motor_setpoint_encode(SYS_ID,COMP_ID, &msg, &actual_motor_signal);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_SPEED_INFO:
-			/* DEMO CODE INIT*/
-				actual_speed_measure.time = mouseDriver_getTime();
-			/* DEMO CODE END*/
-			mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_ERROR:
-			mavlink_msg_error_encode(SYS_ID,COMP_ID,&msg,&actual_error);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_POINT_LOADED:
-			mavlink_msg_point_loaded_pack(SYS_ID,COMP_ID,&msg,actual_point);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_POINT:
-			mavlink_msg_point_encode(SYS_ID,COMP_ID,&msg,&points[actual_point]);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);
-			break;
-		case MAVLINK_MSG_ID_RAW_SENSOR:
-			mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[0]);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);/*
-			mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[1]);
-			msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-			main_transmit_buffer(outBuffer, msg_size);*/
-			break;
-		default:
-			break;
-	}
-}
-/*!
-\fn mouseDriver_setMode(uint8_t mode)
-\param mode is the mode in which the driver should be set. 
-\brief Function that sets the mode of the machine.
-
-This functions modifies the mode of the machine. Not all transitions are possible,
-this functions verifies that the transitions are lawful.
-*/
-void mouseDriver_setMode(uint8_t mode){
-	if (mode == MOUSE_MODE_STOP){
-		main_stop_motors();
-		actual_point = 0;
-		actual_mode = MOUSE_MODE_STOP;
-	}
-	if (mode == MOUSE_MODE_AUTO_LOAD){
-		actual_mode = mode;
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-	}
-	if (actual_mode == MOUSE_MODE_AUTO_LOAD && mode == MOUSE_MODE_AUTO_RUN ){
-		actual_point = 0;
-		actual_point_start_time = mouseDriver_getTime();
-		actual_speed_setpoint.setpoint_x = points[0].setpoint_x;
-		actual_speed_setpoint.setpoint_y = points[0].setpoint_y;
-		actual_mode = mode;
-	}
-
-	if (actual_mode != MOUSE_MODE_AUTO_RUN)
-		actual_mode = mode;
-}
 
 /* Private Idle functions */
 
@@ -274,6 +183,7 @@ void mouseDriver_init(void){
 
 	/* Init sensor as well */
 	sensorDriver_init();
+	main_stop_motors();
 }
 /*!
 \fn mouseDriver_getTime
@@ -283,130 +193,8 @@ void mouseDriver_init(void){
 uint32_t mouseDriver_getTime (void){
 	return (HAL_GetTick());
 }
-/*!
-\fn mouseDriver_readMsg(const mavlink_message_t msg)
-\param msg MAVLink message to be decoded
-\brief Function that reads one message.
 
-This function is called in main.c. Depending on the received message different actions are taken.
-*/
-void mouseDriver_readMsg(const mavlink_message_t msg){
 
-	switch(msg.msgid){
-
-	case MAVLINK_MSG_ID_MODE_SELECTION:
-		mouseDriver_setMode( mavlink_msg_mode_selection_get_mode(&msg));
-		break;
-
-	case MAVLINK_MSG_ID_SPEED_SETPOINT:
-		if (actual_mode == MOUSE_MODE_SPEED)
-			mavlink_msg_speed_setpoint_decode(&msg, &actual_speed_setpoint);
-		break;
-
-	case MAVLINK_MSG_ID_MOTOR_SETPOINT:
-		if (actual_mode == MOUSE_MODE_SPEED)
-			mavlink_msg_speed_setpoint_decode(&msg, &actual_speed_setpoint);
-		break;
-	case MAVLINK_MSG_ID_POINT:
-		if(actual_mode == MOUSE_MODE_AUTO_LOAD){
-			mavlink_msg_point_decode(&msg, &points[actual_point]);
-			if (actual_point == 255){
-				actual_error.error = MOUSE_ROUTINE_TOO_LONG;
-				actual_error.time = mouseDriver_getTime();
-				mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
-			}
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_POINT_LOADED);
-			actual_point ++;
-
-		}
-		break;
-	default:
-		break;
-	};
-}
-
-/*!
-\fn mouseDriver_idle
-\brief Idle function for the mouse treadmill driver.
-\note This function needs to be called periodically to ensure a correct behaviour.
-
-This is the idle function of the mouse treadmill. It reads values from the sensors,
-calls \ref mouseDriver_control_idle, and sends high frequency messages (not the status ones).
-*/
-void mouseDriver_idle (void){
-	uint64_t difference = 0;
-	uint32_t old_time = 0;
-	old_time = actual_raw_sensor[SENSOR_X].time;
-	sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
-
-	/* DEMO CODE USING ONLY ONE SENSOR */
-		actual_speed_measure.speed_x = (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
-		actual_speed_measure.speed_y = (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
-		actual_speed_measure.speed_x /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
-		actual_speed_measure.speed_y /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
-	/* DEMO CODE USING ONLY ONE SENSOR END*/
-
-	sensorDrive_motion_read(SENSOR_Y,&actual_raw_sensor[SENSOR_Y]);
-	switch(actual_mode){
-	case MOUSE_MODE_STOP:
-		mouseDriver_initSetpoint();
-		actual_motor_signal.time = mouseDriver_getTime();
-		actual_motor_signal.motor_x = 0;
-		actual_motor_signal.motor_y = 0;
-		main_stop_motors();
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-
-		break;
-	case MOUSE_MODE_SPEED:
-		mouseDriver_control_idle();
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
-
-		break;
-	case MOUSE_MODE_AUTO_LOAD:
-		if (actual_point == 255){
-			actual_error.error = MOUSE_ROUTINE_TOO_LONG;
-			actual_error.time = mouseDriver_getTime();
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
-		}
-		break;
-	case MOUSE_MODE_AUTO_RUN:
-		mouseDriver_control_idle();
-		difference = mouseDriver_getTime()-actual_point_start_time;
-		if (difference >= points[actual_point].duration){
-			if (actual_point < 255){
-				actual_point++;
-
-				if(points[actual_point].duration == 0){
-					main_stop_motors();
-					mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
-				}
-				actual_speed_setpoint.setpoint_x = points[actual_point].setpoint_x;
-				actual_speed_setpoint.setpoint_y = points[actual_point].setpoint_y;
-				actual_point_start_time = mouseDriver_getTime();
-			}
-		}
-
-		if (actual_point == 255){
-			mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
-		}
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
-		break;
-	default:
-		break;
-	}
-	if (send_msg == 1){
-		send_msg = 0;
-		mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
-		if(actual_mode != MOUSE_MODE_AUTO_LOAD){
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
-			mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
-		}
-	}
-
-}
 /*!
 \fn mouseDriver_send_status_msg
 \brief Function generating the signal for sending messages.
@@ -438,4 +226,230 @@ void mouseDriver_control_idle(void){
 		main_stop_motors();
 	}
 }
+/*!
+\fn mouseDriver_setMode(uint8_t mode)
+\param mode is the mode in which the driver should be set.
+\brief Function that sets the mode of the machine.
 
+This functions modifies the mode of the machine. Not all transitions are possible,
+this functions verifies that the transitions are lawful.
+*/
+void mouseDriver_setMode(uint8_t mode){
+    if (mode == MOUSE_MODE_STOP){
+        main_stop_motors();
+        actual_point = 0;
+        actual_mode = MOUSE_MODE_STOP;
+    }
+    if (mode == MOUSE_MODE_AUTO_LOAD){
+        actual_mode = mode;
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+    }
+    if (actual_mode == MOUSE_MODE_AUTO_LOAD && mode == MOUSE_MODE_AUTO_RUN ){
+        actual_point = 0;
+        actual_point_start_time = mouseDriver_getTime();
+        actual_speed_setpoint.setpoint_x = points[0].setpoint_x;
+        actual_speed_setpoint.setpoint_y = points[0].setpoint_y;
+        actual_mode = mode;
+    }
+
+    if (actual_mode != MOUSE_MODE_AUTO_RUN)
+        actual_mode = mode;
+}
+/*!
+\fn mouseDriver_sendMsg(uint32_t msgid)
+\param msgid is the ID of the message to be sent.
+\brief Function that sends a message given its ID.
+\attention This function can be called in interrupts whith a priority lower than 0 (1,2,3,...),
+otherwise the HAL_Delay() function stall and the STM32 crashes.
+
+This function access global variables to send information to the computer.
+Given one message ID the functions reads the information from a global variable and
+sends it using the DMA as soon as the previous messages are sent.
+*/
+#ifndef TEST
+void mouseDriver_sendMsg(uint32_t msgid){
+    mavlink_message_t msg;
+    static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
+    static uint16_t msg_size = 0;
+
+    while (main_get_huart_tx_state() == HAL_BUSY){
+        /*Wait for other messages to be sent*/
+        HAL_Delay(1);
+    }
+
+    switch(msgid){
+        case MAVLINK_MSG_ID_HEARTBEAT:
+            mavlink_msg_heartbeat_pack(SYS_ID,COMP_ID, &msg, actual_mode, mouseDriver_getTime());
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_SPEED_SETPOINT:
+            mavlink_msg_speed_setpoint_encode(SYS_ID,COMP_ID, &msg, &actual_speed_setpoint);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_MOTOR_SETPOINT:
+            mavlink_msg_motor_setpoint_encode(SYS_ID,COMP_ID, &msg, &actual_motor_signal);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_SPEED_INFO:
+            /* DEMO CODE INIT*/
+                actual_speed_measure.time = mouseDriver_getTime();
+            /* DEMO CODE END*/
+            mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_ERROR:
+            mavlink_msg_error_encode(SYS_ID,COMP_ID,&msg,&actual_error);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_POINT_LOADED:
+            mavlink_msg_point_loaded_pack(SYS_ID,COMP_ID,&msg,actual_point);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_POINT:
+            mavlink_msg_point_encode(SYS_ID,COMP_ID,&msg,&points[actual_point]);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);
+            break;
+        case MAVLINK_MSG_ID_RAW_SENSOR:
+            mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[0]);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);/*
+            mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[1]);
+            msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
+            main_transmit_buffer(outBuffer, msg_size);*/
+            break;
+        default:
+            break;
+    }
+}
+#endif
+/*!
+\fn mouseDriver_idle
+\brief Idle function for the mouse treadmill driver.
+\note This function needs to be called periodically to ensure a correct behaviour.
+
+This is the idle function of the mouse treadmill. It reads values from the sensors,
+calls \ref mouseDriver_control_idle, and sends high frequency messages (not the status ones).
+*/
+void mouseDriver_idle (void){
+    uint64_t difference = 0;
+    uint32_t old_time = 0;
+    old_time = actual_raw_sensor[SENSOR_X].time;
+    sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
+
+    /* DEMO CODE USING ONLY ONE SENSOR */
+        actual_speed_measure.speed_x = (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
+        actual_speed_measure.speed_y = (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
+        actual_speed_measure.speed_x /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
+        actual_speed_measure.speed_y /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
+    /* DEMO CODE USING ONLY ONE SENSOR END*/
+
+    sensorDrive_motion_read(SENSOR_Y,&actual_raw_sensor[SENSOR_Y]);
+    switch(actual_mode){
+    case MOUSE_MODE_STOP:
+        mouseDriver_initSetpoint();
+        actual_motor_signal.time = mouseDriver_getTime();
+        actual_motor_signal.motor_x = 0;
+        actual_motor_signal.motor_y = 0;
+        main_stop_motors();
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+
+        break;
+    case MOUSE_MODE_SPEED:
+        mouseDriver_control_idle();
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+
+        break;
+    case MOUSE_MODE_AUTO_LOAD:
+        if (actual_point == 255){
+            actual_error.error = MOUSE_ROUTINE_TOO_LONG;
+            actual_error.time = mouseDriver_getTime();
+            mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
+        }
+        break;
+    case MOUSE_MODE_AUTO_RUN:
+        mouseDriver_control_idle();
+        difference = mouseDriver_getTime()-actual_point_start_time;
+        if (difference >= points[actual_point].duration){
+            if (actual_point < 255){
+                actual_point++;
+
+                if(points[actual_point].duration == 0){
+                    main_stop_motors();
+                    mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
+                }
+                actual_speed_setpoint.setpoint_x = points[actual_point].setpoint_x;
+                actual_speed_setpoint.setpoint_y = points[actual_point].setpoint_y;
+                actual_point_start_time = mouseDriver_getTime();
+            }
+        }
+
+        if (actual_point == 255){
+            mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
+        }
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+        break;
+    default:
+        break;
+    }
+    if (send_msg == 1){
+        send_msg = 0;
+        mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
+        if(actual_mode != MOUSE_MODE_AUTO_LOAD){
+            mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
+            mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
+            mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+        }
+    }
+
+}
+/*!
+\fn mouseDriver_readMsg(const mavlink_message_t msg)
+\param msg MAVLink message to be decoded
+\brief Function that reads one message.
+
+This function is called in main.c. Depending on the received message different actions are taken.
+*/
+void mouseDriver_readMsg(const mavlink_message_t msg){
+
+    switch(msg.msgid){
+
+    case MAVLINK_MSG_ID_MODE_SELECTION:
+        mouseDriver_setMode( mavlink_msg_mode_selection_get_mode(&msg));
+        break;
+
+    case MAVLINK_MSG_ID_SPEED_SETPOINT:
+        if (actual_mode == MOUSE_MODE_SPEED)
+            mavlink_msg_speed_setpoint_decode(&msg, &actual_speed_setpoint);
+        break;
+
+    case MAVLINK_MSG_ID_MOTOR_SETPOINT:
+        if (actual_mode == MOUSE_MODE_SPEED)
+            mavlink_msg_speed_setpoint_decode(&msg, &actual_speed_setpoint);
+        break;
+    case MAVLINK_MSG_ID_POINT:
+        if(actual_mode == MOUSE_MODE_AUTO_LOAD){
+            mavlink_msg_point_decode(&msg, &points[actual_point]);
+            if (actual_point == 255){
+                actual_error.error = MOUSE_ROUTINE_TOO_LONG;
+                actual_error.time = mouseDriver_getTime();
+                mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
+            }
+            mouseDriver_sendMsg(MAVLINK_MSG_ID_POINT_LOADED);
+            actual_point ++;
+
+        }
+        break;
+    default:
+        break;
+    };
+}
+#endif

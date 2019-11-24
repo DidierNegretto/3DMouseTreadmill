@@ -18,11 +18,11 @@
 */
 #define MOUSEDRIVER_N_H
 
+#ifndef TEST
 #include "mavlink.h"
 #include "utils.h"
 #include "sensorDriver.h"
-
-
+#endif
 /* Constants for MALINK functions*/
 
 /*!
@@ -56,19 +56,21 @@
  */
 void mouseDriver_init(void);
 
-/* Function for decoding a message */
-void mouseDriver_readMsg(const mavlink_message_t msg);
 
-/* Idle function for mouse driver. To be called in the while(1) loop */
-void mouseDriver_idle (void);
 
 /* Function called every DT for updating the control signals to motors */
 void mouseDriver_control_idle(void);
 
+/* Function for sending status messages regularly */
+void mouseDriver_send_status_msg(void);
+
+/* Function for decoding a message */
+void mouseDriver_readMsg(const mavlink_message_t msg);
+
 /* Functions for setting/getting time */
 uint32_t mouseDriver_getTime (void);
 
-/* Function for sending status messages regularly */
-void mouseDriver_send_status_msg(void);
+/* Idle function for mouse driver. To be called in the while(1) loop */
+void mouseDriver_idle (void);
 
 #endif
