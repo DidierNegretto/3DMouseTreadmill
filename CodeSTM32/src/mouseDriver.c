@@ -127,6 +127,7 @@ static int send_msg = 1;
 This function modifies \ref actual_speed_setpoint by setting it to 0.
 */
 #endif
+void mouseDriver_sendMsg(uint32_t msgid);
 
 void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_x = 0;
@@ -219,12 +220,6 @@ to avoid damaging or destroing them !!
 This function is called periodially to update the control signal for the motors.
 */
 void mouseDriver_control_idle(void){
-    if (isnan(actual_motor_signal.motor_x) || isnan(actual_motor_signal.motor_y)){
-        actual_motor_signal.motor_x = 0;
-        actual_motor_signal.motor_y = 0;
-        main_stop_motors();
-        return;
-    }
 	if (actual_mode == MOUSE_MODE_SPEED || actual_mode == MOUSE_MODE_AUTO_RUN){
 		actual_motor_signal.time = mouseDriver_getTime();
 		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
@@ -285,7 +280,6 @@ This function access global variables to send information to the computer.
 Given one message ID the functions reads the information from a global variable and
 sends it using the DMA as soon as the previous messages are sent.
 */
-#ifndef TEST
 void mouseDriver_sendMsg(uint32_t msgid){
     mavlink_message_t msg;
     static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
@@ -347,7 +341,6 @@ void mouseDriver_sendMsg(uint32_t msgid){
             break;
     }
 }
-#endif
 /*!
 \fn mouseDriver_idle
 \brief Idle function for the mouse treadmill driver.
@@ -395,25 +388,23 @@ void mouseDriver_idle (void){
     case MOUSE_MODE_AUTO_RUN:
         difference = mouseDriver_getTime()-actual_point_start_time;
         if (difference >= points[actual_point].duration){
-            if (actual_point < 255){
+            if (actual_point < MAX_POINTS-1){
                 actual_point++;
 
                 if(points[actual_point].duration == 0){
-                    main_stop_motors();
-                    mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
+                    actual_point = 0;
                 }
                 actual_speed_setpoint.setpoint_x = points[actual_point].setpoint_x;
                 actual_speed_setpoint.setpoint_y = points[actual_point].setpoint_y;
                 actual_point_start_time = mouseDriver_getTime();
             }
         }
-        mouseDriver_control_idle();
-
-        if (actual_point == 255){
+        if (actual_point == MAX_POINTS){
             mouseDriver_setMode(MOUSE_MODE_AUTO_LOAD);
         }
         mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
         mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);
+        mouseDriver_control_idle();
         break;
     default:
         break;

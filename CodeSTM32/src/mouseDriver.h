@@ -75,4 +75,5 @@ uint32_t mouseDriver_getTime (void);
 /* Idle function for mouse driver. To be called in the while(1) loop */
 void mouseDriver_idle (void);
 
+
 #endif
