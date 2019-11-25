@@ -16,7 +16,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-bool display (bool correct, const char *name){
+static inline bool display (bool correct, const char *name){
     if(correct == true){
         printf("\t["GREEN "OK" END"] ");
         printf(name);

@@ -3,10 +3,11 @@
 #ifndef SENSORDRIVER_H_
 #define SENSORDRIVER_H_
 
+#ifndef TEST
 #include "main.h"
 #include "mavlink.h"
 #include "sensorSROM.h"
-
+#endif
 
 /* BEGIN DEFINES FOR SENSOR INTERNAL REGISTERS */
 #define Product_ID  0x00
@@ -59,6 +60,9 @@
 #define Raw_Data_Burst  0x64
 #define LiftCutoff_Tune2  0x65
 /* END DEFINES FOR SENSOR INTERNAL REGISTERS */
+
+#include <mavlink_msg_raw_sensor.h>
+#include <stdint.h>
 
 /* DEFINES FOR BURST READ (only usefull data) */
 #define MOTION 0

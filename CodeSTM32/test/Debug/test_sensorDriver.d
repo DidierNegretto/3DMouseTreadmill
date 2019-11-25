@@ -1,4 +1,4 @@
-main.o: ../main.c ../test_mouseDriver.h \
+test_sensorDriver.o: ../test_sensorDriver.c ../test_sensorDriver.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/version.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mouse.h \
@@ -18,9 +18,12 @@ main.o: ../main.c ../test_mouseDriver.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_error.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/./mavlink_msg_raw_sensor.h \
   /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h \
-  ../test_sensorDriver.h
+  ../mock_sensorDriver.h ../display.h \
+  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/CodeSTM32/src/sensorDriver.c \
+  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/CodeSTM32/src/sensorDriver.h \
+  /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink_msg_raw_sensor.h
 
-../test_mouseDriver.h:
+../test_sensorDriver.h:
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink.h:
 
@@ -60,4 +63,12 @@ main.o: ../main.c ../test_mouseDriver.h \
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/../mavlink_get_info.h:
 
-../test_sensorDriver.h:
+../mock_sensorDriver.h:
+
+../display.h:
+
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/CodeSTM32/src/sensorDriver.c:
+
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/CodeSTM32/src/sensorDriver.h:
+
+/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MAVLink\ Library/mouse/mavlink_msg_raw_sensor.h:

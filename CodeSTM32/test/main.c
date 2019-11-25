@@ -28,7 +28,6 @@ int main(void){
     printf("TESTING mouseDriver_control_idle()\n");
     test &= test_mouseDriver_control_idle();
 
-
     /*printf("-----------------------------------------------------\n");
     printf("TESTING mouseDriver.c\n");
     if (! test_mouseDriver_init()) printf(RED"ERRORS IN mouseDriver_init\n"END);*/

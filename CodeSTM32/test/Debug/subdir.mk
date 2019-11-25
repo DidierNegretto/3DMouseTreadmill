@@ -5,15 +5,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../main.c \
-../test_mouseDriver.c 
+../test_mouseDriver.c \
+../test_sensorDriver.c 
 
 OBJS += \
 ./main.o \
-./test_mouseDriver.o 
+./test_mouseDriver.o \
+./test_sensorDriver.o 
 
 C_DEPS += \
 ./main.d \
-./test_mouseDriver.d 
+./test_mouseDriver.d \
+./test_sensorDriver.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

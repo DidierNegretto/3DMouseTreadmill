@@ -20,17 +20,28 @@ static int sensor_init = 0;
 static int sensor_read_x = 0;
 static int sensor_read_y = 0;
 
+/* Define mock variables for testing */
+static int send_msg = 1;
+static uint8_t actual_mode = MOUSE_MODE_STOP;
+static mavlink_speed_setpoint_t actual_speed_setpoint;
+static mavlink_speed_info_t actual_speed_measure;
+static mavlink_motor_setpoint_t actual_motor_signal;
+static mavlink_point_t points[255];
+static uint8_t actual_point = 0;
+static uint32_t actual_point_start_time = 0;
+static mavlink_error_t actual_error;
+static mavlink_raw_sensor_t actual_raw_sensor[2];
 
 /* Define mock functions */
-void sensorDriver_init(void){sensor_init = 1; };
-uint32_t HAL_GetTick(void){
+static inline void sensorDriver_init(void){sensor_init = 1; };
+static inline uint32_t HAL_GetTick(void){
     static uint32_t i = 0;
     i++;
     return i;
 };
-void main_set_motors_speed(mavlink_motor_setpoint_t actual_motor_signal){stop_motor = 0;};
-void main_stop_motors(void){stop_motor = 1;};
-void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
+static inline void main_set_motors_speed(mavlink_motor_setpoint_t actual_motor_signal){stop_motor = 0;};
+static inline void main_stop_motors(void){stop_motor = 1;};
+static inline void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
     if (sensor_id == SENSOR_X){
         sensor_read_x = 1;
     }
@@ -41,12 +52,13 @@ void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_da
     actual_raw_sensor->delta_y = 0;
 
 };
-int main_get_huart_tx_state(void){
+static inline int main_get_huart_tx_state(void){
     return 1;
 }
 
-void HAL_Delay(int delay){
+static inline void HAL_Delay(int delay){
     return;
 }
-void main_transmit_buffer(uint8_t * outbuffer, int msg_size){};
+static inline void main_transmit_buffer(uint8_t * outbuffer, int msg_size){};
+
 #endif /* MOCK_MOUSEDRIVER_H_ */

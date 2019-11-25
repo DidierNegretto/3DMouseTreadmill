@@ -4,11 +4,6 @@
  *  Created on: Nov 24, 2019
  *      Author: Didier
  */
-
-#ifndef TEST_MOUSEDRIVER_C_
-#define TEST_MOUSEDRIVER_C_
-
-
 #include "test_mouseDriver.h"
 #include "mock_mouseDriver.h"
 #include "display.h"
@@ -201,5 +196,3 @@ bool test_mouseDriver_control_idle(void){
     return test;
 }
 
-
-#endif /* TEST_MOUSEDRIVER_C_ */
