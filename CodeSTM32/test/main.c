@@ -6,6 +6,7 @@
  */
 
 #include "test_mouseDriver.h"
+#include "test_sensorDriver.h"
 
 int main(void){
 
