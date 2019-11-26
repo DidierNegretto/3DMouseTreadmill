@@ -5,6 +5,7 @@ import numpy as np
 #import matplotlib as plt
 from appJar import gui
 import time
+import json
 from tqdm import tqdm
 import routine as mouseRoutine
 from pymavlink.dialects.v20 import mouse as mouseController
@@ -22,8 +23,9 @@ DATA = { "HEARTBEAT": {"time": [], "mode": []},
          "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": [], "start": 0}, 
          "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": [], "start": 0} 
          }
+LOG = []
 MAX_SAMPLES_ON_SCREEN = 200
-print(mouseController.MAVLink_raw_sensor_message.fieldnames)
+print(mouseController.MAVLink_speed_info_message.fieldnames)
 port = "/dev/cu.usbmodem14102"
  
 
@@ -48,7 +50,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                #print(m)
+                LOG.append(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -70,14 +72,16 @@ class MyApplication():
                     #DATA["SPEED_SETPOINT"]["motor_z"].append(self.actualMotorSetpoint[2])
                 elif m.name == "SPEED_INFO":
                     #print(m)
-                    DATA["SPEED_INFO"]["time"].append(m.time)
+                    DATA["SPEED_INFO"]["time"].append(m.time_x)
                     DATA["SPEED_INFO"]["speed_x"].append(m.speed_x)
                     DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
                 elif m.name == "RAW_SENSOR":
                     #print(m)
-                    self.app.setLabel("sensorStatus1",SENSOR_STATUS_MSG[1]+str(m.product_id))
-                    self.app.setLabel("sensorStatus2",SENSOR_STATUS_MSG[2]+str(m.lift))
-                    self.app.setLabel("sensorStatus3",SENSOR_STATUS_MSG[3]+str(m.squal))
+                    if m.sensor_id == 0:
+                        self.app.setLabel("sensorStatus1",SENSOR_STATUS_MSG[1]+str(m.product_id))
+                        self.app.setLabel("sensorStatus2",SENSOR_STATUS_MSG[2]+str(m.lift))
+                        self.app.setLabel("sensorStatus3",SENSOR_STATUS_MSG[3]+str(m.squal))
+                        self.app.setLabel("sensorStatus4",SENSOR_STATUS_MSG[4]+str(m.srom_id))
                 elif m.name == "POINT":
                     print(m)
                 else:
@@ -191,11 +195,10 @@ class MyApplication():
                                 stop = False
                             else:
                                 raise Exception("ERROR LOADING DATA, wrong msg_id received")
-                
-
-
-
-            
+     def saveLog(self):
+        with open('log/log.txt', 'w+') as f:
+            for item in LOG:
+                f.write("%s\n" % item)    
                
      def runRoutine(self):
         if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:
@@ -240,6 +243,7 @@ class MyApplication():
         self.app.addButton("RESET PLOTS", self.resetPlot, 0,0,1,1)
         self.app.addButton("LOAD POINTS", self.loadRoutine, 1,0,1,1)
         self.app.addButton("RUN ROUTINE", self.runRoutine,1,1,1,1 )
+        self.app.addButton("SAVE LOG",self.saveLog,0,1,1,1)
         row = row+1
 
         # Sensor Status

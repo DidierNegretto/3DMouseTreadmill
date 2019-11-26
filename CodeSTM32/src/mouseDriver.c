@@ -307,6 +307,10 @@ void mouseDriver_sendMsg(uint32_t msgid){
             mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[0]);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
             main_transmit_buffer(outBuffer, msg_size);
+            while (main_get_huart_tx_state() == HAL_BUSY){
+                   /*Wait for other messages to be sent*/
+                   HAL_Delay(1);
+            }
             mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[1]);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
             main_transmit_buffer(outBuffer, msg_size);

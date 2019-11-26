@@ -43,13 +43,13 @@
             			
             <storageModule moduleId="cdtBuildSystem" version="4.0.0">
                 				
-                <configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.VCErrorParser" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1558270145" name="Debug" parent="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="Build and run tests" prebuildStep="sh ../../CodeSTM32/src/build.sh">
+                <configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.VCErrorParser" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1558270145" name="Debug" parent="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug" postannouncebuildStep="Build and run tests" postbuildStep="sh ../../CodeSTM32/src/build.sh" preannouncebuildStep="" prebuildStep="">
                     					
                     <folderInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1558270145." name="/" resourcePath="">
                         						
                         <toolChain id="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.exe.debug.2008672530" name="MCU ARM GCC" nonInternalBuilderId="com.st.stm32cube.ide.mcu.gnu.managedbuild.builder" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.exe.debug">
                             							
-                            <option id="com.st.stm32cube.ide.mcu.option.internal.toolchain.type.1607757646" name="Internal Toolchain Type" superClass="com.st.stm32cube.ide.mcu.option.internal.toolchain.type" useByScannerDiscovery="false" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.gnu-tools-for-stm32" valueType="string"/>
+                            <option id="com.st.stm32cube.ide.mcu.option.internal.toolchain.type.1607757646" name="Internal Toolchain Type" superClass="com.st.stm32cube.ide.mcu.option.internal.toolchain.type" useByScannerDiscovery="false" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.base.gnu-arm-embedded" valueType="string"/>
                             							
                             <option id="com.st.stm32cube.ide.mcu.option.internal.toolchain.version.486957853" name="Internal Toolchain Version" superClass="com.st.stm32cube.ide.mcu.option.internal.toolchain.version" useByScannerDiscovery="false" value="7-2018-q2-update" valueType="string"/>
                             							
@@ -70,6 +70,8 @@
                             <option id="com.st.stm32cube.ide.mcu.option.internal.toolchain.default.1210488409" name="Internal Toolchain Default" superClass="com.st.stm32cube.ide.mcu.option.internal.toolchain.default" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                             							
                             <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.runtimelibrary_c.652390260" name="Runtime library" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.runtimelibrary_c" useByScannerDiscovery="false" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.runtimelibrary_c.value.standard_c" valueType="enumerated"/>
+                            							
+                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.toolchain_path.727194106" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.toolchain_path" value="${gnu_arm_embedded_compiler_path}" valueType="string"/>
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform.493702730" isAbstract="false" osList="all" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform"/>
                             							

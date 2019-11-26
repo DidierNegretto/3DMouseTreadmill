@@ -246,7 +246,7 @@ int main(void)
 	 mouseDriver_idle();
     /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+	/* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }

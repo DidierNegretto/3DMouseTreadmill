@@ -36,7 +36,7 @@ MouseTreadmillSTM32Project.list \
 
 # All Target
 all:
-	+@make --no-print-directory pre-build && make --no-print-directory main-build
+	+@make --no-print-directory main-build && make --no-print-directory post-build
 
 # Main-build Target
 main-build: MouseTreadmillSTM32Project.elf secondary-outputs
@@ -62,13 +62,13 @@ clean:
 	-$(RM) *
 	-@echo ' '
 
-pre-build:
+post-build:
 	sh ../../CodeSTM32/src/build.sh
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
 
 .PHONY: all clean dependents
-.SECONDARY: main-build pre-build
+.SECONDARY: post-build
 
 -include ../makefile.targets
