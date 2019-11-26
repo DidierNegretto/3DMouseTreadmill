@@ -15,7 +15,7 @@ PATH
 
 /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillPC/python
 """
-SENSOR_STATUS_MSG = ["SENSOR STATUS", "ID = ", "LIFT = ", "SQUAL = ", "ROM = "]
+SENSOR_STATUS_MSG = ["SENSOR STATUS", "ID 66 = ", "LIFT 0 = ", "SQUAL > 20 = ", "ROM 4 = "]
 MODES = ["STOP", "SPEED","AUTO","RUNNING"]
 MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2),"RUNNING": int(3) }
 DATA = { "HEARTBEAT": {"time": [], "mode": []}, 
