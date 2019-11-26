@@ -27,7 +27,6 @@ LOG = []
 MAX_SAMPLES_ON_SCREEN = 200
 print(mouseController.MAVLink_speed_info_message.fieldnames)
 port = "/dev/cu.usbmodem14102"
- 
 
 class MyApplication():
      actualMode = 0 
@@ -77,12 +76,28 @@ class MyApplication():
                     #DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
                     DATA["SPEED_INFO"]["speed_y"].append(0)
                 elif m.name == "RAW_SENSOR":
-                    #print(m)
                     if m.sensor_id == 0:
-                        self.app.setLabel("sensorStatus1",SENSOR_STATUS_MSG[1]+str(m.product_id))
-                        self.app.setLabel("sensorStatus2",SENSOR_STATUS_MSG[2]+str(m.lift))
-                        self.app.setLabel("sensorStatus3",SENSOR_STATUS_MSG[3]+str(m.squal))
-                        self.app.setLabel("sensorStatus4",SENSOR_STATUS_MSG[4]+str(m.srom_id))
+                        status_x = []
+                        status_x.append(m.product_id)
+                        status_x.append(m.lift)
+                        status_x.append(m.squal)
+                        status_x.append(m.srom_id)
+                    elif m.sensor_id == 1:
+                        status_y = []
+                        status_y.append(m.product_id)
+                        status_y.append(m.lift)
+                        status_y.append(m.squal)
+                        status_y.append(m.srom_id)
+                    try:
+                        if (len(status_x) == 4) and (len(status_y) == 4):
+                            self.app.setLabel("sensorStatus1",SENSOR_STATUS_MSG[1]+str(status_x[0])+"|"+str(status_y[0]))
+                            self.app.setLabel("sensorStatus2",SENSOR_STATUS_MSG[2]+str(status_x[1])+"|"+str(status_y[1]))
+                            self.app.setLabel("sensorStatus3",SENSOR_STATUS_MSG[3]+str(status_x[2])+"|"+str(status_y[2]))
+                            self.app.setLabel("sensorStatus4",SENSOR_STATUS_MSG[4]+str(status_x[3])+"|"+str(status_y[3]))
+                    except:
+                        pass
+
+
                 elif m.name == "POINT":
                     print(m)
                 else:
