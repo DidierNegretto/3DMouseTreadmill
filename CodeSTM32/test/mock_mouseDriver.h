@@ -41,24 +41,17 @@ static inline uint32_t HAL_GetTick(void){
 };
 static inline void main_set_motors_speed(mavlink_motor_setpoint_t actual_motor_signal){stop_motor = 0;};
 static inline void main_stop_motors(void){stop_motor = 1;};
-static inline void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
-    if (sensor_id == SENSOR_X){
-        sensor_read_x = 1;
-    }
-    if (sensor_id == SENSOR_Y){
-        sensor_read_y = 1;
-    }
-    actual_raw_sensor->delta_x = 0;
-    actual_raw_sensor->delta_y = 0;
-
-};
-static inline int main_get_huart_tx_state(void){
-    return 1;
-}
-
-static inline void HAL_Delay(int delay){
-    return;
-}
+static inline int main_get_huart_tx_state(void){return 1;};
+static inline void HAL_Delay(int delay){};
 static inline void main_transmit_buffer(uint8_t * outbuffer, int msg_size){};
+
+static inline void sensorDriver_motion_read_speed(mavlink_raw_sensor_t actual_raw_sensor[2], mavlink_speed_info_t * actual_speed_measure){
+    sensor_read_x = 1;
+    sensor_read_y = 1;
+    actual_raw_sensor[0].delta_x = 0;
+    actual_raw_sensor[1].delta_y = 0;
+    actual_speed_measure->speed_x = 0;
+    actual_speed_measure->speed_y = 0;
+};
 
 #endif /* MOCK_MOUSEDRIVER_H_ */

@@ -73,8 +73,22 @@
 #define DELTA_Y_H 5
 #define SQUAL_READ 6
 
+#define SQUAL_THRESH 16
+/*!
+\def RESOLUTION
+\brief Resolution of the sensor in Count per Inch (CPI)
+\note This value needs to be updated if the resoulution of the sensors is changed,
+
+This value is used to convert the raw sensor value in couts to meter per second.
+*/
+#define RESOLUTION 5000
+/*!
+\def INCH2METER
+\brief Conversion factor to conver inches in meters.
+*/
+#define INCH2METER 0.0254
 /* Public functions */
 void sensorDriver_init(void);
-void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data);
+void sensorDriver_motion_read_speed(mavlink_raw_sensor_t sensor_data[2], mavlink_speed_info_t * speed_info);
 
 #endif

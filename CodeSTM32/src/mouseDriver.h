@@ -52,27 +52,58 @@
 
 
 /*!
- \brief Function for initializing the mouseDriver
+\fn mouseDriver_init
+\brief Function that initializes the driver of the mouse treadmill.
 
- This function initializes
- */
+This functions initialites the mouse treadmill driver. It initializes the sensors as well.
+*/
 void mouseDriver_init(void);
 
 
 
-/* Function called every DT for updating the control signals to motors */
+/*!
+\fn mouseDriver_control_idle
+\brief Function doing the control on the motors.
+\attention This function is in charge of generating the control signals for the
+motors. If it is modified, make sure to respect the specifications of the motor
+to avoid damaging or destroing them !!
+
+This function is called periodially to update the control signal for the motors.
+*/
 void mouseDriver_control_idle(void);
 
-/* Function for sending status messages regularly */
+/*!
+\fn mouseDriver_send_status_msg
+\brief Function generating the signal for sending messages.
+
+This function is called periodially to set the flag for sending status messages.
+*/
 void mouseDriver_send_status_msg(void);
 
-/* Function for decoding a message */
+/*!
+\fn mouseDriver_readMsg(const mavlink_message_t msg)
+\param msg MAVLink message to be decoded
+\brief Function that reads one message.
+
+This function is called in main.c. Depending on the received message different actions are taken.
+*/
 void mouseDriver_readMsg(const mavlink_message_t msg);
 
-/* Functions for setting/getting time */
+/*!
+\fn mouseDriver_getTime
+\return The actual time in ms from boot of the system.
+\brief Function that gets the time of the system from boot.
+*/
 uint32_t mouseDriver_getTime (void);
 
-/* Idle function for mouse driver. To be called in the while(1) loop */
+/*!
+\fn mouseDriver_idle
+\brief Idle function for the mouse treadmill driver.
+\note This function needs to be called periodically to ensure a correct behaviour.
+
+This is the idle function of the mouse treadmill. It reads values from the sensors,
+calls \ref mouseDriver_control_idle, and sends high frequency messages (not the status ones).
+*/
 void mouseDriver_idle (void);
 
 

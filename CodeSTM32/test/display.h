@@ -18,12 +18,12 @@
 
 static inline bool display (bool correct, const char *name){
     if(correct == true){
-        printf("\t["GREEN "OK" END"] ");
+        printf("    ["GREEN "OK" END"] ");
         printf(name);
         printf(GREEN " DONE SUCCESSFULY\n" END);
     }
     else{
-       printf("["RED "ERR" END"] ");
+       printf("["RED "NO" END"]     ");
        printf(name);
        printf(RED " PERFORMED INCORRECTLY OR NOT AT ALL\n" END);
     }

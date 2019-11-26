@@ -78,7 +78,7 @@ void sensorDriver_init(void){
 	sensorDriver_powerup(sensor_y);
 }
 
-void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
+void sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
 	uint8_t data[12];
 	int16_t temp = 0;
 	sensor_t sensor;
@@ -114,4 +114,32 @@ void sensorDrive_motion_read(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_da
 
 	sensor_data->squal = data[SQUAL_READ];
 	sensor_data->lift = (data[MOTION] & 0x08) >> 3;
+	sensor_data->srom_id = sensor.status;
+}
+void sensorDriver_motion_read_speed(mavlink_raw_sensor_t sensor_data[2], mavlink_speed_info_t * speed_info){
+	mavlink_raw_sensor_t raw_values[2];
+    uint32_t old_time[2];
+
+    speed_info->valid = 0;
+    old_time[0] = speed_info->time_x;
+    old_time[1] = speed_info->time_y;
+
+	sensorDriver_motion_read_raw(SENSOR_X, &raw_values[0]);
+	sensorDriver_motion_read_raw(SENSOR_Y, &raw_values[1]);
+
+	if((raw_values[0].lift == 0) && (raw_values[1].lift == 0) &&
+		(raw_values[0].squal >= SQUAL_THRESH) && (raw_values[0].squal >= SQUAL_THRESH)){
+		speed_info->speed_x =  (float)raw_values[0].delta_x*(float)INCH2METER/(float)RESOLUTION;
+		speed_info->speed_x /= (float)(raw_values[0].time-old_time[0])/(float)1000;
+		speed_info->time_x = raw_values[0].time;
+		speed_info->speed_y =  (float)raw_values[1].delta_x*(float)INCH2METER/(float)RESOLUTION;
+		speed_info->speed_y /= (float)(raw_values[1].time-old_time[1])/(float)1000;
+		speed_info->time_y = raw_values[1].time;
+		sensor_data[0] = raw_values[0];
+		sensor_data[1] = raw_values[1];
+		speed_info->valid = 1;
+	}
+	else{
+		speed_info->valid = 0;
+	}
 }

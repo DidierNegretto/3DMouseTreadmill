@@ -314,29 +314,31 @@ class MAVLink_speed_info_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_SPEED_INFO
         name = 'SPEED_INFO'
-        fieldnames = ['time', 'speed_x', 'speed_y']
-        ordered_fieldnames = ['time', 'speed_x', 'speed_y']
-        fieldtypes = ['uint32_t', 'float', 'float']
+        fieldnames = ['time_x', 'time_y', 'speed_x', 'speed_y', 'valid']
+        ordered_fieldnames = ['time_x', 'time_y', 'speed_x', 'speed_y', 'valid']
+        fieldtypes = ['uint32_t', 'uint32_t', 'float', 'float', 'uint8_t']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<Iff'
-        native_format = bytearray('<Iff', 'ascii')
-        orders = [0, 1, 2]
-        lengths = [1, 1, 1]
-        array_lengths = [0, 0, 0]
-        crc_extra = 76
-        unpacker = struct.Struct('<Iff')
+        format = '<IIffB'
+        native_format = bytearray('<IIffB', 'ascii')
+        orders = [0, 1, 2, 3, 4]
+        lengths = [1, 1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0, 0]
+        crc_extra = 243
+        unpacker = struct.Struct('<IIffB')
 
-        def __init__(self, time, speed_x, speed_y):
+        def __init__(self, time_x, time_y, speed_x, speed_y, valid):
                 MAVLink_message.__init__(self, MAVLink_speed_info_message.id, MAVLink_speed_info_message.name)
                 self._fieldnames = MAVLink_speed_info_message.fieldnames
-                self.time = time
+                self.time_x = time_x
+                self.time_y = time_y
                 self.speed_x = speed_x
                 self.speed_y = speed_y
+                self.valid = valid
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 76, struct.pack('<Iff', self.time, self.speed_x, self.speed_y), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 243, struct.pack('<IIffB', self.time_x, self.time_y, self.speed_x, self.speed_y, self.valid), force_mavlink1=force_mavlink1)
 
 class MAVLink_speed_setpoint_message(MAVLink_message):
         '''
@@ -993,29 +995,33 @@ class MAVLink(object):
                 '''
                 return self.send(self.heartbeat_encode(mode, time), force_mavlink1=force_mavlink1)
 
-        def speed_info_encode(self, time, speed_x, speed_y):
+        def speed_info_encode(self, time_x, time_y, speed_x, speed_y, valid):
                 '''
                 The message giving the actual speed of the motor. Sender = STM32
                 Receiver = PC
 
-                time                      : Time from boot of system (type:uint32_t)
+                time_x                    : Time from boot of system for speed_x measure (type:uint32_t)
+                time_y                    : Time from boot of system for speed_y measure (type:uint32_t)
                 speed_x                   : Speed in x direction (type:float)
                 speed_y                   : Speed in y direction (type:float)
+                valid                     : 0 if data are not valid, 1 if data are valid (type:uint8_t)
 
                 '''
-                return MAVLink_speed_info_message(time, speed_x, speed_y)
+                return MAVLink_speed_info_message(time_x, time_y, speed_x, speed_y, valid)
 
-        def speed_info_send(self, time, speed_x, speed_y, force_mavlink1=False):
+        def speed_info_send(self, time_x, time_y, speed_x, speed_y, valid, force_mavlink1=False):
                 '''
                 The message giving the actual speed of the motor. Sender = STM32
                 Receiver = PC
 
-                time                      : Time from boot of system (type:uint32_t)
+                time_x                    : Time from boot of system for speed_x measure (type:uint32_t)
+                time_y                    : Time from boot of system for speed_y measure (type:uint32_t)
                 speed_x                   : Speed in x direction (type:float)
                 speed_y                   : Speed in y direction (type:float)
+                valid                     : 0 if data are not valid, 1 if data are valid (type:uint8_t)
 
                 '''
-                return self.send(self.speed_info_encode(time, speed_x, speed_y), force_mavlink1=force_mavlink1)
+                return self.send(self.speed_info_encode(time_x, time_y, speed_x, speed_y, valid), force_mavlink1=force_mavlink1)
 
         def speed_setpoint_encode(self, setpoint_x, setpoint_y):
                 '''

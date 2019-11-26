@@ -12,19 +12,6 @@
 #include "../test/test_mouseDriver.h"
 #endif
 /*!
-\def RESOLUTION 
-\brief Resolution of the sensor in Count per Inch (CPI)
-\note This value needs to be updated if the resoulution of the sensors is changed,
-
-This value is used to convert the raw sensor value in couts to meter per second.
-*/
-#define RESOLUTION 5000 
-/*!
-\def INCH2METER  
-\brief Conversion factor to conver inches in meters.
-*/
-#define INCH2METER 0.0254 
-/*!
 \def K 
 \brief Proportional coefficient for motor control.
 */
@@ -52,6 +39,12 @@ needs to be taken if this value is modified.
 /*!
 \def MIN_MOTOR_SIGNAL
 \brief Min value for the motor signal. Any value lower than that will cause the motor to stop
+*/
+#define MAX_MISSING_MEASURES 15
+/*!
+\def MAX_MISSING_MEASURES
+\brief After MAX_MISSING_MEASURES non valid measures from sensors the motors are stopped and mode goes
+to stop.
 */
 #ifndef TEST
 /*!
@@ -127,27 +120,56 @@ static int send_msg = 1;
 This function modifies \ref actual_speed_setpoint by setting it to 0.
 */
 #endif
-void mouseDriver_sendMsg(uint32_t msgid);
+/*!
+\fn mouseDriver_sendMsg(uint32_t msgid)
+\param msgid is the ID of the message to be sent.
+\brief Function that sends a message given its ID.
+\attention This function can be called in interrupts whith a priority lower than 0 (1,2,3,...),
+otherwise the HAL_Delay() function stall and the STM32 crashes.
 
-void mouseDriver_initSetpoint(void){
-	actual_speed_setpoint.setpoint_x = 0;
-	actual_speed_setpoint.setpoint_y = 0;
-}
+This function access global variables to send information to the computer.
+Given one message ID the functions reads the information from a global variable and
+sends it using the DMA as soon as the previous messages are sent.
+*/
+void mouseDriver_sendMsg(uint32_t msgid);
+/*!
+\fn mouseDriver_initSetpoint
+\brief Function that initializes the motor setpoint to 0.
+
+This function initializes \ref actual_speed_setpoint.
+*/
+void mouseDriver_initSetpoint(void);
 /*!
 \fn mouseDriver_initMode
 \brief Function that initializes the mode to MOUSE_MODE_STOP
 
 This function modifies \ref actual_mode by setting it to MOUSE_MODE_STOP.
 */
-void mouseDriver_initMode(void){
-	actual_mode = MOUSE_MODE_STOP;
-}
+void mouseDriver_initMode(void);
 /*!
 \fn mouseDriver_initPoints
 \brief Function that initializes the routine points for AUTO mode to 0.
 
 This function modifies \ref points by setting all their fields to 0.
 */
+void mouseDriver_initPoints(void);/*!
+\fn mouseDriver_setMode(uint8_t mode)
+\param mode is the mode in which the driver should be set.
+\brief Function that sets the mode of the machine.
+
+This functions modifies the mode of the machine. Not all transitions are possible,
+this functions verifies that the transitions are lawful.
+*/
+void mouseDriver_setMode(uint8_t mode);
+
+
+void mouseDriver_initSetpoint(void){
+	actual_speed_setpoint.setpoint_x = 0;
+	actual_speed_setpoint.setpoint_y = 0;
+}
+void mouseDriver_initMode(void){
+	actual_mode = MOUSE_MODE_STOP;
+}
 void mouseDriver_initPoints(void){
 	for(int i=0; i<MAX_POINTS; i++){
 		points[i].duration = 0;
@@ -162,25 +184,6 @@ void mouseDriver_initMotorSignal(void){
     actual_motor_signal.motor_x = 0;
     actual_motor_signal.motor_y = 0;
 }
-/* Private set/get functions 
-void mouseDriver_setSetpoint(const mavlink_speed_setpoint_t speed){
-	actual_speed_setpoint = speed;
-}
-*/
-
-/* Private message functions */
-
-/* Private Idle functions */
-
-/* END of private functions */
-
-/* Init functions */
-/*!
-\fn mouseDriver_init
-\brief Function that initializes the driver of the mouse treadmill.
-
-This functions initialites the mouse treadmill driver. It initializes the sensors as well.
-*/
 void mouseDriver_init(void){
 	mouseDriver_initMode();
 	mouseDriver_initSetpoint();
@@ -191,35 +194,22 @@ void mouseDriver_init(void){
 	sensorDriver_init();
 	main_stop_motors();
 }
-/*!
-\fn mouseDriver_getTime
-\return The actual time in ms from boot of the system.
-\brief Function that gets the time of the system from boot.
-*/
 uint32_t mouseDriver_getTime (void){
 	return (HAL_GetTick());
 }
-
-
-/*!
-\fn mouseDriver_send_status_msg
-\brief Function generating the signal for sending messages.
-
-This function is called periodially to set the flag for sending status messages.
-*/
 void mouseDriver_send_status_msg(void){
 	send_msg = 1;
 }
-/*!
-\fn mouseDriver_control_idle
-\brief Function doing the control on the motors.
-\attention This function is in charge of generating the control signals for the
-motors. If it is modified, make sure to respect the specifications of the motor 
-to avoid damaging or destroing them !!
-
-This function is called periodially to update the control signal for the motors.
-*/
 void mouseDriver_control_idle(void){
+	static int count = 0;
+	if (actual_speed_measure.valid == 0){
+		count ++;
+		if(count >= MAX_MISSING_MEASURES){
+			main_stop_motors();
+			mouseDriver_setMode(MOUSE_MODE_STOP);
+		}
+		return;
+	}
 	if (actual_mode == MOUSE_MODE_SPEED || actual_mode == MOUSE_MODE_AUTO_RUN){
 		actual_motor_signal.time = mouseDriver_getTime();
 		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
@@ -233,6 +223,7 @@ void mouseDriver_control_idle(void){
         }
 
 		main_set_motors_speed(actual_motor_signal);
+		count = 0;
 	}
 	else{
 		actual_motor_signal.motor_x = 0;
@@ -240,19 +231,13 @@ void mouseDriver_control_idle(void){
 		main_stop_motors();
 	}
 }
-/*!
-\fn mouseDriver_setMode(uint8_t mode)
-\param mode is the mode in which the driver should be set.
-\brief Function that sets the mode of the machine.
 
-This functions modifies the mode of the machine. Not all transitions are possible,
-this functions verifies that the transitions are lawful.
-*/
 void mouseDriver_setMode(uint8_t mode){
     if (mode == MOUSE_MODE_STOP){
         main_stop_motors();
         actual_point = 0;
         actual_mode = MOUSE_MODE_STOP;
+        mouseDriver_initMotorSignal();
     }
     if (mode == MOUSE_MODE_AUTO_LOAD){
         actual_mode = mode;
@@ -269,17 +254,6 @@ void mouseDriver_setMode(uint8_t mode){
     if (actual_mode != MOUSE_MODE_AUTO_RUN)
         actual_mode = mode;
 }
-/*!
-\fn mouseDriver_sendMsg(uint32_t msgid)
-\param msgid is the ID of the message to be sent.
-\brief Function that sends a message given its ID.
-\attention This function can be called in interrupts whith a priority lower than 0 (1,2,3,...),
-otherwise the HAL_Delay() function stall and the STM32 crashes.
-
-This function access global variables to send information to the computer.
-Given one message ID the functions reads the information from a global variable and
-sends it using the DMA as soon as the previous messages are sent.
-*/
 void mouseDriver_sendMsg(uint32_t msgid){
     mavlink_message_t msg;
     static uint8_t outBuffer[MAX_BYTE_BUFFER_SIZE];
@@ -308,7 +282,7 @@ void mouseDriver_sendMsg(uint32_t msgid){
             break;
         case MAVLINK_MSG_ID_SPEED_INFO:
             /* DEMO CODE INIT*/
-                actual_speed_measure.time = mouseDriver_getTime();
+                actual_speed_measure.time_x = mouseDriver_getTime();
             /* DEMO CODE END*/
             mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
@@ -332,37 +306,18 @@ void mouseDriver_sendMsg(uint32_t msgid){
         case MAVLINK_MSG_ID_RAW_SENSOR:
             mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[0]);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-            main_transmit_buffer(outBuffer, msg_size);/*
+            main_transmit_buffer(outBuffer, msg_size);
             mavlink_msg_raw_sensor_encode(SYS_ID,COMP_ID,&msg,&actual_raw_sensor[1]);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
-            main_transmit_buffer(outBuffer, msg_size);*/
+            main_transmit_buffer(outBuffer, msg_size);
             break;
         default:
             break;
     }
 }
-/*!
-\fn mouseDriver_idle
-\brief Idle function for the mouse treadmill driver.
-\note This function needs to be called periodically to ensure a correct behaviour.
-
-This is the idle function of the mouse treadmill. It reads values from the sensors,
-calls \ref mouseDriver_control_idle, and sends high frequency messages (not the status ones).
-*/
 void mouseDriver_idle (void){
     uint64_t difference = 0;
-    uint32_t old_time = 0;
-    old_time = actual_raw_sensor[SENSOR_X].time;
-    sensorDrive_motion_read(SENSOR_X,&actual_raw_sensor[SENSOR_X]);
-
-    /* DEMO CODE USING ONLY ONE SENSOR */
-        actual_speed_measure.speed_x =  (float)actual_raw_sensor[SENSOR_X].delta_x*(float)INCH2METER/(float)RESOLUTION;
-        actual_speed_measure.speed_y =  (float)actual_raw_sensor[SENSOR_X].delta_y*(float)INCH2METER/(float)RESOLUTION;
-        actual_speed_measure.speed_x /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
-        actual_speed_measure.speed_y /= (float)(actual_raw_sensor[SENSOR_X].time-old_time)/(float)1000;
-    /* DEMO CODE USING ONLY ONE SENSOR END*/
-
-    sensorDrive_motion_read(SENSOR_Y,&actual_raw_sensor[SENSOR_Y]);
+    sensorDriver_motion_read_speed(actual_raw_sensor, &actual_speed_measure);
     switch(actual_mode){
     case MOUSE_MODE_STOP:
         mouseDriver_initSetpoint();
@@ -420,13 +375,6 @@ void mouseDriver_idle (void){
     }
 
 }
-/*!
-\fn mouseDriver_readMsg(const mavlink_message_t msg)
-\param msg MAVLink message to be decoded
-\brief Function that reads one message.
-
-This function is called in main.c. Depending on the received message different actions are taken.
-*/
 void mouseDriver_readMsg(const mavlink_message_t msg){
 
     switch(msg.msgid){
