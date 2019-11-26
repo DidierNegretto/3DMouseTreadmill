@@ -10,7 +10,7 @@
 
 int main(void){
 
-    bool test = false;
+    bool test = 1;
 
     printf("=====================================================\n");
     printf("***********TESTING CODE FOR MOUSE TREADMILL *********\n");
@@ -18,7 +18,7 @@ int main(void){
     printf("-----------------------------------------------------\n");
     printf("TESTING mouseDriver.c\n");
     printf("TESTING mouseDriver_init()\n");
-    test = test_mouseDriver_init();
+    test &= test_mouseDriver_init();
     printf("TESTING mouseDriver_idle()\n");
     test &= test_mouseDriver_idle();
     printf("TESTING mouseDriver_getTime()\n");
@@ -27,13 +27,12 @@ int main(void){
     test &= test_mouseDriver_send_status_msg();
     printf("TESTING mouseDriver_control_idle()\n");
     test &= test_mouseDriver_control_idle();
-
     /*printf("-----------------------------------------------------\n");
     printf("TESTING mouseDriver.c\n");
     if (! test_mouseDriver_init()) printf(RED"ERRORS IN mouseDriver_init\n"END);*/
 
 
-    if (!test){
+    if (test == 1){
         printf("ALL TEST PASSED SUCCESSUFULLY\n");
     }
     else{

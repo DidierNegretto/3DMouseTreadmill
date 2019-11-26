@@ -12,7 +12,7 @@
 
 bool test_mouseDriver_init(void){
 
-    bool test = false;
+    bool test = 1;
 
     actual_mode = 5;
     for(int i = 0; i < MAX_POINTS; i++){
@@ -33,14 +33,16 @@ bool test_mouseDriver_init(void){
 
     mouseDriver_init();
 
-    test = display(actual_mode == 0, "actual_mode initialization");
+    test &= display(actual_mode == 0, "actual_mode initialization");
     test &= display(actual_point == 0, "actual_point initialization");
     test &= display(actual_point_start_time == 0, "actual_point_start_time initialization");
     test &= display((actual_speed_setpoint.setpoint_y  == 0)&& (actual_speed_setpoint.setpoint_x  == 0), "actual_speed_setpoint initialization");
+    bool test_sub = 1;
     for(int i = 0; i < MAX_POINTS; i++){
-        test &= ((points[i].duration == 0) && (points[i].setpoint_x == 0) &&
+        test_sub &= ((points[i].duration == 0) && (points[i].setpoint_x == 0) &&
                     (points[i].setpoint_y == 0) && (points[i].point_id == 0));
     }
+    test &= display(test_sub, "points initialized correctly");
     test &= display(sensor_init == 1, "sensor_init initialization");
     test &= display(stop_motor == 1, "stop_motor initialization");
     test &= display((actual_motor_signal.motor_x  == 0)&& (actual_motor_signal.motor_y  == 0), "actual_motor_signal initialization");
@@ -84,9 +86,9 @@ bool test_mouseDriver_idle(void){
     return test;
 }
 bool test_mouseDriver_getTime(void){
-    bool test = false;
+    bool test = 1;
     uint32_t start = HAL_GetTick();
-    test = mouseDriver_getTime() == start+1;
+    test &= mouseDriver_getTime() == start+1;
     test &= mouseDriver_getTime() == start+2;
     test &= mouseDriver_getTime() == start+3;
     test &= mouseDriver_getTime() == start+4;
@@ -106,7 +108,7 @@ bool test_mouseDriver_send_status_msg(void){
     return test;
 }
 bool test_mouseDriver_control_idle(void){
-    bool test = false;
+    bool test = 1;
     stop_motor = 0;
     actual_speed_measure.speed_x = -10;
     actual_speed_measure.speed_y = -10;
