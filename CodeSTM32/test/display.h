@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifdef COLOR
 static inline bool display (bool correct, const char *name){
     if(correct == true){
         printf("    ["GREEN "OK" END"] ");
@@ -29,6 +30,20 @@ static inline bool display (bool correct, const char *name){
     }
     return correct;
 }
+#else
 
-
+static inline bool display (bool correct, const char *name){
+    if(correct == true){
+        printf("    [OK] ");
+        printf("%s", name);
+        printf(" DONE SUCCESSFULY\n");
+    }
+    else{
+       printf("[NO]     ");
+       printf("%s", name);
+       printf(" PERFORMED INCORRECTLY OR NOT AT ALL\n");
+    }
+    return correct;
+}
+#endif
 #endif /* DISPLAY_H_ */

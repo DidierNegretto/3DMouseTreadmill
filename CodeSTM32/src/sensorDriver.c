@@ -7,11 +7,34 @@
 
 # include "sensorDriver.h"
 
-/* Define sensors */
+/*!
+ \var sensor_x
+ \brief variable for storing data for the x sensor.
+ */
 static sensor_t sensor_x = {CS_0_GPIO_Port,CS_0_Pin,PW_0_GPIO_Port,PW_0_Pin,0};
+
+/*!
+ \var sensor_y
+ \brief variable for storing data for the y sensor.
+ */
 static sensor_t sensor_y = {CS_1_GPIO_Port,CS_1_Pin,PW_1_GPIO_Port,PW_1_Pin,0};
 
-/* PRIVATE functions */
+/*!
+ \fn sensorDriver_powerup(sensor_t sensor)
+ \param sensor sensor structure of the sensor to be powered up
+ \brief This function turns off and the on the sensor. It then performs the power up routine
+ \note This routine is time consuming and done only at start up.
+ */
+void sensorDriver_powerup(sensor_t sensor);
+
+/*!
+ \fn sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data)
+ \param sensor_id 0 for sensor x, 1 for sensor y
+ \param sensor_data pointer to a structure for storing the raw sensor value
+ \brief This function reads raw data from the sensor given its ID and puts the result in the pointer.
+ */
+void sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data);
+
 void sensorDriver_powerup(sensor_t sensor){
 	/* Disable the sensor */
 	HAL_GPIO_WritePin(sensor.cs_port, sensor.cs_pin, GPIO_PIN_SET);
@@ -71,13 +94,10 @@ void sensorDriver_powerup(sensor_t sensor){
 	/* Write to Config2 for wired mouse */
 	main_write_sensor(sensor, Config2, 0x00);
 }
-
-/* Public functions */
 void sensorDriver_init(void){
 	sensorDriver_powerup(sensor_x);
 	sensorDriver_powerup(sensor_y);
 }
-
 void sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
 	uint8_t data[12];
 	int16_t temp = 0;

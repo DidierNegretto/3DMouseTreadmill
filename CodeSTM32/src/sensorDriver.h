@@ -73,22 +73,47 @@
 #define DELTA_Y_H 5
 #define SQUAL_READ 6
 
+/*!
+\def SQUAL_THRESH
+\brief Threshold value on SQUAL to consider the measure valid.
+*/
 #define SQUAL_THRESH 16
+
 /*!
 \def RESOLUTION
 \brief Resolution of the sensor in Count per Inch (CPI)
-\note This value needs to be updated if the resoulution of the sensors is changed,
+\note This value needs to be updated if the resolution of the sensors is changed,
 
-This value is used to convert the raw sensor value in couts to meter per second.
+This value is used to convert the raw sensor value in counts to meter per second.
 */
 #define RESOLUTION 5000
+
 /*!
 \def INCH2METER
-\brief Conversion factor to conver inches in meters.
+\brief Conversion factor to convert inches in meters.
 */
 #define INCH2METER 0.0254
-/* Public functions */
+
+/*!
+\fn sensorDriver_init
+\brief Initializes all sensors.
+
+This functions powers down the sensor and does the powering up routine.
+\note This routine takes a long time, so it is done only at start up.
+*/
 void sensorDriver_init(void);
+
+/*!
+\fn sensorDriver_motion_read_speed(mavlink_raw_sensor_t sensor_data[2], mavlink_speed_info_t * speed_info)
+\param sensor_data[2] array for the raw values of the 2 sensors
+\param speed_info pointer to a mavlink_speed_info_t
+\brief Function for reading the raw data and speed measures from the sensors.
+\attention The speed_info.time_x/y is used to compute speed. This value should NOT BE MODIFIED by
+the caller function
+
+This function reads values from the sensors and puts them in the given pointers.
+It also flags invalid readings, so that \ref mouseDriver_control_idle do not use them.
+*/
 void sensorDriver_motion_read_speed(mavlink_raw_sensor_t sensor_data[2], mavlink_speed_info_t * speed_info);
 
 #endif

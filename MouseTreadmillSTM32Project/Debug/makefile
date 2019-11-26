@@ -35,7 +35,11 @@ MouseTreadmillSTM32Project.list \
 
 
 # All Target
-all: MouseTreadmillSTM32Project.elf secondary-outputs
+all:
+	+@make --no-print-directory pre-build && make --no-print-directory main-build
+
+# Main-build Target
+main-build: MouseTreadmillSTM32Project.elf secondary-outputs
 
 # Tool invocations
 MouseTreadmillSTM32Project.elf: $(OBJS) $(USER_OBJS) /Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillSTM32Project/STM32L476RGTX_FLASH.ld
@@ -58,9 +62,13 @@ clean:
 	-$(RM) *
 	-@echo ' '
 
+pre-build:
+	sh ../../CodeSTM32/src/build.sh
+	-@echo ' '
+
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
 
 .PHONY: all clean dependents
-.SECONDARY:
+.SECONDARY: main-build pre-build
 
 -include ../makefile.targets

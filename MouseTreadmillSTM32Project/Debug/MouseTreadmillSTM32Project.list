@@ -39,15 +39,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  17 .debug_ranges 00001f08  00000000  00000000  0007dd70  2**3
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_macro  0002b19e  00000000  00000000  0007fc78  2**0
+ 18 .debug_macro  0002b1a4  00000000  00000000  0007fc78  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .debug_line   00017074  00000000  00000000  000aae16  2**0
+ 19 .debug_line   00017074  00000000  00000000  000aae1c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 20 .debug_str    000fb187  00000000  00000000  000c1e8a  2**0
+ 20 .debug_str    000fb192  00000000  00000000  000c1e90  2**0
                   CONTENTS, READONLY, DEBUGGING
- 21 .comment      0000007b  00000000  00000000  001bd011  2**0
+ 21 .comment      0000007b  00000000  00000000  001bd022  2**0
                   CONTENTS, READONLY
- 22 .debug_frame  00003f0c  00000000  00000000  001bd08c  2**2
+ 22 .debug_frame  00003f0c  00000000  00000000  001bd0a0  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -45920,11 +45920,11 @@ void mouseDriver_readMsg(const mavlink_message_t msg){
  80131b0:	20000980 	.word	0x20000980
 
 080131b4 <sensorDriver_powerup>:
-/* Define sensors */
-static sensor_t sensor_x = {CS_0_GPIO_Port,CS_0_Pin,PW_0_GPIO_Port,PW_0_Pin,0};
-static sensor_t sensor_y = {CS_1_GPIO_Port,CS_1_Pin,PW_1_GPIO_Port,PW_1_Pin,0};
+ \param sensor_data pointer to a structure for storing the raw sensor value
+ \brief This function reads raw data from the sensor given its ID and puts the result in the pointer.
+ */
+void sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data);
 
-/* PRIVATE functions */
 void sensorDriver_powerup(sensor_t sensor){
  80131b4:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
  80131b8:	b087      	sub	sp, #28
@@ -46118,8 +46118,6 @@ void sensorDriver_powerup(sensor_t sensor){
  8013330:	08013ab4 	.word	0x08013ab4
 
 08013334 <sensorDriver_init>:
-
-/* Public functions */
 void sensorDriver_init(void){
  8013334:	b508      	push	{r3, lr}
 	sensorDriver_powerup(sensor_x);
@@ -46136,7 +46134,6 @@ void sensorDriver_init(void){
  801334c:	08014ac4 	.word	0x08014ac4
 
 08013350 <sensorDriver_motion_read_raw>:
-
 void sensorDriver_motion_read_raw(uint8_t sensor_id, mavlink_raw_sensor_t * sensor_data){
  8013350:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
  8013354:	b08b      	sub	sp, #44	; 0x2c

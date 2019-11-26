@@ -32,5 +32,15 @@ int main(void){
     printf("TESTING mouseDriver.c\n");
     if (! test_mouseDriver_init()) printf(RED"ERRORS IN mouseDriver_init\n"END);*/
 
-    return 0;
+
+    if (!test){
+        printf("ALL TEST PASSED SUCCESSUFULLY\n");
+    }
+    else{
+        printf("=====================================================\n");
+        printf("!!!!!!!!!!!! SOME TESTS NOT PASSED !!!!!!!!!!!!!!!!!!\n");
+        printf("=====================================================\n\n");
+
+    }
+    return test;
 }

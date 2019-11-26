@@ -11,5 +11,5 @@
 #include "sensorDriver.c"
 
 bool test_sensorDriver_init(void){
-    display(0,"TEST SENSOR DRIVER");
+    return display(0,"TEST SENSOR DRIVER");
 }

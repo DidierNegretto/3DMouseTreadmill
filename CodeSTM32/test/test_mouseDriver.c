@@ -52,6 +52,7 @@ bool test_mouseDriver_idle(void){
     bool test = false;
     actual_speed_measure.speed_x = -10;
     actual_speed_measure.speed_y = -10;
+    actual_speed_measure.valid = 1;
     actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
     actual_speed_setpoint.setpoint_y = MAX_MOTOR_SIGNAL * 1000;
     actual_point_start_time = 0;
@@ -80,10 +81,6 @@ bool test_mouseDriver_idle(void){
     test &= display(sensor_read_x == 1, "read sensor x in MOUSE_MODE_AUTO_RUN");
     test &= display(sensor_read_y == 1, "read sensor y in MOUSE_MODE_AUTO_RUN");
     test &= display(stop_motor == 0, "motor started in MOUSE_MODE_AUTO_RUN");
-
-
-
-
     return test;
 }
 bool test_mouseDriver_getTime(void){
@@ -158,6 +155,26 @@ bool test_mouseDriver_control_idle(void){
         mouseDriver_control_idle();
     test &= display((actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL) && (actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL), "motor_y and motor_x with MAX_MOTOR_SIGNAL limit");
 
+    /* Reaction to invalid measures */
+    actual_speed_setpoint.setpoint_x = 0;
+    actual_speed_setpoint.setpoint_y = 0;
+    actual_speed_measure.speed_x = 1000;
+    actual_speed_measure.speed_y = 1000;
+    actual_motor_signal.motor_x = 10;
+    actual_motor_signal.motor_y = 10;
+    bool test_stop = true;
+    actual_speed_measure.valid = 0;
+    for(int i = 0;i < MAX_MISSING_MEASURES-1; i++ ){
+        test_stop &= (actual_motor_signal.motor_x == 10);
+        test_stop &= (actual_motor_signal.motor_y == 10);
+        mouseDriver_control_idle();
+    }
+    mouseDriver_control_idle();
+    test &= display(test_stop, "constant motor signal if invalid measure");
+    test &= display(actual_mode == MOUSE_MODE_STOP, "stop motor after too many invalid measures");
+
+
+
     /* Case actual mode == SPEED */
     actual_mode = MOUSE_MODE_AUTO_RUN;
     stop_motor = 1;
@@ -165,6 +182,7 @@ bool test_mouseDriver_control_idle(void){
     actual_speed_setpoint.setpoint_x = MAX_MOTOR_SIGNAL * 1000;
     actual_motor_signal.motor_x = MAX_MOTOR_SIGNAL * 1000;
     actual_motor_signal.motor_y = MAX_MOTOR_SIGNAL * 1000;
+    actual_speed_measure.valid = 1;
     printf("if (actual_mode ==  MOUSE_MODE_AUTO_RUN)\n");
     mouseDriver_control_idle();
     test &= display(stop_motor == 0, "motor_x speed changed");
@@ -192,6 +210,19 @@ bool test_mouseDriver_control_idle(void){
     for(int i = 0; i < 100; i++)
         mouseDriver_control_idle();
     test &= display((actual_motor_signal.motor_y <= MAX_MOTOR_SIGNAL) && (actual_motor_signal.motor_x <= MAX_MOTOR_SIGNAL), "motor_y and motor_x with MAX_MOTOR_SIGNAL limit");
+
+    test_stop = true;
+    actual_speed_measure.valid = 0;
+    actual_motor_signal.motor_x = 10;
+    actual_motor_signal.motor_y = 10;
+    for(int i = 0;i < MAX_MISSING_MEASURES-1; i++ ){
+        test_stop &= (actual_motor_signal.motor_x == 10);
+        test_stop &= (actual_motor_signal.motor_y == 10);
+        mouseDriver_control_idle();
+    }
+    mouseDriver_control_idle();
+    test &= display(test_stop, "constant motor signal if invalid measure");
+    test &= display(actual_mode == MOUSE_MODE_STOP, "stop motor after too many invalid measures");
 
     return test;
 }
