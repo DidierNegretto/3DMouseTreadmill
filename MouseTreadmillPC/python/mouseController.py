@@ -74,7 +74,8 @@ class MyApplication():
                     #print(m)
                     DATA["SPEED_INFO"]["time"].append(m.time_x)
                     DATA["SPEED_INFO"]["speed_x"].append(m.speed_x)
-                    DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
+                    #DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
+                    DATA["SPEED_INFO"]["speed_y"].append(0)
                 elif m.name == "RAW_SENSOR":
                     #print(m)
                     if m.sensor_id == 0:
