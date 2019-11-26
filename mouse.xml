@@ -81,13 +81,13 @@
         <message id="5" name="POINT_LOADED">
             <description>This message is used to acknowledge the receipt of one point for auto mode Sender = STM32 Receiver = PC
             </description>
-            <field type="uint8_t" name="point_id">Last ID of point loaded</field>
+            <field type="uint16_t" name="point_id">Last ID of point loaded</field>
         </message>
         <message id="6" name="POINT">
             <description>This message is used to send one point for auto mode. Sender = PC Receiver = STM32
             </description>
             <field type="uint32_t" name="duration">Time during which the setpoint need to be kept</field>
-            <field type="uint8_t" name="point_id">point ID</field>
+            <field type="uint16_t" name="point_id">point ID</field>
             <field type="float" name="setpoint_x">Speed setpoint in x direction</field>
             <field type="float" name="setpoint_y">Speed setpoint in y direction</field>
         </message>
@@ -107,6 +107,7 @@
 	 		<field type="uint8_t" name="squal">Quality of the surface. For white paper is around 30.</field>
 	 		<field type="uint8_t" name="lift">1 if the sensor is lifted (not measuring). 0 otherwise</field>	
 	    	<field type="uint8_t" name="product_id">0x42 if the serial communication with the sensor works correctly.</field>	
+            <field type="uint8_t" name="srom_id">0x00 if initialisation is not done. Other value if done correctly.</field>	
 	    </message>   
     </messages>
 </mavlink>

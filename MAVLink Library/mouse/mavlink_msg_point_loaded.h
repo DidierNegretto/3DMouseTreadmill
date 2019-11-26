@@ -5,16 +5,16 @@
 
 MAVPACKED(
 typedef struct __mavlink_point_loaded_t {
- uint8_t point_id; /*<  Last ID of point loaded*/
+ uint16_t point_id; /*<  Last ID of point loaded*/
 }) mavlink_point_loaded_t;
 
-#define MAVLINK_MSG_ID_POINT_LOADED_LEN 1
-#define MAVLINK_MSG_ID_POINT_LOADED_MIN_LEN 1
-#define MAVLINK_MSG_ID_5_LEN 1
-#define MAVLINK_MSG_ID_5_MIN_LEN 1
+#define MAVLINK_MSG_ID_POINT_LOADED_LEN 2
+#define MAVLINK_MSG_ID_POINT_LOADED_MIN_LEN 2
+#define MAVLINK_MSG_ID_5_LEN 2
+#define MAVLINK_MSG_ID_5_MIN_LEN 2
 
-#define MAVLINK_MSG_ID_POINT_LOADED_CRC 155
-#define MAVLINK_MSG_ID_5_CRC 155
+#define MAVLINK_MSG_ID_POINT_LOADED_CRC 167
+#define MAVLINK_MSG_ID_5_CRC 167
 
 
 
@@ -23,14 +23,14 @@ typedef struct __mavlink_point_loaded_t {
     5, \
     "POINT_LOADED", \
     1, \
-    {  { "point_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_point_loaded_t, point_id) }, \
+    {  { "point_id", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_point_loaded_t, point_id) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_POINT_LOADED { \
     "POINT_LOADED", \
     1, \
-    {  { "point_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_point_loaded_t, point_id) }, \
+    {  { "point_id", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_point_loaded_t, point_id) }, \
          } \
 }
 #endif
@@ -45,11 +45,11 @@ typedef struct __mavlink_point_loaded_t {
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_point_loaded_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t point_id)
+                               uint16_t point_id)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LOADED_LEN];
-    _mav_put_uint8_t(buf, 0, point_id);
+    _mav_put_uint16_t(buf, 0, point_id);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_POINT_LOADED_LEN);
 #else
@@ -74,11 +74,11 @@ static inline uint16_t mavlink_msg_point_loaded_pack(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_point_loaded_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t point_id)
+                                   uint16_t point_id)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LOADED_LEN];
-    _mav_put_uint8_t(buf, 0, point_id);
+    _mav_put_uint16_t(buf, 0, point_id);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_POINT_LOADED_LEN);
 #else
@@ -127,11 +127,11 @@ static inline uint16_t mavlink_msg_point_loaded_encode_chan(uint8_t system_id, u
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_point_loaded_send(mavlink_channel_t chan, uint8_t point_id)
+static inline void mavlink_msg_point_loaded_send(mavlink_channel_t chan, uint16_t point_id)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LOADED_LEN];
-    _mav_put_uint8_t(buf, 0, point_id);
+    _mav_put_uint16_t(buf, 0, point_id);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_POINT_LOADED, buf, MAVLINK_MSG_ID_POINT_LOADED_MIN_LEN, MAVLINK_MSG_ID_POINT_LOADED_LEN, MAVLINK_MSG_ID_POINT_LOADED_CRC);
 #else
@@ -164,11 +164,11 @@ static inline void mavlink_msg_point_loaded_send_struct(mavlink_channel_t chan, 
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_point_loaded_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t point_id)
+static inline void mavlink_msg_point_loaded_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint16_t point_id)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, point_id);
+    _mav_put_uint16_t(buf, 0, point_id);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_POINT_LOADED, buf, MAVLINK_MSG_ID_POINT_LOADED_MIN_LEN, MAVLINK_MSG_ID_POINT_LOADED_LEN, MAVLINK_MSG_ID_POINT_LOADED_CRC);
 #else
@@ -190,9 +190,9 @@ static inline void mavlink_msg_point_loaded_send_buf(mavlink_message_t *msgbuf, 
  *
  * @return  Last ID of point loaded
  */
-static inline uint8_t mavlink_msg_point_loaded_get_point_id(const mavlink_message_t* msg)
+static inline uint16_t mavlink_msg_point_loaded_get_point_id(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint16_t(msg,  0);
 }
 
 /**

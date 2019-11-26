@@ -313,7 +313,7 @@ static void mavlink_test_point_loaded(uint8_t system_id, uint8_t component_id, m
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_point_loaded_t packet_in = {
-        5
+        17235
     };
     mavlink_point_loaded_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -367,7 +367,7 @@ static void mavlink_test_point(uint8_t system_id, uint8_t component_id, mavlink_
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_point_t packet_in = {
-        963497464,45.0,73.0,41
+        963497464,45.0,73.0,17859
     };
     mavlink_point_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -479,7 +479,7 @@ static void mavlink_test_raw_sensor(uint8_t system_id, uint8_t component_id, mav
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_raw_sensor_t packet_in = {
-        963497464,17443,17547,29,96,163,230
+        963497464,17443,17547,29,96,163,230,41
     };
     mavlink_raw_sensor_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -490,6 +490,7 @@ static void mavlink_test_raw_sensor(uint8_t system_id, uint8_t component_id, mav
         packet1.squal = packet_in.squal;
         packet1.lift = packet_in.lift;
         packet1.product_id = packet_in.product_id;
+        packet1.srom_id = packet_in.srom_id;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -504,12 +505,12 @@ static void mavlink_test_raw_sensor(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_raw_sensor_pack(system_id, component_id, &msg , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id );
+    mavlink_msg_raw_sensor_pack(system_id, component_id, &msg , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id , packet1.srom_id );
     mavlink_msg_raw_sensor_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_raw_sensor_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id );
+    mavlink_msg_raw_sensor_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id , packet1.srom_id );
     mavlink_msg_raw_sensor_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -522,7 +523,7 @@ static void mavlink_test_raw_sensor(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_raw_sensor_send(MAVLINK_COMM_1 , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id );
+    mavlink_msg_raw_sensor_send(MAVLINK_COMM_1 , packet1.time , packet1.sensor_id , packet1.delta_x , packet1.delta_y , packet1.squal , packet1.lift , packet1.product_id , packet1.srom_id );
     mavlink_msg_raw_sensor_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

@@ -8,16 +8,16 @@ typedef struct __mavlink_point_t {
  uint32_t duration; /*<  Time during which the setpoint need to be kept*/
  float setpoint_x; /*<  Speed setpoint in x direction*/
  float setpoint_y; /*<  Speed setpoint in y direction*/
- uint8_t point_id; /*<  point ID*/
+ uint16_t point_id; /*<  point ID*/
 }) mavlink_point_t;
 
-#define MAVLINK_MSG_ID_POINT_LEN 13
-#define MAVLINK_MSG_ID_POINT_MIN_LEN 13
-#define MAVLINK_MSG_ID_6_LEN 13
-#define MAVLINK_MSG_ID_6_MIN_LEN 13
+#define MAVLINK_MSG_ID_POINT_LEN 14
+#define MAVLINK_MSG_ID_POINT_MIN_LEN 14
+#define MAVLINK_MSG_ID_6_LEN 14
+#define MAVLINK_MSG_ID_6_MIN_LEN 14
 
-#define MAVLINK_MSG_ID_POINT_CRC 75
-#define MAVLINK_MSG_ID_6_CRC 75
+#define MAVLINK_MSG_ID_POINT_CRC 144
+#define MAVLINK_MSG_ID_6_CRC 144
 
 
 
@@ -27,7 +27,7 @@ typedef struct __mavlink_point_t {
     "POINT", \
     4, \
     {  { "duration", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_point_t, duration) }, \
-         { "point_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_point_t, point_id) }, \
+         { "point_id", NULL, MAVLINK_TYPE_UINT16_T, 0, 12, offsetof(mavlink_point_t, point_id) }, \
          { "setpoint_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_point_t, setpoint_x) }, \
          { "setpoint_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_point_t, setpoint_y) }, \
          } \
@@ -37,7 +37,7 @@ typedef struct __mavlink_point_t {
     "POINT", \
     4, \
     {  { "duration", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_point_t, duration) }, \
-         { "point_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_point_t, point_id) }, \
+         { "point_id", NULL, MAVLINK_TYPE_UINT16_T, 0, 12, offsetof(mavlink_point_t, point_id) }, \
          { "setpoint_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_point_t, setpoint_x) }, \
          { "setpoint_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_point_t, setpoint_y) }, \
          } \
@@ -57,14 +57,14 @@ typedef struct __mavlink_point_t {
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_point_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t duration, uint8_t point_id, float setpoint_x, float setpoint_y)
+                               uint32_t duration, uint16_t point_id, float setpoint_x, float setpoint_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LEN];
     _mav_put_uint32_t(buf, 0, duration);
     _mav_put_float(buf, 4, setpoint_x);
     _mav_put_float(buf, 8, setpoint_y);
-    _mav_put_uint8_t(buf, 12, point_id);
+    _mav_put_uint16_t(buf, 12, point_id);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_POINT_LEN);
 #else
@@ -95,14 +95,14 @@ static inline uint16_t mavlink_msg_point_pack(uint8_t system_id, uint8_t compone
  */
 static inline uint16_t mavlink_msg_point_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t duration,uint8_t point_id,float setpoint_x,float setpoint_y)
+                                   uint32_t duration,uint16_t point_id,float setpoint_x,float setpoint_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LEN];
     _mav_put_uint32_t(buf, 0, duration);
     _mav_put_float(buf, 4, setpoint_x);
     _mav_put_float(buf, 8, setpoint_y);
-    _mav_put_uint8_t(buf, 12, point_id);
+    _mav_put_uint16_t(buf, 12, point_id);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_POINT_LEN);
 #else
@@ -157,14 +157,14 @@ static inline uint16_t mavlink_msg_point_encode_chan(uint8_t system_id, uint8_t 
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_point_send(mavlink_channel_t chan, uint32_t duration, uint8_t point_id, float setpoint_x, float setpoint_y)
+static inline void mavlink_msg_point_send(mavlink_channel_t chan, uint32_t duration, uint16_t point_id, float setpoint_x, float setpoint_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_POINT_LEN];
     _mav_put_uint32_t(buf, 0, duration);
     _mav_put_float(buf, 4, setpoint_x);
     _mav_put_float(buf, 8, setpoint_y);
-    _mav_put_uint8_t(buf, 12, point_id);
+    _mav_put_uint16_t(buf, 12, point_id);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_POINT, buf, MAVLINK_MSG_ID_POINT_MIN_LEN, MAVLINK_MSG_ID_POINT_LEN, MAVLINK_MSG_ID_POINT_CRC);
 #else
@@ -200,14 +200,14 @@ static inline void mavlink_msg_point_send_struct(mavlink_channel_t chan, const m
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_point_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t duration, uint8_t point_id, float setpoint_x, float setpoint_y)
+static inline void mavlink_msg_point_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t duration, uint16_t point_id, float setpoint_x, float setpoint_y)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint32_t(buf, 0, duration);
     _mav_put_float(buf, 4, setpoint_x);
     _mav_put_float(buf, 8, setpoint_y);
-    _mav_put_uint8_t(buf, 12, point_id);
+    _mav_put_uint16_t(buf, 12, point_id);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_POINT, buf, MAVLINK_MSG_ID_POINT_MIN_LEN, MAVLINK_MSG_ID_POINT_LEN, MAVLINK_MSG_ID_POINT_CRC);
 #else
@@ -242,9 +242,9 @@ static inline uint32_t mavlink_msg_point_get_duration(const mavlink_message_t* m
  *
  * @return  point ID
  */
-static inline uint8_t mavlink_msg_point_get_point_id(const mavlink_message_t* msg)
+static inline uint16_t mavlink_msg_point_get_point_id(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  12);
+    return _MAV_RETURN_uint16_t(msg,  12);
 }
 
 /**

@@ -438,17 +438,17 @@ class MAVLink_point_loaded_message(MAVLink_message):
         name = 'POINT_LOADED'
         fieldnames = ['point_id']
         ordered_fieldnames = ['point_id']
-        fieldtypes = ['uint8_t']
+        fieldtypes = ['uint16_t']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<B'
-        native_format = bytearray('<B', 'ascii')
+        format = '<H'
+        native_format = bytearray('<H', 'ascii')
         orders = [0]
         lengths = [1]
         array_lengths = [0]
-        crc_extra = 155
-        unpacker = struct.Struct('<B')
+        crc_extra = 167
+        unpacker = struct.Struct('<H')
 
         def __init__(self, point_id):
                 MAVLink_message.__init__(self, MAVLink_point_loaded_message.id, MAVLink_point_loaded_message.name)
@@ -456,7 +456,7 @@ class MAVLink_point_loaded_message(MAVLink_message):
                 self.point_id = point_id
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 155, struct.pack('<B', self.point_id), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 167, struct.pack('<H', self.point_id), force_mavlink1=force_mavlink1)
 
 class MAVLink_point_message(MAVLink_message):
         '''
@@ -467,17 +467,17 @@ class MAVLink_point_message(MAVLink_message):
         name = 'POINT'
         fieldnames = ['duration', 'point_id', 'setpoint_x', 'setpoint_y']
         ordered_fieldnames = ['duration', 'setpoint_x', 'setpoint_y', 'point_id']
-        fieldtypes = ['uint32_t', 'uint8_t', 'float', 'float']
+        fieldtypes = ['uint32_t', 'uint16_t', 'float', 'float']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<IffB'
-        native_format = bytearray('<IffB', 'ascii')
+        format = '<IffH'
+        native_format = bytearray('<IffH', 'ascii')
         orders = [0, 3, 1, 2]
         lengths = [1, 1, 1, 1]
         array_lengths = [0, 0, 0, 0]
-        crc_extra = 75
-        unpacker = struct.Struct('<IffB')
+        crc_extra = 144
+        unpacker = struct.Struct('<IffH')
 
         def __init__(self, duration, point_id, setpoint_x, setpoint_y):
                 MAVLink_message.__init__(self, MAVLink_point_message.id, MAVLink_point_message.name)
@@ -488,7 +488,7 @@ class MAVLink_point_message(MAVLink_message):
                 self.setpoint_y = setpoint_y
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 75, struct.pack('<IffB', self.duration, self.setpoint_x, self.setpoint_y, self.point_id), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 144, struct.pack('<IffH', self.duration, self.setpoint_x, self.setpoint_y, self.point_id), force_mavlink1=force_mavlink1)
 
 class MAVLink_error_message(MAVLink_message):
         '''
@@ -527,21 +527,21 @@ class MAVLink_raw_sensor_message(MAVLink_message):
         '''
         id = MAVLINK_MSG_ID_RAW_SENSOR
         name = 'RAW_SENSOR'
-        fieldnames = ['time', 'sensor_id', 'delta_x', 'delta_y', 'squal', 'lift', 'product_id']
-        ordered_fieldnames = ['time', 'delta_x', 'delta_y', 'sensor_id', 'squal', 'lift', 'product_id']
-        fieldtypes = ['uint32_t', 'uint8_t', 'int16_t', 'int16_t', 'uint8_t', 'uint8_t', 'uint8_t']
+        fieldnames = ['time', 'sensor_id', 'delta_x', 'delta_y', 'squal', 'lift', 'product_id', 'srom_id']
+        ordered_fieldnames = ['time', 'delta_x', 'delta_y', 'sensor_id', 'squal', 'lift', 'product_id', 'srom_id']
+        fieldtypes = ['uint32_t', 'uint8_t', 'int16_t', 'int16_t', 'uint8_t', 'uint8_t', 'uint8_t', 'uint8_t']
         fielddisplays_by_name = {}
         fieldenums_by_name = {}
         fieldunits_by_name = {}
-        format = '<IhhBBBB'
-        native_format = bytearray('<IhhBBBB', 'ascii')
-        orders = [0, 3, 1, 2, 4, 5, 6]
-        lengths = [1, 1, 1, 1, 1, 1, 1]
-        array_lengths = [0, 0, 0, 0, 0, 0, 0]
-        crc_extra = 246
-        unpacker = struct.Struct('<IhhBBBB')
+        format = '<IhhBBBBB'
+        native_format = bytearray('<IhhBBBBB', 'ascii')
+        orders = [0, 3, 1, 2, 4, 5, 6, 7]
+        lengths = [1, 1, 1, 1, 1, 1, 1, 1]
+        array_lengths = [0, 0, 0, 0, 0, 0, 0, 0]
+        crc_extra = 75
+        unpacker = struct.Struct('<IhhBBBBB')
 
-        def __init__(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id):
+        def __init__(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id, srom_id):
                 MAVLink_message.__init__(self, MAVLink_raw_sensor_message.id, MAVLink_raw_sensor_message.name)
                 self._fieldnames = MAVLink_raw_sensor_message.fieldnames
                 self.time = time
@@ -551,9 +551,10 @@ class MAVLink_raw_sensor_message(MAVLink_message):
                 self.squal = squal
                 self.lift = lift
                 self.product_id = product_id
+                self.srom_id = srom_id
 
         def pack(self, mav, force_mavlink1=False):
-                return MAVLink_message.pack(self, mav, 246, struct.pack('<IhhBBBB', self.time, self.delta_x, self.delta_y, self.sensor_id, self.squal, self.lift, self.product_id), force_mavlink1=force_mavlink1)
+                return MAVLink_message.pack(self, mav, 75, struct.pack('<IhhBBBBB', self.time, self.delta_x, self.delta_y, self.sensor_id, self.squal, self.lift, self.product_id, self.srom_id), force_mavlink1=force_mavlink1)
 
 
 mavlink_map = {
@@ -1089,7 +1090,7 @@ class MAVLink(object):
                 This message is used to acknowledge the receipt of one point for auto
                 mode Sender = STM32 Receiver = PC
 
-                point_id                  : Last ID of point loaded (type:uint8_t)
+                point_id                  : Last ID of point loaded (type:uint16_t)
 
                 '''
                 return MAVLink_point_loaded_message(point_id)
@@ -1099,7 +1100,7 @@ class MAVLink(object):
                 This message is used to acknowledge the receipt of one point for auto
                 mode Sender = STM32 Receiver = PC
 
-                point_id                  : Last ID of point loaded (type:uint8_t)
+                point_id                  : Last ID of point loaded (type:uint16_t)
 
                 '''
                 return self.send(self.point_loaded_encode(point_id), force_mavlink1=force_mavlink1)
@@ -1110,7 +1111,7 @@ class MAVLink(object):
                 Receiver = STM32
 
                 duration                  : Time during which the setpoint need to be kept (type:uint32_t)
-                point_id                  : point ID (type:uint8_t)
+                point_id                  : point ID (type:uint16_t)
                 setpoint_x                : Speed setpoint in x direction (type:float)
                 setpoint_y                : Speed setpoint in y direction (type:float)
 
@@ -1123,7 +1124,7 @@ class MAVLink(object):
                 Receiver = STM32
 
                 duration                  : Time during which the setpoint need to be kept (type:uint32_t)
-                point_id                  : point ID (type:uint8_t)
+                point_id                  : point ID (type:uint16_t)
                 setpoint_x                : Speed setpoint in x direction (type:float)
                 setpoint_y                : Speed setpoint in y direction (type:float)
 
@@ -1150,7 +1151,7 @@ class MAVLink(object):
                 '''
                 return self.send(self.error_encode(time, error), force_mavlink1=force_mavlink1)
 
-        def raw_sensor_encode(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id):
+        def raw_sensor_encode(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id, srom_id):
                 '''
                 This message contains raw sensor values Sender = STM32 Receiver = PC
 
@@ -1161,11 +1162,12 @@ class MAVLink(object):
                 squal                     : Quality of the surface. For white paper is around 30. (type:uint8_t)
                 lift                      : 1 if the sensor is lifted (not measuring). 0 otherwise (type:uint8_t)
                 product_id                : 0x42 if the serial communication with the sensor works correctly. (type:uint8_t)
+                srom_id                   : 0x00 if initialisation is not done. Other value if done correctly. (type:uint8_t)
 
                 '''
-                return MAVLink_raw_sensor_message(time, sensor_id, delta_x, delta_y, squal, lift, product_id)
+                return MAVLink_raw_sensor_message(time, sensor_id, delta_x, delta_y, squal, lift, product_id, srom_id)
 
-        def raw_sensor_send(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id, force_mavlink1=False):
+        def raw_sensor_send(self, time, sensor_id, delta_x, delta_y, squal, lift, product_id, srom_id, force_mavlink1=False):
                 '''
                 This message contains raw sensor values Sender = STM32 Receiver = PC
 
@@ -1176,7 +1178,8 @@ class MAVLink(object):
                 squal                     : Quality of the surface. For white paper is around 30. (type:uint8_t)
                 lift                      : 1 if the sensor is lifted (not measuring). 0 otherwise (type:uint8_t)
                 product_id                : 0x42 if the serial communication with the sensor works correctly. (type:uint8_t)
+                srom_id                   : 0x00 if initialisation is not done. Other value if done correctly. (type:uint8_t)
 
                 '''
-                return self.send(self.raw_sensor_encode(time, sensor_id, delta_x, delta_y, squal, lift, product_id), force_mavlink1=force_mavlink1)
+                return self.send(self.raw_sensor_encode(time, sensor_id, delta_x, delta_y, squal, lift, product_id, srom_id), force_mavlink1=force_mavlink1)
 

@@ -23,6 +23,7 @@ DATA = { "HEARTBEAT": {"time": [], "mode": []},
          "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": [], "start": 0} 
          }
 MAX_SAMPLES_ON_SCREEN = 200
+print(mouseController.MAVLink_raw_sensor_message.fieldnames)
 port = "/dev/cu.usbmodem14102"
  
 
