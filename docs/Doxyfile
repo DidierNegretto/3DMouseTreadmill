@@ -831,10 +831,10 @@ WARN_LOGFILE           =
 
 INPUT                  = ../MouseTreadmillSTM32Project/Core/Inc/main.h \
                          ../MouseTreadmillSTM32Project/Core/Src/main.c \
-                         ../mouse.py \
-                         ../MouseTreadmillPC/python \
                          ../MouseTreadmillSTM32Project/Core/Inc/main.h \
-                         ../CodeSTM32/src
+                         ../CodeSTM32/src \
+                         ../CodeSTM32 \
+                         ../CodeSTM32/test
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

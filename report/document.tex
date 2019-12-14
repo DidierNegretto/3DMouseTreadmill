@@ -1,0 +1,355 @@
+
+\documentclass[12pt,a4paper]{article}
+
+%% Language and font encodings
+\usepackage[french, english]{babel}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{footnote}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{diagbox}
+\usepackage{float}
+\usepackage{lastpage}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage[english]{fancyref}
+\usepackage[UKenglish]{datetime}
+\usepackage{pdfpages}
+%\usepackage{todonotes}
+\usepackage{placeins}
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\pgfplotsset{width=10cm,compat=1.9}
+\setlength{\columnsep}{0.3cm}
+\pagestyle{fancy}
+\cfoot{Page \thepage \hspace{1pt} of \pageref{LastPage}}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\definecolor{titlepagecolor}{cmyk}{0,0,0,0}
+\definecolor{namecolor}{cmyk}{1,1,1,1}
+\usepackage{subcaption}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+\usepackage{wrapfig}
+\usepackage{listings}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+%\renewcommand{\thetable}{\arabic{section}.\arabic{figure}}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.99,0.99,0.99}
+
+\lstdefinestyle{CStyle}{
+	backgroundcolor=\color{backgroundColour},   
+	commentstyle=\color{mGreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{mGray},
+	stringstyle=\color{mPurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=C
+}
+\lstdefinestyle{PyStyle}{
+	backgroundcolor=\color{backgroundColour},   
+	commentstyle=\color{mGreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{mGray},
+	stringstyle=\color{mPurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=Python
+}
+
+%\usepackage{natbib}
+\pagestyle{fancy}
+\title{Development and study of ailerons vs. twisting wing}
+\author{\large{Negretto Didier Chérubin, MT-MA-3}}
+\makeindex
+
+\begin{document}
+	\date{\today}
+\begin{titlepage}
+\hspace{+2.8cm} %defines the geometry for the titlepage
+\pagecolor{titlepagecolor}
+\noindent
+\includegraphics[width=8cm]{fig/EPFL_Logo_Digital_RGB_PROD.jpg}\\[-1em]
+\color{black}
+\hspace{+3.5cm}
+\makebox[3pt][l]{\rule{8 cm}{1pt}}
+\par
+\noindent
+\hspace{+4.5cm}
+\textbf{\Large \textsf{Biorobotics laboratory}}\\
+\vspace{0.5cm}
+\hspace{-3.5cm}
+	%\begin{figure}[H]
+    %	\centering
+		%\includegraphics[width=12 cm]{fig/frontpage_1.pdf}
+		%\includegraphics[width=0.48\linewidth]{fig_pos/FS}
+		%\raisebox{-5cm}{\reflectbox{\includegraphics[width=0.48\linewidth]{fig_pos/BS}}}
+%					\includegraphics[width=0.49\linewidth]{fig_pos/BS}
+%		\reflectbox{\includegraphics[width=0.49\linewidth]{fig_pos/BS}}
+	%\end{figure}
+
+\vfill
+
+
+\hspace{+0.5cm}
+{\huge \huge \textsf{MOUSE TREADMILL CONTROL}}
+
+\vskip\baselineskip
+\noindent
+\hspace{+3.5cm}
+{\textsf{\today}
+\vskip\baselineskip
+\noindent
+\hspace{+3.5cm}
+{\textsf{By \textbf{\Large{Didier Chérubin Negretto} }}}
+\vskip\baselineskip
+\noindent
+\hspace{+3.5cm}
+{\textsf{Professor: \large\textbf{Auke Ijspeert}}}
+\vskip\baselineskip
+\noindent
+\hspace{+3.5cm}
+{\textsf{Assistant 1:\textbf{Shravan Tata Ramalingasetty} }}
+}
+\end{titlepage}
+
+\restoregeometry % restores the geometry
+\nopagecolor% Use this to restore the color pages to white
+\begin{center}
+\chead{\textit{\textbf{Mouse treadmill control}}}
+%\newpage
+\textbf{\Large{Semester project description}}\\
+\end{center}
+\begin{multicols}{2}
+[]
+
+\paragraph{Objectives and preliminary considerations} 
+\lfoot{\today}
+\rfoot{Biorobotics laboratory}
+The project consists of designing and manufacturing of a lightweight mechanism to improve roll authority at low angles of attack. After that the mechanism is tested and conclusions, with respect to the existing mechanism are drawn.
+A drone with morphing wings was designed and manufactured in the months before this project. The drone has wings with artificial overlapping feathers at the wing tip, which are used for roll control. The roll rate obtained at low angles of attack is too low to grant the desired high manoeuvrability as shown by \cite{ref6} for a similar roll control strategy. In the first part of the project different methods are taken into account: ailerons, which are used in the aircraft industry and wing twisting, which is inspired by birds \cite{bird}. Those methods are simulated on XFLR5 (using VLM and 3D-Panels), after which wing twisting is chosen for implementation and testing. Wing twisting has many advantages compared to ailerons: higher roll moment \cite{real_plane} and higher lift to drag ratio \cite{ref3}. On the other hand this technique is less used in industry and leads to an increased weight of the drone. 
+%\begin{figure}[H]
+%	\includegraphics[width=0.8\linewidth]{fig_des/exp_setup.jpg}
+%	\caption{Photo taken during the wind tunnel test, with a symmetric backward sweep configuration. }\label{fig:wind}
+%\end{figure}
+\paragraph{Mechanism design}
+ A weight of less than 20 [$g$] is required as well as the interoperability with the pre-existing folding mechanism. Four different designs are taken into account (partial twisting, flexible components, cylindrical element and ball joints). In the end the design consisting of a lever actuated by a servo (ball joints) is chosen for implementation. This design is simple and can generate the required roll (roll control power over 2 [$\frac{\partial C_r}{\partial rad}$] for $\alpha \leq 8^\circ$) at low angles of attack, solving the initial problem. The folding angle $\phi$ is defined as the sum of the angles compared to normal sweep on the two sides. 
+\paragraph{Testing and results}
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=1.2\linewidth]{fig_des/fin_comp}
+	%\includegraphics[width=\linewidth]{fig_sim/fin_comp}
+	\caption{Roll coefficient as a function of the angle of attack for different values of twisting and folding angles. Schematics of folding configurations are added. }\label{fig:tw_vs_fold_bar}
+\end{figure}
+The third part consists of testing the drone in the wind tunnel at different angles of attack (from 0$^\circ$ to 28$^\circ$ with steps of 4$^\circ$), at three different twisting angles (0$^\circ$, 5$^\circ$ and 10$^\circ$), and with three possible wing shapes to take into account the effect of folding. Most of roll is generated with twisting at low angles of attack ($\alpha<8^\circ$), while at high angles folding has a greater impact (see figure \ref{fig:tw_vs_fold_bar}).
+\paragraph{Roll control and cost}
+Finally a roll control algorithm for folding and twisting wing drones is presented.  This is one of the most important accomplishments of this report since a study of different roll control methods on the same platform is, at the best of our knowledge, absent in literature. The cost of such a setup is discussed as well. This cost is very low, mainly due to the weight of the mechanism and to the energy consumption since the loss of aerodynamic performances during roll is small ($C_d$ +38,98\%), compared to the roll achieved ($C_r = 0.4519$ [ ]).
+
+\end{multicols}
+
+\clearpage
+\lfoot{ }
+\rfoot{ }
+\chead{ }
+%\begin{abstract}
+
+%\end{abstract}
+
+\pagestyle{plain}
+\clearpage
+
+\tableofcontents
+\clearpage
+\pagestyle{fancy}
+\section{Introduction}\label{sec:intro}
+In this section the main objectives and the state of the art for the project are presented as well as the overall structure of this report.
+\subsection{Motivation}
+\begin{wrapfigure}{L}{0.42\textwidth}
+	\includegraphics[width=\linewidth]{fig/OleSetup.png}
+	\caption{The experimental setup used in \cite{Ole}.}\label{fig:OleSetup}
+	\vspace{-3.0 cm}
+\end{wrapfigure}
+The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, on the other hand, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist in a spiral maze made out cardboard. This setup comes with some advantages such as:
+\begin{itemize}
+	\item Low price
+	\item Simple to implement and use
+	\item Untrained mice can be employed
+	\item Free moving mouse
+\end{itemize}
+As well as some disadvantages:
+\begin{itemize}
+	\item Impossibility to analyse the mouse gait
+	\item The mouse movements can't be imposed
+\end{itemize}
+To asses these issues a new design is needed for conducting such experiments. The new platform needs to allow the control on the walking surface on which the mouse is standing in such a way that a specific speed profile can be imposed to the mouse. Moreover it must be possible to analyse the mouse gait using cameras. \\
+For the new design inspiration is taken from some existing solutions on the market. 
+\subsection{Requirements}
+First the mechanical requirements are discussed and stated. Table \ref{tab:Requirements} summarizes them.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|r} 
+		\textbf{Description}&\textbf{Value}  &\textbf{Unit}  \\ 
+		\hline
+		\hline 
+		Dimensions of the moving surface & 0.5 & $[m^2]$ \\ 
+		\hline 
+		Course & $\infty$  & $[m]$  \\ 
+		\hline 
+		Maximum speed & 3 & $[\frac{m}{s}]$ \\ 
+		\hline 
+		Maximum acceleration & 2 & $[\frac{m}{s^2}]$  \\ 
+		\hline 
+		Position resolution & 0.01 & $[m]$  \\ 
+		\hline 
+		Speed resolution & 0.02  & $[\frac{m}{s}]$  \\ 
+		\hline 
+		Maximum weight & 0.1  & $[kg]$  \\  
+		\hline 
+		Mounting time for 1 person & 30 & $[min]$  \\
+		\hline 
+		Maximum weight of the mouse & 40  & $[g]$ \\
+		\hline 
+		Length of common experiment (distance, time) & (20, 600)  & ($[m]$,$[s]$)  \\
+	\end{tabular} 
+	\caption{Summary of the requirements for the mouse treadmill platform.}
+	\label{tab:Requirements}
+\end{table}
+The functional requirements are listed as well:
+\begin{itemize}
+	\item \textbf{Closed-loop control} Once a 2D speed setpoint is chosen the speed of the surface needs to be measured and the motor control signal need to be adjusted automatically to reach the desired setpoint. 
+	\item \textbf{Speed routines} The user can define a speed routine, which needs to be executed by the treadmill. The speed routine consist in a list of 2D speed setpoints and the time interval during which the machine should execute them.
+	\item \textbf{User interface} The user can use a Graphical user interface (GUI) on a computer to be able to use the mouse treadmill. This interface informs the user if the sensors are correctly connected and initialized, and it should give a live update of the treadmill speed.
+	\item \textbf{Data logging} The user can save the data sent by the treadmill during the experiment for future uses. 
+\end{itemize}
+
+\subsection{Structure of the report}
+This report is structured as follows: an introduction is given in section \ref{sec:intro}, the system architecture and communication are explained in \ref{sec:archi}. Section \ref{sec:design}, describes the design decisions and the components choices made .Section \ref{sec:control} describes the control strategy and shows some preliminary responses.
+Finally in section \ref{sec:conc} the conclusion of the project is given. The code, code documentation as well as the data-sheets of the components are annexed.
+
+\section{System architecture and communication} \label{sec:archi}
+In this section the architecture and the communication are explained and detailed.
+\subsection{System architecture}
+In this section the architecture and interfaces between the different components of the machine are detailed.
+\subsection{Communication}
+In this section all the messages as well as their meaning and usage are explained.
+
+\section{Design choices}\label{sec:design}
+In this section the design choices are explained and justified. First the choice of the board is analysed, then the sensors and finally the calculations for the motor dimensioning are shown.
+\subsection{Board}
+\subsection{Sensor}
+\subsection{Motor}
+To properly dimension the motors these assumptions are taken:
+\begin{enumerate}
+	\item $\eta = 1$ No losses in wheel-sphere coupling
+	\item No slip of the wheel on the sphere
+	\item Hollow sphere
+	\item Flat disk
+\end{enumerate}
+
+The data given are:
+\begin{itemize}
+	\item $m_s$ mass of the sphere
+	\item $r_s$ radius of the sphere
+	\item $m_w$ mass of the wheel
+	\item $r_w$ radius of the wheel
+	\item $M_{max}$ maximum torque provided by the motor-gearbox 
+	\item $\omega_{max}$ maximum angular speed of the motor-gearbox
+	\item $J_m$ inertia of the rotor
+\end{itemize}
+It is therefore possible to estimate the maximum continuous  acceleration and speed of the sphere.
+
+\section{Control} \label{sec:control}
+
+\section{Conclusion} \label{sec:conc}
+
+
+
+\clearpage
+\lhead{ }
+\begin{thebibliography}{100}
+	
+	\bibitem{Ole}Jared M. Cregg, Roberto Leiras, Alexia Montalant, Ian R. Wickersham, and Ole Kiehn, \textit{Brainstem Neurons that Command Left/Right Locomotor Asymmetries} 
+	
+	
+	\bibitem{sar} Robin R. Murphy, Eric Steimle et al. \textit{Cooperative Use of Unmanned Sea Surface and Micro Aerial Vehicles at Hurricane Wilma},Journal of Field Robotics,2008
+	\bibitem{eco}     Kenzo Nonami, Farid Kendoul, Satoshi Suzuki, Wei Wang, Daisuke Nakazawa,\textit{Autonomous Flying Robots}, Springer, 2010.
+	\bibitem{roll} G. Sachs, \textit{What Can Be Learned from Unique Lateral-Directional Dynamics Properties of Birds for Mini-Aircraft}, Atmospheric Flight Mechanics Conference and Exhibit, 2007
+	%\bibitem{ref1} Onur Bilgen, Kevin B. Kochersberger, and Daniel J. Inman, \textit{Novel, Bidirectional, Variable-Camber Airfoil via Macro-Fiber Composite Actuators}, Journal of aircraft Vol. 47, No. 1, January–February 2010.
+	\bibitem{real_plane} R. Pecora, F. Amoroso, and L. Lecce, \textit{Effectiveness of Wing Twist Morphing in Roll Control}, Journal of aircraft Vol. 49, No. 6, November–December 2012
+	\bibitem{ref3} Osgar John Ohanian III, Christopher Hickling, Brandon Stiltner, Etan D. Karni, \textit{Piezoelectric Morphing versus Servo-Actuated MAV Control Surfaces}, 53rd AIAA/ASME/ASCE/AHS/ASC Structures, Structural Dynamics and Materials Conference, 2012
+	\bibitem{ref4} Helen M. Garcia , Mujahid Abdulrahim and Rick Lind, \textit{Roll control for a micro air vehicle using active wing morphing}, AIAA Guidance, Navigation, and Control Conference and Exhibit, 2003
+	\bibitem{ref5} Mujahid Abdulrahim, Helen Garcia, and Rick Lind, \textit{Flight Characteristics of Shaping the Membrane Wing of a Micro Air Vehicle}, Journal of aircraft Vol. 42, No. 1, January–February 2005
+	\bibitem{ref6} M. Di Luca, S. Mintchev, G. Heitz, F. Noca and D. Floreano, \textit{Bioinspired morphing wings for extended flight envelope and roll control of small drones}, Interface Focus 7, 2017
+	\bibitem{urb_env} William E. Green and Paul Y. Oh, \textit{A Hybrid MAV for Ingress and Egress of Urban Environments}, IEEE transactions on robotics, 2009
+	\bibitem{twist} Bret Stanford, Mujahid Abdulrahim, Rick Lind, and Peter Ifju, \textit{Actuation for Roll Control of a Micro Air Vehicle}, Journal of aircraft,  2007
+	\bibitem{rev} Juan Carlos Gomez and Ephrahim Garcia, \textit{Morphing unmanned aerial vehicles}, Smart materials and structures, 2011.
+	\bibitem{book} E.L. Houghton, P.W. Carpenter, Steven H. Collicott and Daniel T. Valentine, \textit{Aerodynamics for engineering students}, Seventh edition.
+	\bibitem{fire} Pero Skorput, Sadko Mandzuka, Hrvoje Vojvodic, \textit{The Use of Unmanned Aerial Vehicles for Forest Fire Monitoring }, 58th International Symposium ELMAR, 2016
+	\bibitem{city} David Gallacher, \textit{Drone Applications for Environmental Management in Urban Spaces: A Review}, International Journal of Sustainable Land Use and Urban Planning, 2016
+	\bibitem{disaster} Ludovic Apvrille, Tullio Tanzi, and Jean-Luc Dugelay \textit{Autonomous Drones for Assisting Rescue Services within the context of Natural Disasters}, XXXIth URSI General Assembly and Scientific Symposium, 2014
+\end{thebibliography}
+\bibliographystyle{plainnat}
+\listoffigures
+\listoftables
+\appendix
+\section{Code for STM32 NUCLEO 64 board}
+\subsection{Main}
+\lstinputlisting[style=CStyle]{../MouseTreadmillSTM32Project/Core/Inc/main.h}
+\lstinputlisting[style=CStyle]{../MouseTreadmillSTM32Project/Core/Src/main.c}
+\subsection{Treadmill driver}
+\lstinputlisting[style=CStyle]{../CodeSTM32/src/mouseDriver.c}
+\lstinputlisting[style=CStyle]{../CodeSTM32/src/mouseDriver.h}
+\subsection{Sensor driver}
+\lstinputlisting[style=CStyle]{../CodeSTM32/src/sensorDriver.c}
+\lstinputlisting[style=CStyle]{../CodeSTM32/src/sensorDriver.h}
+\subsection{Code for unit tests}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/display.h}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/main.c}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/mock_mouseDriver.h}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/mock_sensorDriver.h}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/test_mouseDriver.h}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/test_sensorDriver.h}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/test_mouseDriver.c}
+\lstinputlisting[style=CStyle]{../CodeSTM32/test/test_sensorDriver.c}
+\subsection{Build script}
+\lstinputlisting[style=CStyle]{../CodeSTM32/src/build.sh}
+
+\section{Code for PC}
+\subsection{GUI}
+\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
+\subsection{Routine example}
+\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
+\subsection{Sensor data-sheet}
+\includepdf[pages=-]{../resources/sensorDatasheet.pdf}
+%\input{"../docs/latex/refman.tex"}
+
+
+
+\end{document}
