@@ -83,7 +83,26 @@
 	tabsize=2,
 	language=Python
 }
+\lstset{
+	basicstyle=\ttfamily,
+	columns=fullflexible,
+	showstringspaces=false,
+	commentstyle=\color{gray}\upshape
+}
 
+\lstdefinelanguage{XML}
+{
+	morestring=[b]",
+	morestring=[s]{>}{<},
+	morecomment=[s]{<?}{?>},
+	numberstyle=\tiny\color{mGray},       
+	breaklines=true, 
+	numbers=left,            
+	numbersep=5pt,       
+	identifierstyle=\color{mGreen},
+	keywordstyle=\color{magenta},
+	morekeywords={xmlns,version,type}% list your attributes here
+}
 %\usepackage{natbib}
 \pagestyle{fancy}
 \title{Development and study of ailerons vs. twisting wing}
@@ -247,6 +266,7 @@ The functional requirements are listed as well:
 	\item \textbf{Speed routines} The user can define a speed routine, which needs to be executed by the treadmill. The speed routine consist in a list of 2D speed setpoints and the time interval during which the machine should execute them.
 	\item \textbf{User interface} The user can use a Graphical user interface (GUI) on a computer to be able to use the mouse treadmill. This interface informs the user if the sensors are correctly connected and initialized, and it should give a live update of the treadmill speed.
 	\item \textbf{Data logging} The user can save the data sent by the treadmill during the experiment for future uses. 
+	\item \textbf{Expandability of the system} The user can easily expand the system with other controllers to have other features, than the ones listed above.
 \end{itemize}
 
 \subsection{Structure of the report}
@@ -257,13 +277,92 @@ Finally in section \ref{sec:conc} the conclusion of the project is given. The co
 In this section the architecture and the communication are explained and detailed.
 \subsection{System architecture}
 In this section the architecture and interfaces between the different components of the machine are detailed.
-\subsection{Communication}
-In this section all the messages as well as their meaning and usage are explained.
 
 \section{Design choices}\label{sec:design}
 In this section the design choices are explained and justified. First the choice of the board is analysed, then the sensors and finally the calculations for the motor dimensioning are shown.
 \subsection{Board}
+For the board choice different types are taken into account:
+\begin{itemize}
+	\item \textbf{Single board computer}: In this category the raspberry pi and the odroid are taken into consideration. These boards offer powerful computers, which can be running operating systems such as Linux or Windows, which makes them interesting. Unfortunately they can't provide any accurate timing,  which is needed for the motor control and PWM generation.
+	\item \textbf{Evaluation boards}: In this category the STM32 nucleo boards as well as the arduino boards can be found. These boards allow proper timing of the signals and accurate PWM generation, but on the other hand a computer is needed for plotting and storing the data, which can't be done locally on the board due to memory restrictions and limited resources on the board.
+\end{itemize}
+Due to the constraints in the system the second category is consider for implementation, the STM32L476RG board is taken for the system. Table \ref{tab:board} summarizes the features of the board.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|r} 
+		\textbf{Description}&\textbf{Value}  &\textbf{Unit}  \\ 
+		\hline
+		\hline 
+		Architecture & ARM-Cortex 32-bit with FPU & $-$ \\ 
+		\hline 
+		Clock frequency & 80  & $[MHz]$  \\ 
+		\hline 
+		Flash memory & 1 & $[MB]$ \\ 
+		\hline 
+		RAM memory & 128 & $[KB]$  \\ 
+		\hline 
+		I2C interfaces & 3 & $-$  \\ 
+		\hline 
+		USART interfaces & 5  & $-$  \\ 
+		\hline 
+		SPI interfaces & 3  & $-$  \\  
+		\hline 
+		DMA controller & 14 & $-$  \\
+		\hline
+		Cost & 20.58 &$[CHF]$
+	\end{tabular} 
+	\caption{STM32L476RG main features.}
+	\label{tab:board}
+\end{table}
+One of the most important feature of the board is the DMA, which enhances the performances of the CPU. The DMA is used for the UART communication with the computer. This technique frees the CPU from waiting for the UART communication to be finished, so that it can spend more time on other activities. This same solution can be, in principle, adopted for the SPI communication if a standard SPI is used. Unfortunately the timing diagrams for the sensors are not standard, thus some time needs to be "wasted" by the processor so that the sensors can keep up with the communication.
+Other interesting features are: the big flash memory, the good RAM memory and the low cost. One drawback is that dynamic memory allocation is not possible in such an small system to prevent stack overflow and problems during run time. This is why the size of the speed routine is limited to a given number of points.
+Finally the multiple serial interfaces allow the possibility to expand the system to a bigger one with more controllers involved.
+
+\subsection{Communication}
+\begin{wrapfigure}{R}{0.42\textwidth}
+	\includegraphics[width=\linewidth]{fig/MAVLink_logo.png}
+	\caption{MAVLink logo}\label{fig:MAVLink_logo}
+\end{wrapfigure}
+For the communication with the computer the UART protocol is chosen. This choice is almost mandatory since most boards are provided with an UART to USB interface and a mini-USB connector. The STM32L476RG is no exception to this rule.
+
+Since the system needs to be expanded for future more complex experiments some thought is put in the choice of the messaging protocol to allow this key feature.
+The best solution found is MAVLink. "MAVLink is a very lightweight messaging protocol for communicating with drones"\cite{mavlink}, one can say that the mouse treadmill is not meant to fly around, but this messaging protocol is flexible enough to be adapted to the mouse treadmill.
+More precisely a dialect is described in \ref{app:mavlink}, and summarized in table \ref{tab:msg}. Thanks to the description file it is possible to generate libraries in different programming languages (C, Python, Java, ...) and if in the future a new message is required a additional definition can be added to the file and the libraries can be regenerated.
+
+Despite the light weight MAVLink comes with some interesting features, such is high reliability (detects packets drops and corruption), high efficiency (only 14-bits of overhead), it can also allow up to 255 concurrent systems on the network.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||p{3cm}|l|l} 
+		\textbf{Name} &\textbf{Description} &\textbf{Sender} &\textbf{Receiver}\\ 
+		\hline
+		\hline 
+		HEARTBEAT &Verifies communication& STM32 & PC \\ 
+		\hline 
+		SPEED\_INFO &Measured speed  & STM32 & PC \\ 
+		\hline 
+		SPEED\_SETPOINT & Speed setpoint & PC & STM32 \\ 
+		\hline 
+		MODE\_SELECTION & Changes mode & PC & STM32  \\ 
+		\hline 
+		MOTOR\_SETPOINT & Up time of PWM duty cycle & STM32 & PC  \\ 
+		\hline 
+		POINT\_LOADED & Acknowledge for routine point loaded  & STM32 & PC  \\ 
+		\hline 
+		POINT & Information for one point of the routine  & PC & STM32  \\  
+		\hline 
+		ERROR & Error message & STM32 & PC  \\
+		\hline
+		RAW\_SENSOR & Raw sensor values & STM32 & PC \\
+	\end{tabular} 
+	\caption{List and description of the MAVLink messages.}
+	\label{tab:msg}
+\end{table}
+
+
 \subsection{Sensor}
+For sensing the speed of the wheel a contactless solution is chosen. To have achive this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine. 
+
 \subsection{Motor}
 To properly dimension the motors these assumptions are taken:
 \begin{enumerate}
@@ -296,7 +395,7 @@ It is therefore possible to estimate the maximum continuous  acceleration and sp
 \begin{thebibliography}{100}
 	
 	\bibitem{Ole}Jared M. Cregg, Roberto Leiras, Alexia Montalant, Ian R. Wickersham, and Ole Kiehn, \textit{Brainstem Neurons that Command Left/Right Locomotor Asymmetries} 
-	
+	\bibitem{mavlink} MAVLink Developer Guide, \textit{https://mavlink.io/en/}
 	
 	\bibitem{sar} Robin R. Murphy, Eric Steimle et al. \textit{Cooperative Use of Unmanned Sea Surface and Micro Aerial Vehicles at Hurricane Wilma},Journal of Field Robotics,2008
 	\bibitem{eco}     Kenzo Nonami, Farid Kendoul, Satoshi Suzuki, Wei Wang, Daisuke Nakazawa,\textit{Autonomous Flying Robots}, Springer, 2010.
@@ -319,6 +418,8 @@ It is therefore possible to estimate the maximum continuous  acceleration and sp
 \listoffigures
 \listoftables
 \appendix
+\section{MAVLink dialect description file}\label{app:mavlink}
+\lstinputlisting[language=XML]{../mouse.xml}
 \section{Code for STM32 NUCLEO 64 board}
 \subsection{Main}
 \lstinputlisting[style=CStyle]{../MouseTreadmillSTM32Project/Core/Inc/main.h}

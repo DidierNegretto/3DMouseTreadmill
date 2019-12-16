@@ -2,3 +2,5 @@
 \select@language {english}
 \select@language {english}
 \contentsline {table}{\numberline {1}{\ignorespaces Summary of the requirements for the mouse treadmill platform.\relax }}{4}{table.caption.8}
+\contentsline {table}{\numberline {2}{\ignorespaces STM32L476RG main features.\relax }}{5}{table.caption.9}
+\contentsline {table}{\numberline {3}{\ignorespaces List and description of the MAVLink messages.\relax }}{7}{table.caption.11}
