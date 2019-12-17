@@ -64,6 +64,22 @@
 	tabsize=2,
 	language=C
 }
+\lstdefinestyle{Bashstyle}{
+	backgroundcolor=\color{backgroundColour},   
+	commentstyle=\color{mGreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{mGray},
+	stringstyle=\color{mPurple},
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                                                 
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=bash
+}
 \lstdefinestyle{PyStyle}{
 	backgroundcolor=\color{backgroundColour},   
 	commentstyle=\color{mGreen},
@@ -273,10 +289,16 @@ The functional requirements are listed as well:
 This report is structured as follows: an introduction is given in section \ref{sec:intro}, the system architecture and communication are explained in \ref{sec:archi}. Section \ref{sec:design}, describes the design decisions and the components choices made .Section \ref{sec:control} describes the control strategy and shows some preliminary responses.
 Finally in section \ref{sec:conc} the conclusion of the project is given. The code, code documentation as well as the data-sheets of the components are annexed.
 
-\section{System architecture and communication} \label{sec:archi}
-In this section the architecture and the communication are explained and detailed.
-\subsection{System architecture}
-In this section the architecture and interfaces between the different components of the machine are detailed.
+\section{System architecture} \label{sec:archi}
+In this section the architecture of the system is explained and detailed.
+One first overview of the system is given in figure \ref{fig:arch}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{fig/archi.pdf}
+	\caption{Architecture for mouse treadmill project}
+	\label{fig:arch}
+\end{figure}
+The core of the system is the STM32L476RG, which can read from the sensors using the SPI interface and control the motors using the PWM. Moreover it can communicate with the computer and the GUI for data logging and to receive the inputs form the user. The communication with the computer uses the DMA capabilities of the microcontroller to free the processor from waiting for the communication to end before being able to take care of other tasks.
 
 \section{Design choices}\label{sec:design}
 In this section the design choices are explained and justified. First the choice of the board is analysed, then the sensors and finally the calculations for the motor dimensioning are shown.
@@ -361,7 +383,38 @@ Despite the light weight MAVLink comes with some interesting features, such is h
 
 
 \subsection{Sensor}
-For sensing the speed of the wheel a contactless solution is chosen. To have achive this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine. 
+For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
+Because of that the PMW3360 is chosen for the implentation.
+The working principle of the sensor is quite simple. The sensor is equipped with a LED to light a given area and a camera. The camera takes picture of the moving surface with a frequency of up to 12000 $[fps]$. Using the integrated DSP module some features are extracted form the images and, by knowing the displacement of the features, it is possible to determine how much the surface has moved on the X and Y direction.
+Some other useful information can be retrieved from the sensor such as :
+\begin{itemize}
+	\item \textbf{Lift status} This bit in the motion register gives information about the status of the sensor and especially if the sensor detects a surface or not. This information is used to determine if the read value is valid or not.
+	\item \textbf{Surface quality (SQUAL)} This register gives an information about how many features are detected on the surface. This value is used to verify the quality of the measurement, which is considered valid only if the number of detected feature is above a given threshold.
+	\item \textbf{SROM ID} This value is read after the power up of the sensor to verify that the SROM of the sensor is uploaded correctly using the SPI interface. If this value is not as expected it means that the sensor is not initialized correctly and thus might not work properly. 
+\end{itemize}
+The performances of the sensor are summarized on table \ref{tab:PMW3360}\footnote{$[cpi]$ stands for counts per inch.}. For more details refer to \ref{app:PMW3660}.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|r} 
+		\textbf{Description}&\textbf{Value}  &\textbf{Unit}  \\ 
+		\hline
+		\hline 
+		High speed detection & 6.3 & $[\frac{m}{s}]$ \\ 
+		\hline 
+		High acceleration detection & 490  & $[\frac{m}{s^2}]$  \\ 
+		\hline 
+		Default resolution & 5000 & $[cpi]$ \\ 
+		\hline 
+		Resolution error of & 1 & $[\%]$  \\ 
+		\hline 
+		4 wires SPI interface & 1 & $-$  \\ 
+		\hline
+		Cost & 29.99 &$[\$]$
+	\end{tabular} 
+	\caption{PMW3660 main features.}
+	\label{tab:PMW3360}
+\end{table}
+
 
 \subsection{Motor}
 To properly dimension the motors these assumptions are taken:
@@ -383,8 +436,73 @@ The data given are:
 	\item $J_m$ inertia of the rotor
 \end{itemize}
 It is therefore possible to estimate the maximum continuous  acceleration and speed of the sphere.
+\section{User manual for mouse treadmill software}
+The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
+\subsection{Installation of the PC software}
+First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:
+\begin{itemize}
+	\item pyserial
+	\item os
+	\item sys
+	\item numpy
+	\item appjar
+	\item tqdm
+	\item json
+	\item matplotlib
+\end{itemize}
+Make sure that pymavlink is not install. This is important since the dialect used is a standard one, but it is custom. Do not install pymavlink using PiP.\\
+
+To install the software the sequent steps have to be accomplished:
+\begin{enumerate}
+	\item Clone the git repository of the project using 
+	\begin{lstlisting}[style = Bashstyle]
+		$ git clone https://github.com/DidierNegretto/3DMouseTreadmill.git
+	\end{lstlisting}
+	\item Move inside the repository
+	\begin{lstlisting}[style = Bashstyle]
+		$ cd 3DMouseTreadmill/
+	\end{lstlisting}
+	\item Make sure no previous version of pymavlink is installed
+	\begin{lstlisting}[style = Bashstyle]
+		$ pip uninstall pymavlink
+	\end{lstlisting}
+	\item Remove the mavlink directory
+	\begin{lstlisting}[style = Bashstyle]
+		$ rm -r -f mavlink/
+	\end{lstlisting}
+	\item Clone the mavlink repository
+	\begin{lstlisting}[style = Bashstyle]
+		$ git clone https://github.com/mavlink/mavlink.git
+	\end{lstlisting}
+	\item Update the submodule
+	\begin{lstlisting}[style = Bashstyle]
+		$ git submodule update --init --recursive
+	\end{lstlisting}
+	\item Copy mouse.xml file and the mouse.py files into mavlink/pymavlink/dialects/v20 
+	\item Change directory to mavlink/
+	\begin{lstlisting}[style = Bashstyle]
+		$ cd mavlink
+	\end{lstlisting}
+	\item Export the path to the repository so that python will find all the code it needs to run
+	\begin{lstlisting}[style = Bashstyle]
+		$ export PYTHONPATH=`path_to_repository/3DMouseTreadmill/`
+	\end{lstlisting}
+	\item Change directory to pymavlink
+	\begin{lstlisting}[style = Bashstyle]
+		$ cd pymavlink
+	\end{lstlisting}
+	\item Setup everything using the setup.py provided
+	\begin{lstlisting}[style = Bashstyle]
+		$ python3 setup.py install --user
+	\end{lstlisting}
+	
+\end{enumerate}
+\subsection{How to use the GUI} 
+\subsection{How to write a routine}
+\subsection{How to extend the system}
 
 \section{Control} \label{sec:control}
+For the closed-loop control a simple PI controller is used. This can be improved in future works to allow for faster and better performance control.
 
 \section{Conclusion} \label{sec:conc}
 
@@ -396,6 +514,7 @@ It is therefore possible to estimate the maximum continuous  acceleration and sp
 	
 	\bibitem{Ole}Jared M. Cregg, Roberto Leiras, Alexia Montalant, Ian R. Wickersham, and Ole Kiehn, \textit{Brainstem Neurons that Command Left/Right Locomotor Asymmetries} 
 	\bibitem{mavlink} MAVLink Developer Guide, \textit{https://mavlink.io/en/}
+	\bibitem{py} Python website, \textit{https://www.python.org/downloads/}
 	
 	\bibitem{sar} Robin R. Murphy, Eric Steimle et al. \textit{Cooperative Use of Unmanned Sea Surface and Micro Aerial Vehicles at Hurricane Wilma},Journal of Field Robotics,2008
 	\bibitem{eco}     Kenzo Nonami, Farid Kendoul, Satoshi Suzuki, Wei Wang, Daisuke Nakazawa,\textit{Autonomous Flying Robots}, Springer, 2010.
@@ -447,7 +566,8 @@ It is therefore possible to estimate the maximum continuous  acceleration and sp
 \lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
 \subsection{Routine example}
 \lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
-\subsection{Sensor data-sheet}
+\section{Data-sheets}
+\subsection{Sensor Data-sheet }\label{app:PMW3660}
 \includepdf[pages=-]{../resources/sensorDatasheet.pdf}
 %\input{"../docs/latex/refman.tex"}
 
