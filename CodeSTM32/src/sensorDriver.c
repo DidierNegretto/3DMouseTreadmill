@@ -1,10 +1,8 @@
-/*
- * sensorDriver.c
- *
- *  Created on: Nov 11, 2019
- *      Author: Didier
- */
+/*! \file sensorDriver.c
+\brief Implementation of the sensor driver for the mouse treadmill project.
 
+\author Didier Negretto
+*/
 # include "sensorDriver.h"
 
 /*!
@@ -20,14 +18,14 @@ static sensor_t sensor_x = {CS_0_GPIO_Port,CS_0_Pin,PW_0_GPIO_Port,PW_0_Pin,0};
 static sensor_t sensor_y = {CS_1_GPIO_Port,CS_1_Pin,PW_1_GPIO_Port,PW_1_Pin,0};
 
 /*!
- \fn sensorDriver_powerup(sensor_t sensor)
+ \fn sensorDriver_powerup(sensor_t *sensor)
  \param sensor sensor structure of the sensor to be powered up
  \brief This function turns off and the on the sensor. It then performs the power up routine
  \note This routine is time consuming and done only at start up.
 
  After Flashing the SROM the SROM_ID register is read to confirm that the
  SROM have been flashed correctly.
- */
+*/
 void sensorDriver_powerup(sensor_t * sensor);
 
 /*!

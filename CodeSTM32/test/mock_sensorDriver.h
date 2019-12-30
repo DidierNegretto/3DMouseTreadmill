@@ -1,19 +1,25 @@
-/*
- * mock_sensorDriver.h
- *
- *  Created on: Nov 25, 2019
- *      Author: Didier
- */
+/*! \file mock_sensorDriver.h
+\brief In this file mock functions are defined for the sensor driver unit tests
+
+\author Didier Negretto
+*/
+
 
 #ifndef MOCK_SENSORDRIVER_H_
 #define MOCK_SENSORDRIVER_H_
 
+/**
+ * A mock structure to represent one sensor
+ */
 typedef struct SENSOR{
-    int cs_port;
-    uint8_t cs_pin;
-    int pw_port;
-    uint8_t pw_pin;
-    uint8_t status;
+    /*@{*/
+    int cs_port; /**< the chip select port for the sensor */
+    uint8_t cs_pin;/**< the chip select pin for the sensor */
+    int pw_port; /**< the power port for the sensor */
+    uint8_t pw_pin;/**< the power pin for the sensor */
+    uint8_t status;/**< the sensor status. This is the SROM_ID after the upload of the
+  firmware. This value should not be 0 otherwise the upload of the SROM is failed. */
+    /*@}*/
 } sensor_t;
 
 #define CS_0_GPIO_Port 0

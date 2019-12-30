@@ -1,9 +1,13 @@
-/*
- * main.c
- *
- *  Created on: Nov 24, 2019
- *      Author: Didier
- */
+/*! \file main.c
+\brief Main for unit testss
+\author Didier Negretto
+
+This main is compiled and run after the compilation of the stm32 project
+This main runs the unit tests and prints which tests are passed and which are not
+\attention  The bash script for the automatic unit testing after compilation
+was written for MAC and may not work on LINUX or Windows. To solve this issue
+modify CodeSTM32/src/build.sh
+*/
 
 #include "test_mouseDriver.h"
 #include "test_sensorDriver.h"

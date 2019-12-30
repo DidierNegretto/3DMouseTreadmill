@@ -925,7 +925,9 @@ EXCLUDE                = ../mavlink \
                          ../MouseTreadmillSTM32Project/Core/Src/stm32l4xx_it.c \
                          ../MouseTreadmillSTM32Project/Core/Src/syscalls.c \
                          ../MouseTreadmillSTM32Project/Core/Src/sysmem.c \
-                         ../MouseTreadmillSTM32Project/Core/Src/system_stm32l4xx.c
+                         ../MouseTreadmillSTM32Project/Core/Src/system_stm32l4xx.c \
+                         ../CodeSTM32/test/mock_mouseDriver.h \
+                         ../CodeSTM32/test/mock_sensorDriver.h
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

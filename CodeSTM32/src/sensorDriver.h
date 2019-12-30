@@ -1,3 +1,8 @@
+/*! \file sensorDriver.h
+\brief Header of the sensor driver for the mouse treadmil project.
+
+\author Didier Negretto
+*/
 #pragma once
 
 #ifndef SENSORDRIVER_H_

@@ -32,11 +32,13 @@
 \brief System ID for MAVLink
 */
 #define SYS_ID 0
+
 /*!
 \def COMP_ID
 \brief Component ID for MAVLink
 */
 #define COMP_ID 0
+
 /* maximum size of the trasmit buffer */
 /*!
 \def MAX_BYTE_BUFFER_SIZE
@@ -50,7 +52,6 @@
 */
 #define MAX_POINTS 255
 
-
 /*!
 \fn mouseDriver_init
 \brief Function that initializes the driver of the mouse treadmill.
@@ -58,8 +59,6 @@
 This functions initialites the mouse treadmill driver. It initializes the sensors as well.
 */
 void mouseDriver_init(void);
-
-
 
 /*!
 \fn mouseDriver_control_idle

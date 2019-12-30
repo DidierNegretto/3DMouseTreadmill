@@ -1,16 +1,25 @@
-/*
- * sensorSROM.h
- *
- *  Created on: Nov 11, 2019
- *      Author: Didier
- */
+/*! \file sensorSROM.h
+\brief Header defining the SROM to be uploaded on the sensor after every reset.
+
+\author mrjohnk 
+
+This header was taken from: https://github.com/mrjohnk/PMW3360DM-T2QU/blob/master/Arduino%20Examples/PMW3360DM-polling/SROM_0x04_Arduino.ino
+*/
 
 #pragma once
 #ifndef SENSORSROM_H_
 #define SENSORSROM_H_
 
+/*!
+\var firmware_length
+\brief length of the firmware to be uploaded on the sensors
+*/
 static const unsigned short firmware_length = 4094;
 
+/*!
+\var firmware_data
+\brief The firmware to be uploaded on the sensors
+*/
 static const unsigned char firmware_data[] = {
 0x01, 0x04, 0x8e, 0x96, 0x6e, 0x77, 0x3e, 0xfe, 0x7e, 0x5f, 0x1d, 0xb8, 0xf2, 0x66, 0x4e,
 0xff, 0x5d, 0x19, 0xb0, 0xc2, 0x04, 0x69, 0x54, 0x2a, 0xd6, 0x2e, 0xbf, 0xdd, 0x19, 0xb0,

@@ -25,12 +25,12 @@
 \contentsline {section}{\numberline {A}MAVLink dialect description file}{12}{appendix.A}
 \contentsline {section}{\numberline {B}Code for STM32 NUCLEO 64 board}{16}{appendix.B}
 \contentsline {subsection}{\numberline {B.1}Main}{16}{subsection.B.1}
-\contentsline {subsection}{\numberline {B.2}Treadmill driver}{30}{subsection.B.2}
-\contentsline {subsection}{\numberline {B.3}Sensor driver}{39}{subsection.B.3}
-\contentsline {subsection}{\numberline {B.4}Code for unit tests}{44}{subsection.B.4}
-\contentsline {subsection}{\numberline {B.5}Build script}{53}{subsection.B.5}
-\contentsline {section}{\numberline {C}Code for PC}{54}{appendix.C}
-\contentsline {subsection}{\numberline {C.1}GUI}{54}{subsection.C.1}
-\contentsline {subsection}{\numberline {C.2}Routine example}{60}{subsection.C.2}
-\contentsline {section}{\numberline {D}Data-sheets}{60}{appendix.D}
-\contentsline {subsection}{\numberline {D.1}Sensor Data-sheet }{60}{subsection.D.1}
+\contentsline {subsection}{\numberline {B.2}Treadmill driver}{32}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Sensor driver}{42}{subsection.B.3}
+\contentsline {subsection}{\numberline {B.4}Code for unit tests}{47}{subsection.B.4}
+\contentsline {subsection}{\numberline {B.5}Build script}{56}{subsection.B.5}
+\contentsline {section}{\numberline {C}Code for PC}{57}{appendix.C}
+\contentsline {subsection}{\numberline {C.1}GUI}{57}{subsection.C.1}
+\contentsline {subsection}{\numberline {C.2}Routine example}{63}{subsection.C.2}
+\contentsline {section}{\numberline {D}Data-sheets}{63}{appendix.D}
+\contentsline {subsection}{\numberline {D.1}Sensor Data-sheet }{63}{subsection.D.1}

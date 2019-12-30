@@ -162,6 +162,13 @@ this functions verifies that the transitions are lawful.
 */
 void mouseDriver_setMode(uint8_t mode);
 
+/*!
+\fn mouseDriver_initMotorSignal
+\brief Function that initializes the motor signals to 0.
+
+This function modifies \ref actual_motor_signal by setting all their fields to 0.
+*/
+void mouseDriver_initMotorSignal(void);
 
 void mouseDriver_initSetpoint(void){
 	actual_speed_setpoint.setpoint_x = 0;

@@ -33,6 +33,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+/*!
+\def TIMEOUT
+\brief Constant used as timeout in ms. 
+\deprecated Using DMA makes the transfer free from the processor, thus the
+TIMEOUT never appens.
+*/
 #define TIMEOUT 2
 /* USER CODE END PD */
 
@@ -51,6 +57,14 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
+/*!
+\var inByte
+\brief Buffer for one byte.
+
+This is the buffer used to copy data form UART. When one byte is available it is stored in
+inByte and then parsed using the mavlink_parse_char function. Everytime one
+byte arrives the inByte variable is overwritten.
+*/
 static uint8_t inByte = 0;
 /* USER CODE END PV */
 
@@ -79,6 +93,10 @@ void main_wait_20us(void){
 		i++;
 	}
 }
+/*!
+\fn main_wait_1us(void)
+\brief Function for waiting approximately one microsecond
+*/
 void main_wait_1us(void){
 	int i = 0;
 	i = 0;
@@ -159,13 +177,29 @@ void main_transmit_spi(uint8_t data){
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/*!
+\fn TM7_IRQHandler(void)
+\brief Handle for IRQ of Timer 7
 
+Timer 7 is used to generate a periodic interrupt to send status messages. 
+Those messages give information about the status of the system and are sent periodically.
+The messages giving more important information such as the speed of the ball are sent
+as fast as possible, which means faster than the status messages.
+*/
 void TM7_IRQHandler(void){
 	HAL_TIM_IRQHandler(&htim7);
-
 }
 
-/* This callback is called by the HAL_UART_IRQHandler when the given number of bytes are received */
+/*!
+\fn HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+\param huart pointer on huart structure (as defined in the HAL library)
+\brief Function called everytime a new byte is available from UART communication
+
+This function is used to receive data from UART communication. Everytime one byte is 
+received by the STM32 it is copied in the \ref inByte and then passed to the mavlink_parse_char
+function. Once enough byte are taken and one message is received the function
+\ref mouseDriver_readMsg is called and a subsiquent action is taken.
+*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_NVIC_DisableIRQ(USART2_IRQn);
 	mavlink_message_t inmsg;
@@ -181,6 +215,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
+/*!
+\fn HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+\param htim pointer on timer structure (as defined in the HAL library)
+\brief Function called everytime a certain time is enlapsed
+
+This function is used to send periodically some status information to the PC.
+*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim->Instance==TIM7){
     	mouseDriver_send_status_msg();
