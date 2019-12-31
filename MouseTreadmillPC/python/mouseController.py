@@ -26,7 +26,8 @@ DATA = { "HEARTBEAT": {"time": [], "mode": []},
 LOG = []
 MAX_SAMPLES_ON_SCREEN = 200
 print(mouseController.MAVLink_speed_info_message.fieldnames)
-port = "/dev/cu.usbmodem14102"
+#port = "/dev/cu.usbmodem14102"
+port  = "/dev/stdout"
 
 class MyApplication():
      actualMode = 0 
@@ -73,8 +74,7 @@ class MyApplication():
                     #print(m)
                     DATA["SPEED_INFO"]["time"].append(m.time_x)
                     DATA["SPEED_INFO"]["speed_x"].append(m.speed_x)
-                    #DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
-                    DATA["SPEED_INFO"]["speed_y"].append(0)
+                    DATA["SPEED_INFO"]["speed_y"].append(m.speed_y)
                 elif m.name == "RAW_SENSOR":
                     if m.sensor_id == 0:
                         status_x = []
@@ -185,32 +185,36 @@ class MyApplication():
             time.sleep(0.001)
 
      def loadRoutine(self):
-        if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:
-            if (len(mouseRoutine.ROUTINE["duration"])>254 or len(mouseRoutine.ROUTINE["setpoint_x"])>254 or len(mouseRoutine.ROUTINE["setpoint_y"])>254):
-                raise ValueError("mouseRoutine too long")
-            if not (len(mouseRoutine.ROUTINE["duration"]) == len(mouseRoutine.ROUTINE["setpoint_x"]) == len(mouseRoutine.ROUTINE["setpoint_y"])):
-                raise ValueError("not all components of mouseRoutine have the same lenght")
-            
-            
-            # TODO add verification on max speed and min speed
-            
-            
-            for i in tqdm(range(len(mouseRoutine.ROUTINE["duration"]))):
-                self.mavlink.point_send(mouseRoutine.ROUTINE["duration"][i],i,mouseRoutine.ROUTINE["setpoint_x"][i], mouseRoutine.ROUTINE["setpoint_y"][i])
-                stop = True
-                while(self.connection.in_waiting>0 or stop):
-                    # Recive messages
-                    try:
-                        m = self.mavlink.parse_char(self.connection.read())
-                    except:
-                        pass
-                    if m:
-                        #print(m)
-                        if m.name == "POINT_LOADED":
-                            if m.point_id == i:
-                                stop = False
-                            else:
-                                raise Exception("ERROR LOADING DATA, wrong msg_id received")
+        if (len(mouseRoutine.ROUTINE["duration"])>254 or len(mouseRoutine.ROUTINE["setpoint_x"])>254 or len(mouseRoutine.ROUTINE["setpoint_y"])>254):
+            raise ValueError("mouseRoutine too long")
+        if not (len(mouseRoutine.ROUTINE["duration"]) == len(mouseRoutine.ROUTINE["setpoint_x"]) == len(mouseRoutine.ROUTINE["setpoint_y"])):
+            raise ValueError("not all components of mouseRoutine have the same lenght")
+        
+        
+        # TODO add verification on max speed and min speed
+        
+        
+        for i in tqdm(range(len(mouseRoutine.ROUTINE["duration"]))):
+            self.mavlink.point_send(mouseRoutine.ROUTINE["duration"][i],i,mouseRoutine.ROUTINE["setpoint_x"][i], mouseRoutine.ROUTINE["setpoint_y"][i])
+            stop = True
+            while(self.connection.in_waiting>0 or stop):
+                # Recive messages
+                try:
+                    m = self.mavlink.parse_char(self.connection.read())
+                except:
+                    pass
+                if m:
+                    #print(m)
+                    if m.name == "POINT_LOADED":
+                        if m.point_id == i:
+                            stop = False
+                        else:
+                            print ("ERROR LOADING DATA, wrong msg_id received, STOP MODE instead.")
+                            self.mavlink.mode_selection_send(MODES_NUM[0]) 
+                            while(self.connection.out_waiting > 0):
+                                time.sleep(0.001)
+                            time.sleep(0.001)
+                            stop = False
      def saveLog(self):
         with open('log/log.txt', 'w+') as f:
             for item in LOG:

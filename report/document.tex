@@ -37,6 +37,7 @@
 \usepackage[colorlinks=true, allcolors=black]{hyperref}
 \usepackage{wrapfig}
 \usepackage{listings}
+\usepackage{xcolor}
 \renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
 %\renewcommand{\thetable}{\arabic{section}.\arabic{figure}}
 
@@ -500,8 +501,46 @@ To install the software the sequent steps have to be accomplished:
 	\end{lstlisting}
 	
 \end{enumerate}
-\subsection{How to use the GUI} 
+\subsection{How to use the GUI}
+\todo{ADD STATE MACHINE FOR THE MACHINE}  
+In this section the use of the GUI and its functionalities are described.
+First of all the GUI provided can be expanded using the functions in the mouse.py generated using mavlink, and thus can be improved for future versions of the project. One screenshot of the GUI is shown in figure \ref{fig:GUI}.
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\linewidth]{fig/GUI.png}
+	\caption{GUI screenshot on a MAC.}\label{fig:GUI}
+\end{figure}
+Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on other platforms, but it might look different. The library used to design the GUI is Appjar, which is compatible with MAC, LINUX and Windows.
+\begin{itemize}
+	\item \textcolor{red}{\textbf{A}} In this region the content of the HEARTBEAT message are presented. Time is the time from boot of the system in milliseconds. Modes is the mode in which the stm32 is. The mode can be STOP, SPEED AUTO or RUNNING.
+	\item \textcolor{blue}{\textbf{B}} In this region the real-time data are plotted. The top plot shows the X and Y motor signals, the middle one shows the X and Y speed setpoints and the bottom one shows the motor signal. By using the top left buttons it is possible to save the plots and navigate them, it is advisable to store the data and plot them afterwards using another script for better analysis due to the fast update of the plots.
+	\item \textcolor{green}{\textbf{C}} In this region data from the sensors are displayed. ID is the product ID of the sensor and is used to verify that the communication between the sensor and the board is working correctly. LIFT is 0 if the sensor detects correctly the surface and 1 if it does not. SQUAL is the surface quality information. This value should be greater than 20 for the measure to be good. ROM is the SROM ID of the sensor. This value is used to verify that the SROM is flashed correctly during initialization. If everything is working correctly you should see something like table \ref{tab:sens_corr}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|} 
+			\hline
+			SENSOR STATUS\\ 
+			ID 66 = 66 | 66\\
+			LIFT 0 = 0 | 0\\
+			SQUAL > 20 = 34 | 43\\
+			ROM 4 = 4 | 4\\
+			\hline
+		\end{tabular} 
+		\caption{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
+		\label{tab:sens_corr}
+	\end{table}
+	\item \textcolor{cyan}{\textbf{D}} In this region the input from the user are taken. In the first line the user can select the mode to be used:
+	\begin{itemize}
+		\item \textbf{STOP}: When this mode is selected the motor are stopped.
+		\item \textbf{SPEED}: When this mode is selected the motor setpoint can be typed in the two entries under the Speed X and Speed Y labels.
+		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board and then run the routine.
+	\end{itemize} 
+	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO. Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
+\end{itemize}  
+
+
 \subsection{How to write a routine}
+In this section the way to properly define a routine is described. 
 An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
 A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
 \subsection{How to extend the system}
@@ -565,8 +604,9 @@ If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors ar
 \subsection{Results}
 In this section the results of the control are shown as well as the achieved performances in terms measures \ref{sec:measure_test} and control \ref{sec:control_test}.
 \subsubsection{Measure test}\label{sec:measure_test}
-In this section a simple experiment is described and the results are shown. The experiment consist in letting the ball spin in at constant speed in one direction and measure the speed using the sensors. By doing this it is possible to analyze the noise present in the sensor and characterize it.
+In this section a simple experiment is described and the results are shown. The experiment consist in letting the ball spin in at constant speed in one direction and measure the speed using the sensors. By doing this it is possible to analyse the noise present in the sensor and characterize it.
 \subsubsection{Control test}\label{sec:control_test}
+In this section different step responses are measured using different controller parameters and compared to see which values should be used for the $I$ and $K$ parameter in equation \ref{eq:U}.
 
 
 

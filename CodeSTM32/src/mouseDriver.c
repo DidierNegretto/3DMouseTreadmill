@@ -389,8 +389,8 @@ void mouseDriver_idle (void){
     }
     if (send_msg == 1){
         send_msg = 0;
-        mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
         if(actual_mode != MOUSE_MODE_AUTO_LOAD){
+        	mouseDriver_sendMsg(MAVLINK_MSG_ID_HEARTBEAT);
             mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_SETPOINT);
             mouseDriver_sendMsg(MAVLINK_MSG_ID_RAW_SENSOR);
             mouseDriver_sendMsg(MAVLINK_MSG_ID_MOTOR_SETPOINT);

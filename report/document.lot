@@ -5,3 +5,4 @@
 \contentsline {table}{\numberline {2}{\ignorespaces STM32L476RG main features.\relax }}{6}{table.caption.10}
 \contentsline {table}{\numberline {3}{\ignorespaces List and description of the MAVLink messages.\relax }}{7}{table.caption.12}
 \contentsline {table}{\numberline {4}{\ignorespaces PMW3660 main features.\relax }}{8}{table.caption.13}
+\contentsline {table}{\numberline {5}{\ignorespaces Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.\relax }}{12}{table.caption.16}
