@@ -21,7 +21,7 @@
 %\usepackage{todonotes}
 \usepackage{placeins}
 %% Sets page size and margins
-\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=1cm,marginparwidth=1.75cm]{geometry}
 \pgfplotsset{width=10cm,compat=1.9}
 \setlength{\columnsep}{0.3cm}
 \pagestyle{fancy}
@@ -229,7 +229,7 @@ In this section the main objectives and the state of the art for the project are
 \begin{wrapfigure}{L}{0.42\textwidth}
 	\includegraphics[width=\linewidth]{fig/OleSetup.png}
 	\caption{The experimental setup used in \cite{Ole}.}\label{fig:OleSetup}
-	\vspace{-3.0 cm}
+	\vspace{-2 cm}
 \end{wrapfigure}
 The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, on the other hand, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist in a spiral maze made out cardboard. This setup comes with some advantages such as:
 \begin{itemize}
@@ -436,10 +436,11 @@ The data given are:
 	\item $J_m$ inertia of the rotor
 \end{itemize}
 It is therefore possible to estimate the maximum continuous  acceleration and speed of the sphere.
-\section{User manual for mouse treadmill software}
+\section[User manual]{User manual for mouse treadmill software}
 The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
 \subsection{Installation of the PC software}
-First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:
+First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
+\begin{multicols}{3}[]
 \begin{itemize}
 	\item pyserial
 	\item os
@@ -450,6 +451,8 @@ First python 3 needs to be installed, for that see \cite{py}. GIT needs to be in
 	\item json
 	\item matplotlib
 \end{itemize}
+\end{multicols}
+
 Make sure that pymavlink is not install. This is important since the dialect used is a standard one, but it is custom. Do not install pymavlink using PiP.\\
 
 To install the software the sequent steps have to be accomplished:
@@ -499,11 +502,77 @@ To install the software the sequent steps have to be accomplished:
 \end{enumerate}
 \subsection{How to use the GUI} 
 \subsection{How to write a routine}
+An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
+A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
 \subsection{How to extend the system}
 \todo{Say where to generate all the libraries !!!}
 
 \section{Control} \label{sec:control}
-For the closed-loop control a simple PI controller is used. This can be improved in future works to allow for faster and better performance control.
+In this section the main aspect of the control are discussed as well as some results.
+For the closed-loop control a simple PI controller is used (see \ref{sec:controller}). This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). 
+
+\subsection{Inputs/Outputs}
+In this section the signal definitions are described.
+The control diagram is shown in figure \ref{fig:ctrl_diag}. The signals are defined as follow:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]{fig/ctrl_diag.pdf}
+	\caption{Control diagram}\label{fig:ctrl_diag}
+\end{figure}
+
+\begin{itemize}
+	\item 
+	$X = \begin{bmatrix}
+	v_x\\
+	v_y
+	\end{bmatrix}$
+	: is the measured $v_x$ and $v_y$ speeds. This measure is done using the optical sensors, which means that the raw values are as defined in the datasheet of the sensors (see \ref{app:PMW3660}). In short words the sensor runs a navigation program, which does the correlation between two images as fast as possible and finds out of how many counts the two images are displaced in the $x$ and $y$ direction of the sensor, those values are then integrated up to when the motion burst is performed. Since two sensors are used, only one axis of each sensor is meaningful for the control (since the other one is always fixed). The information that can be retrieved from one sensor is the number of counts along one axis that the ball has done since the last read. This can then be translated in to meters by knowing the resolution of the sensor (which is given in counts per inch) and the relation between inches and meters. Furthermore the speed can be computed by keeping track of when the last measure is taken, and the actual time, thus knowing the $dt$ between two measures.
+	\item	
+	$E = \begin{bmatrix}
+	e_x\\
+	e_y
+	\end{bmatrix}$: is the error id est the difference between the setpoint and the measured speed
+	\item  
+	$U = 
+	\begin{bmatrix}
+		u_x\\
+		u_y
+	\end{bmatrix}$: is the control signal, which is the up time of the duty cycle of the PWM signal controlling the X and Y directions. The parameters of this signal can be modified by using the PRESCALER\_PWM and COUNTER\_PERIOD\_PWM. This two values allow for defining the frequency and number of possible values of the PWM signal.
+\end{itemize}
+\subsection{Controller} \label{sec:controller}
+In this section the internal structure of the controller is described.
+The inputs in the controller are the errors on the speed setpoint in X and Y. The control signal is defined as in equation \ref{eq:U}.
+\begin{equation}\label{eq:U}
+U = 
+\begin{bmatrix}
+u_x\\
+u_y
+\end{bmatrix}
+= K * 
+\begin{bmatrix}
+e_x\\
+e_y
+\end{bmatrix} + I *
+\begin{bmatrix}
+i_x\\
+i_y
+\end{bmatrix} 
+\end{equation}
+Where $K$ and $I$ are constant scalar values and $\begin{bmatrix}i_x\\i_y\end{bmatrix}$ is a vector containing the sum of the errors over all the past measures where the motor signal $U$ is not the maximum allowed. This condition is taken to avoid wind up and overshoot in the controller.\\
+Moreover the control is done only if the measures taken are valid. Which means that the SQUAL measure is bigger than SQUAL\_THRESH, the sensors are not lifted, and the PRODUCT\_ID is equal 66.
+If those conditions are met it means that the surface quality is good, the sensor "sees" correctly the surface and the communication is done correctly.
+If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors are stopped and the mode goes to STOP mode to avoid damage to the machine.
+\subsection{Results}
+In this section the results of the control are shown as well as the achieved performances in terms measures \ref{sec:measure_test} and control \ref{sec:control_test}.
+\subsubsection{Measure test}\label{sec:measure_test}
+In this section a simple experiment is described and the results are shown. The experiment consist in letting the ball spin in at constant speed in one direction and measure the speed using the sensors. By doing this it is possible to analyze the noise present in the sensor and characterize it.
+\subsubsection{Control test}\label{sec:control_test}
+
+
+
+
+
+
 
 \section{Conclusion} \label{sec:conc}
 

@@ -8,22 +8,27 @@
 \BOOKMARK [2][-]{subsection.3.2}{Communication}{section.3}% 8
 \BOOKMARK [2][-]{subsection.3.3}{Sensor}{section.3}% 9
 \BOOKMARK [2][-]{subsection.3.4}{Motor}{section.3}% 10
-\BOOKMARK [1][-]{section.4}{User manual for mouse treadmill software}{}% 11
+\BOOKMARK [1][-]{section.4}{User manual}{}% 11
 \BOOKMARK [2][-]{subsection.4.1}{Installation of the PC software}{section.4}% 12
 \BOOKMARK [2][-]{subsection.4.2}{How to use the GUI}{section.4}% 13
 \BOOKMARK [2][-]{subsection.4.3}{How to write a routine}{section.4}% 14
 \BOOKMARK [2][-]{subsection.4.4}{How to extend the system}{section.4}% 15
 \BOOKMARK [1][-]{section.5}{Control}{}% 16
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 17
-\BOOKMARK [1][-]{appendix.A}{MAVLink dialect description file}{}% 18
-\BOOKMARK [1][-]{appendix.B}{Code for STM32 NUCLEO 64 board}{}% 19
-\BOOKMARK [2][-]{subsection.B.1}{Main}{appendix.B}% 20
-\BOOKMARK [2][-]{subsection.B.2}{Treadmill driver}{appendix.B}% 21
-\BOOKMARK [2][-]{subsection.B.3}{Sensor driver}{appendix.B}% 22
-\BOOKMARK [2][-]{subsection.B.4}{Code for unit tests}{appendix.B}% 23
-\BOOKMARK [2][-]{subsection.B.5}{Build script}{appendix.B}% 24
-\BOOKMARK [1][-]{appendix.C}{Code for PC}{}% 25
-\BOOKMARK [2][-]{subsection.C.1}{GUI}{appendix.C}% 26
-\BOOKMARK [2][-]{subsection.C.2}{Routine example}{appendix.C}% 27
-\BOOKMARK [1][-]{appendix.D}{Data-sheets}{}% 28
-\BOOKMARK [2][-]{subsection.D.1}{Sensor Data-sheet }{appendix.D}% 29
+\BOOKMARK [2][-]{subsection.5.1}{Inputs/Outputs}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.2}{Controller}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.3}{Results}{section.5}% 19
+\BOOKMARK [3][-]{subsubsection.5.3.1}{Measure test}{subsection.5.3}% 20
+\BOOKMARK [3][-]{subsubsection.5.3.2}{Control test}{subsection.5.3}% 21
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 22
+\BOOKMARK [1][-]{appendix.A}{MAVLink dialect description file}{}% 23
+\BOOKMARK [1][-]{appendix.B}{Code for STM32 NUCLEO 64 board}{}% 24
+\BOOKMARK [2][-]{subsection.B.1}{Main}{appendix.B}% 25
+\BOOKMARK [2][-]{subsection.B.2}{Treadmill driver}{appendix.B}% 26
+\BOOKMARK [2][-]{subsection.B.3}{Sensor driver}{appendix.B}% 27
+\BOOKMARK [2][-]{subsection.B.4}{Code for unit tests}{appendix.B}% 28
+\BOOKMARK [2][-]{subsection.B.5}{Build script}{appendix.B}% 29
+\BOOKMARK [1][-]{appendix.C}{Code for PC}{}% 30
+\BOOKMARK [2][-]{subsection.C.1}{GUI}{appendix.C}% 31
+\BOOKMARK [2][-]{subsection.C.2}{Routine example}{appendix.C}% 32
+\BOOKMARK [1][-]{appendix.D}{Data-sheets}{}% 33
+\BOOKMARK [2][-]{subsection.D.1}{Sensor Data-sheet }{appendix.D}% 34

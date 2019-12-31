@@ -209,19 +209,27 @@ void mouseDriver_send_status_msg(void){
 }
 void mouseDriver_control_idle(void){
 	static int count = 0;
+    static float integral_x = 0;
+    static float integral_y = 0;
+    float error_x = 0;
+    float error_y = 0;
 	if (actual_speed_measure.valid == 0){
 		count ++;
 		if(count >= MAX_MISSING_MEASURES){
 			main_stop_motors();
 			mouseDriver_setMode(MOUSE_MODE_STOP);
+            integral_x = 0;
+            integral_y = 0;
 		}
 		return;
 	}
 	if (actual_mode == MOUSE_MODE_SPEED || actual_mode == MOUSE_MODE_AUTO_RUN){
 		actual_motor_signal.time = mouseDriver_getTime();
-		actual_motor_signal.motor_x = (float)K*(actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x);
-		actual_motor_signal.motor_y = (float)K*(actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y);
-
+        error_x = actual_speed_setpoint.setpoint_x-actual_speed_measure.speed_x;
+        error_y = actual_speed_setpoint.setpoint_y-actual_speed_measure.speed_y;
+		actual_motor_signal.motor_x = (float)K*(error_x)+(float)I*integral_x;
+		actual_motor_signal.motor_y = (float)K*(error_y)+(float)I*integral_y;
+        
 		if (actual_motor_signal.motor_x > MAX_MOTOR_SIGNAL){
 		    actual_motor_signal.motor_x = MAX_MOTOR_SIGNAL;
 		}
@@ -230,12 +238,16 @@ void mouseDriver_control_idle(void){
         }
 
 		main_set_motors_speed(actual_motor_signal);
+        integral_x += (actual_motor_signal.motor_x < MAX_MOTOR_SIGNAL)? error_x : 0;
+        integral_y += (actual_motor_signal.motor_y < MAX_MOTOR_SIGNAL)? error_y : 0;
 		count = 0;
 	}
 	else{
 		actual_motor_signal.motor_x = 0;
 		actual_motor_signal.motor_y = 0;
 		main_stop_motors();
+        integral_x = 0;
+        integral_y = 0;
 	}
 }
 
