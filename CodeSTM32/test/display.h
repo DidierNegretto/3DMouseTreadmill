@@ -1,4 +1,4 @@
-/*! \file sensorSROM.h
+/*! \file display.h
 \brief Header and implementation of display function for unit tests
 
 \author Didier Negretto
