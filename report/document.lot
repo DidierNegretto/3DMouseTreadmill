@@ -1,8 +1,0 @@
-\select@language {english}
-\select@language {english}
-\select@language {english}
-\contentsline {table}{\numberline {1}{\ignorespaces Summary of the requirements for the mouse treadmill platform.\relax }}{4}{table.caption.11}
-\contentsline {table}{\numberline {2}{\ignorespaces STM32L476RG main features.\relax }}{7}{table.caption.13}
-\contentsline {table}{\numberline {3}{\ignorespaces List and description of the MAVLink messages.\relax }}{8}{table.caption.16}
-\contentsline {table}{\numberline {4}{\ignorespaces PMW3660 main features.\relax }}{9}{table.caption.18}
-\contentsline {table}{\numberline {5}{\ignorespaces Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.\relax }}{13}{table.caption.20}

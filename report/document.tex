@@ -189,7 +189,12 @@
 \paragraph{Objectives and preliminary considerations} 
 \lfoot{\today}
 \rfoot{Biorobotics laboratory}
-
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{fig/OleSetup}
+	%\includegraphics[width=\linewidth]{fig_sim/fin_comp}
+	\caption{Roll coefficient as a function of the angle of attack for different values of twisting and folding angles. Schematics of folding configurations are added. }\label{fig:tw_vs_fold_bar}
+\end{figure}
 The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system is characterized and tested. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
 
 \paragraph{System architecture}
@@ -197,12 +202,6 @@ The project consists of designing and manufacturing the electronics and control 
  Finally, to ease the user experience, a cross-platform graphical user interface as well as documentation, unit tests and a user manual are provided. 
  
 \paragraph{Testing and results}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.9\linewidth]{fig/OleSetup}
-	%\includegraphics[width=\linewidth]{fig_sim/fin_comp}
-	\caption{Roll coefficient as a function of the angle of attack for different values of twisting and folding angles. Schematics of folding configurations are added. }\label{fig:tw_vs_fold_bar}
-\end{figure}
 Once the system is built some tests are carried out to characterize the system performances.
 First the noise at 0 [$\frac{m}{s}$] in the sensors is measured, then the noise at constant speed. This is important to determine what type of noise is present in the system and whatever it useful to filter it and how. The quality of the surface with a static and moving treadmill is also compared. The noise is characterize with the following parameters: \todo{ADD RESULTS}
 Then one test on the step response is performed, which gave these results: \todo{ADD RESULTS}
@@ -353,7 +352,27 @@ Finally the multiple serial interfaces allow the possibility to expand the syste
 	\includegraphics[width=\linewidth]{fig/MAVLink_logo.png}
 	\caption{MAVLink logo}\label{fig:MAVLink_logo}
 \end{wrapfigure}
-For the communication with the computer the UART protocol is chosen. This choice is almost mandatory since most boards are provided with an UART to USB interface and a mini-USB connector. The STM32L476RG is no exception to this rule.
+For the communication with the computer the UART protocol is chosen. This choice is almost mandatory since most boards are provided with an UART to USB interface and a mini-USB connector. The STM32L476RG is no exception to this rule. The main settings for the UART protocol are reported in table \ref{tab:UART}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|r} 
+		\textbf{Parameter} &\textbf{Value} &\textbf{Unit}\\ 
+		\hline
+		\hline 
+		Baud rate & 230400 & [$\frac{Bits}{s}$] \\ 
+		\hline 
+		Word length & 8 & [$Bits$] \\ 
+		\hline 
+		Parity & None & $-$\\ 
+		\hline 
+		Stop bits & 1 & [$Bits$]\\ 
+		\hline 
+		MSB first & Disable & $-$  \\ 
+	\end{tabular} 
+	\caption{Table describing the main parameters of the UART communication protocol.}
+	\label{tab:UART}
+\end{table}
 
 Since the system needs to be expanded for future more complex experiments some thought is put in the choice of the messaging protocol to allow this key feature.
 The best solution found is MAVLink. "MAVLink is a very lightweight messaging protocol for communicating with drones"\cite{mavlink}, one can say that the mouse treadmill is not meant to fly around, but this messaging protocol is flexible enough to be adapted to the mouse treadmill.
@@ -363,32 +382,31 @@ Despite the light weight MAVLink comes with some interesting features, such is h
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{l||p{3cm}|l|l} 
-		\textbf{Name} &\textbf{Description} &\textbf{Sender} &\textbf{Receiver}\\ 
+	\begin{tabular}{l||p{3cm}|l|l|l} 
+		\textbf{Name} &\textbf{Description} &\textbf{Sender} &\textbf{Receiver} & \textbf{Type}\\ 
 		\hline
 		\hline 
-		HEARTBEAT &Verifies communication& STM32 & PC \\ 
+		HEARTBEAT &Verifies communication& STM32 & PC & Status \\ 
 		\hline 
-		SPEED\_INFO &Measured speed  & STM32 & PC \\ 
+		SPEED\_INFO &Measured speed  & STM32 & PC & Info \\ 
 		\hline 
-		SPEED\_SETPOINT & Speed setpoint & PC & STM32 \\ 
+		SPEED\_SETPOINT & Speed setpoint & PC/STM32 & STM32/PC & Status\\ 
 		\hline 
-		MODE\_SELECTION & Changes mode & PC & STM32  \\ 
+		MODE\_SELECTION & Changes mode & PC & STM32 & $-$\\ 
 		\hline 
-		MOTOR\_SETPOINT & Up time of PWM duty cycle & STM32 & PC  \\ 
+		MOTOR\_SETPOINT & Up time of PWM duty cycle & STM32 & PC & Info  \\ 
 		\hline 
-		POINT\_LOADED & Acknowledge for routine point loaded  & STM32 & PC  \\ 
+		POINT\_LOADED & Acknowledge for routine point loaded  & STM32 & PC & $-$ \\ 
 		\hline 
-		POINT & Information for one point of the routine  & PC & STM32  \\  
+		POINT & Information for one point of the routine  & PC & STM32 & $-$  \\  
 		\hline 
-		ERROR & Error message & STM32 & PC  \\
+		ERROR & Error message & STM32 & PC & $-$  \\
 		\hline
-		RAW\_SENSOR & Raw sensor values & STM32 & PC \\
+		RAW\_SENSOR & Raw sensor values & STM32 & PC & Status\\
 	\end{tabular} 
-	\caption{List and description of the MAVLink messages.}
+	\caption{List and description of the MAVLink messages. The Type indicates whatever the message is high frequency (Info), low frequency (Status) or none of the previous ones ($-$)}
 	\label{tab:msg}
 \end{table}
-\todo{ADD if message is status or not.}
 
 \subsection{Sensor}
 For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
@@ -450,7 +468,7 @@ It is therefore possible to estimate the maximum continuous  acceleration and sp
 \newpage
 \section[User manual]{User manual for mouse treadmill software}
 The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
-\subsection{Installation of the PC software}
+\subsection{Installation of the PC software}\label{sec:install}
 First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
 \begin{multicols}{3}[]
 \begin{itemize}
@@ -465,7 +483,7 @@ First python 3 needs to be installed, for that see \cite{py}. GIT needs to be in
 \end{itemize}
 \end{multicols}
 
-Make sure that pymavlink is not install. This is important since the dialect used is a standard one, but it is custom. Do not install pymavlink using PiP.\\
+Make sure that pymavlink is not install. This is important since the dialect used is not a standard one, but it is custom. Do not install pymavlink using PiP.\\
 
 To install the software the sequent steps have to be accomplished:
 \begin{enumerate}
@@ -559,8 +577,71 @@ In this section the way to properly define a routine is described.
 An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
 A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
 \subsection{How to extend the system}
-\todo{Say where to generate all the libraries !!!}
+To extend the system with new messages and features the main operation consist in modifying \ref{app:mavlink}. This files describes all the messages and constants used in the communication protocol, thus it possible to add/modify them. If you need to create a new message or constant, please have a look at the already defined ones and use them as a template. 
+To extend the system please follow the following steps:
+\begin{enumerate}
+	\item Get the basic system installed correctly, for that see \ref{sec:install}.
+	\item Modify \ref{app:mavlink} as needed.
+	\item Generate the C libraries for the STM32, for that you need:
+	 \begin{lstlisting}[style = Bashstyle]
+	 $ cd 3DMouseTreadmill/mavlink
+	 $ python 3 mavgenerate.py
+	 \end{lstlisting}
+	 Now a GUI asking you information appear, this must be filled as follow:
+	 \begin{itemize}
+	 	\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
+	 	\item \textbf{Out} there you indicate the 3DMouseTreadmill/MAVLink Library/
+	 	\item \textbf{Language} Choose C
+	 	\item \textbf{Protocol} Choose 2.0
+	 	\item \textbf{Validate} Choose Yes
+	 	\item \textbf{Validate Units} Choose Yes
+	 \end{itemize}
+ 	 Now you can press on generate.
+ 	 The GUI should be similar to figure \ref{fig:gen_c}.
+ 	 If some errors are shown, correct them and try again.
+ 	\item Adapt the code in the STM32 project if needed.
+ 	\item Generate the python libraries for the PC, for that you need:
+ 	\begin{enumerate}
+ 		\item Run mavgenerate.py (if not still running)
+ 		\begin{lstlisting}[style = Bashstyle]
+ 		$ python 3 mavgenerate.py
+ 		\end{lstlisting}
+ 		Now a GUI asking you information appear, this must be filled as follow:
+ 		\begin{itemize}
+ 			\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
+ 			\item \textbf{Out} there you indicate the 3DMouseTreadmill/mouse.py
+ 			\item \textbf{Language} Choose Python
+ 			\item \textbf{Protocol} Choose 2.0
+ 			\item \textbf{Validate} Choose Yes
+ 			\item \textbf{Validate Units} Choose Yes
+ 		\end{itemize}
+ 		Now you can press on generate.
+ 		The GUI should be similar to figure \ref{fig:gen_py}.
+ 		If some errors are shown, correct them and try again.
+ 		\item Change directory to the parent one
+ 		\begin{lstlisting}[style = Bashstyle]
+ 		$ cd ../
+ 		\end{lstlisting}
+ 		\item repeat the installation guide (see \ref{sec:install}) from point 3. 
+ 	\end{enumerate}
+ 	\item Adapt the python code if necessary. 	
+\end{enumerate}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/gen_c}
+		\caption{C libraries.}
+		\label{fig:gen_c}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/gen_py}
+		\caption{python libraries.}
+		\label{fig:gen_py}
+	\end{subfigure}
+	\caption{mavgenerate GUI screenshots properly setup for generating python and C libraries.}
+\end{figure}
 
+\newpage
 \section{Control} \label{sec:control}
 In this section the main aspect of the control are discussed as well as some results.
 For the closed-loop control a simple PI controller is used (see \ref{sec:controller}). This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). 
