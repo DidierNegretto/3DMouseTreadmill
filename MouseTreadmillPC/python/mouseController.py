@@ -7,14 +7,9 @@ from appJar import gui
 import time
 import json
 from tqdm import tqdm
-import routine as mouseRoutine
+import routine_sin as mouseRoutine
 from pymavlink.dialects.v20 import mouse as mouseController
 
-"""
-PATH
-
-/Users/Didier/Desktop/EPFL/Secondo_master/SemesterProject2019/GITRepository/3DMouseTreadmill/MouseTreadmillPC/python
-"""
 SENSOR_STATUS_MSG = ["SENSOR STATUS", "ID 66 = ", "LIFT 0 = ", "SQUAL > 20 = ", "ROM 4 = "]
 MODES = ["STOP", "SPEED","AUTO","RUNNING"]
 MODES_NUM = {"STOP": int(0),"SPEED": int(1),"AUTO": int(2),"RUNNING": int(3) }

@@ -47,7 +47,9 @@ report and to https://mavlink.io/en/
 If you need to change those libraries, make sure to generate them in the 
 MAVLink Library folder.
 
-6. MouseTreadmillPC/python: contains the code to be run on the PC.
+6. MouseTreadmillPC/python: contains the code to be run on the PC. An extra script (gen_routine.py) to generate 
+a routine in routine.py is provided as an exemple. This script can be improved for better 
+perfomances in the machine
 
 7. MouseTreadmillSTM32Project: contains the stm32CubeIDE project. The most important 
 things are:
