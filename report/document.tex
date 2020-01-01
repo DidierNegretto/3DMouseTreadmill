@@ -465,183 +465,7 @@ The data given are
 \end{itemize}
 \end{multicols}
 It is therefore possible to estimate the maximum continuous  acceleration and speed of the sphere.
-\newpage
-\section[User manual]{User manual for mouse treadmill software}
-The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
-\subsection{Installation of the PC software}\label{sec:install}
-First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
-\begin{multicols}{3}[]
-\begin{itemize}
-	\item pyserial
-	\item os
-	\item sys
-	\item numpy
-	\item appjar
-	\item tqdm
-	\item json
-	\item matplotlib
-\end{itemize}
-\end{multicols}
 
-Make sure that pymavlink is not install. This is important since the dialect used is not a standard one, but it is custom. Do not install pymavlink using PiP.\\
-
-To install the software the sequent steps have to be accomplished:
-\begin{enumerate}
-	\item Clone the git repository of the project using 
-	\begin{lstlisting}[style = Bashstyle]
-		$ git clone https://github.com/DidierNegretto/3DMouseTreadmill.git
-	\end{lstlisting}
-	\item Move inside the repository
-	\begin{lstlisting}[style = Bashstyle]
-		$ cd 3DMouseTreadmill/
-	\end{lstlisting}
-	\item Make sure no previous version of pymavlink is installed
-	\begin{lstlisting}[style = Bashstyle]
-		$ pip uninstall pymavlink
-	\end{lstlisting}
-	\item Remove the mavlink directory
-	\begin{lstlisting}[style = Bashstyle]
-		$ rm -r -f mavlink/
-	\end{lstlisting}
-	\item Clone the mavlink repository
-	\begin{lstlisting}[style = Bashstyle]
-		$ git clone https://github.com/mavlink/mavlink.git
-	\end{lstlisting}
-	\item Update the submodule
-	\begin{lstlisting}[style = Bashstyle]
-		$ git submodule update --init --recursive
-	\end{lstlisting}
-	\item Copy mouse.xml file and the mouse.py files into mavlink/pymavlink/dialects/v20 
-	\item Change directory to mavlink/
-	\begin{lstlisting}[style = Bashstyle]
-		$ cd mavlink
-	\end{lstlisting}
-	\item Export the path to the repository so that python will find all the code it needs to run
-	\begin{lstlisting}[style = Bashstyle]
-		$ export PYTHONPATH=`path_to_repository/3DMouseTreadmill/`
-	\end{lstlisting}
-	\item Change directory to pymavlink
-	\begin{lstlisting}[style = Bashstyle]
-		$ cd pymavlink
-	\end{lstlisting}
-	\item Setup everything using the setup.py provided
-	\begin{lstlisting}[style = Bashstyle]
-		$ python3 setup.py install --user
-	\end{lstlisting}
-	
-\end{enumerate}
-\subsection{How to use the GUI}  
-In this section the use of the GUI and its functionalities are described.
-First of all the GUI provided can be expanded using the functions in the mouse.py generated using mavlink, and thus can be improved for future versions of the project. One screenshot of the GUI is shown in figure \ref{fig:GUI}.
-\begin{figure}[htp]
-	\centering
-	\includegraphics[width=1\linewidth]{fig/GUI.png}
-	\caption{GUI screenshot on a MAC.}\label{fig:GUI}
-\end{figure}
-Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on other platforms, but it might look different. The library used to design the GUI is Appjar, which is compatible with MAC, LINUX and Windows.
-\begin{itemize}
-	\item \textcolor{red}{\textbf{A}} In this region the content of the HEARTBEAT message are presented. Time is the time from boot of the system in milliseconds. Modes is the mode in which the stm32 is. The mode can be STOP, SPEED AUTO or RUNNING.
-	\item \textcolor{blue}{\textbf{B}} In this region the real-time data are plotted. The top plot shows the X and Y motor signals, the middle one shows the X and Y speed setpoints and the bottom one shows the motor signal. By using the top left buttons it is possible to save the plots and navigate them, it is advisable to store the data and plot them afterwards using another script for better analysis due to the fast update of the plots.
-	\item \textcolor{green}{\textbf{C}} In this region data from the sensors are displayed. ID is the product ID of the sensor and is used to verify that the communication between the sensor and the board is working correctly. LIFT is 0 if the sensor detects correctly the surface and 1 if it does not. SQUAL is the surface quality information. This value should be greater than 20 for the measure to be good. ROM is the SROM ID of the sensor. This value is used to verify that the SROM is flashed correctly during initialization. If everything is working correctly you should see something like table \ref{tab:sens_corr}
-	\begin{table}[H]
-		\centering
-		\begin{tabular}{|c|} 
-			\hline
-			SENSOR STATUS\\ 
-			ID 66 = 66 | 66\\
-			LIFT 0 = 0 | 0\\
-			SQUAL > 20 = 34 | 43\\
-			ROM 4 = 4 | 4\\
-			\hline
-		\end{tabular} 
-		\caption{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
-		\label{tab:sens_corr}
-	\end{table}
-	\item \textcolor{cyan}{\textbf{D}} 
-	In this region the input from the user are taken. In the first line the user can select the mode to be used:
-	\begin{itemize}
-		\item \textbf{STOP}: When this mode is selected the motor are stopped.
-		\item \textbf{SPEED}: When this mode is selected the motor setpoints can be typed in the two entries under the Speed X and Speed Y labels.
-		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board (Modes: LOAD) and then run the routine (Modes: RUNNING).
-	\end{itemize} 
-	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
-\end{itemize}  
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.7\linewidth]{fig/FSM.pdf}
-	\caption{Finite state machine of the mouse treadmill.}\label{fig:FSM}
-\end{figure}
-The finite state machine of the machine is shown in figure \ref{fig:FSM}. All the capital letters conditions (except for MAX\_POINTS) are widgets on the GUI that can be pressed by the user while using the machine.
-\subsection{How to write a routine}
-In this section the way to properly define a routine is described. 
-An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
-A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
-\subsection{How to extend the system}
-To extend the system with new messages and features the main operation consist in modifying \ref{app:mavlink}. This files describes all the messages and constants used in the communication protocol, thus it possible to add/modify them. If you need to create a new message or constant, please have a look at the already defined ones and use them as a template. 
-To extend the system please follow the following steps:
-\begin{enumerate}
-	\item Get the basic system installed correctly, for that see \ref{sec:install}.
-	\item Modify \ref{app:mavlink} as needed.
-	\item Generate the C libraries for the STM32, for that you need:
-	 \begin{lstlisting}[style = Bashstyle]
-	 $ cd 3DMouseTreadmill/mavlink
-	 $ python 3 mavgenerate.py
-	 \end{lstlisting}
-	 Now a GUI asking you information appear, this must be filled as follow:
-	 \begin{itemize}
-	 	\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
-	 	\item \textbf{Out} there you indicate the 3DMouseTreadmill/MAVLink Library/
-	 	\item \textbf{Language} Choose C
-	 	\item \textbf{Protocol} Choose 2.0
-	 	\item \textbf{Validate} Choose Yes
-	 	\item \textbf{Validate Units} Choose Yes
-	 \end{itemize}
- 	 Now you can press on generate.
- 	 The GUI should be similar to figure \ref{fig:gen_c}.
- 	 If some errors are shown, correct them and try again.
- 	\item Adapt the code in the STM32 project if needed.
- 	\item Generate the python libraries for the PC, for that you need:
- 	\begin{enumerate}
- 		\item Run mavgenerate.py (if not still running)
- 		\begin{lstlisting}[style = Bashstyle]
- 		$ python 3 mavgenerate.py
- 		\end{lstlisting}
- 		Now a GUI asking you information appear, this must be filled as follow:
- 		\begin{itemize}
- 			\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
- 			\item \textbf{Out} there you indicate the 3DMouseTreadmill/mouse.py
- 			\item \textbf{Language} Choose Python
- 			\item \textbf{Protocol} Choose 2.0
- 			\item \textbf{Validate} Choose Yes
- 			\item \textbf{Validate Units} Choose Yes
- 		\end{itemize}
- 		Now you can press on generate.
- 		The GUI should be similar to figure \ref{fig:gen_py}.
- 		If some errors are shown, correct them and try again.
- 		\item Change directory to the parent one
- 		\begin{lstlisting}[style = Bashstyle]
- 		$ cd ../
- 		\end{lstlisting}
- 		\item repeat the installation guide (see \ref{sec:install}) from point 3. 
- 	\end{enumerate}
- 	\item Adapt the python code if necessary. 	
-\end{enumerate}
-\begin{figure}[H]
-	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{fig/gen_c}
-		\caption{C libraries.}
-		\label{fig:gen_c}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{fig/gen_py}
-		\caption{python libraries.}
-		\label{fig:gen_py}
-	\end{subfigure}
-	\caption{mavgenerate GUI screenshots properly setup for generating python and C libraries.}
-\end{figure}
-
-\newpage
 \section{Control} \label{sec:control}
 In this section the main aspect of the control are discussed as well as some results.
 For the closed-loop control a simple PI controller is used (see \ref{sec:controller}). This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). 
@@ -700,9 +524,11 @@ If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors ar
 \subsection{Results}
 In this section the results of the control are shown as well as the achieved performances in terms measures \ref{sec:measure_test} and control \ref{sec:control_test}.
 \subsubsection{Measure test}\label{sec:measure_test}
-In this section a simple experiment is described and the results are shown. The experiment consist in letting the ball spin in at constant speed in one direction and measure the speed using the sensors. By doing this it is possible to analyse the noise present in the sensor and characterize it.
+In this section a simple experiment is described and the results are shown. First the zero speed noise is measured in the sensors, then the same measure is repeated while spinning the ball at constant speed. This let us characterize the noise in the sensors and decide whatever some filtering is required.
+
 \subsubsection{Control test}\label{sec:control_test}
-In this section different step responses are measured using different controller parameters and compared to see which values should be used for the $I$ and $K$ parameter in equation \ref{eq:U}.
+In this section the $I$ and $K$ parameters in equation \ref{eq:U} are tuned, then the step responses are measured. Finally a 2D routine is described and the tracking error is analysed to see whatever the machine is able to follow such a routine and with which performances.
+
 
 
 
@@ -712,9 +538,183 @@ In this section different step responses are measured using different controller
 
 \section{Conclusion} \label{sec:conc}
 
+\newpage
+\section[User manual]{User manual for mouse treadmill software}
+The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
+\subsection{Installation of the PC software}\label{sec:install}
+First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
+\begin{multicols}{3}[]
+	\begin{itemize}
+		\item pyserial
+		\item os
+		\item sys
+		\item numpy
+		\item appjar
+		\item tqdm
+		\item json
+		\item matplotlib
+	\end{itemize}
+\end{multicols}
 
+Make sure that pymavlink is not install. This is important since the dialect used is not a standard one, but it is custom. Do not install pymavlink using PiP.\\
 
-\clearpage
+To install the software the sequent steps have to be accomplished:
+\begin{enumerate}
+	\item Clone the git repository of the project using 
+	\begin{lstlisting}[style = Bashstyle]
+	$ git clone https://github.com/DidierNegretto/3DMouseTreadmill.git
+	\end{lstlisting}
+	\item Move inside the repository
+	\begin{lstlisting}[style = Bashstyle]
+	$ cd 3DMouseTreadmill/
+	\end{lstlisting}
+	\item Make sure no previous version of pymavlink is installed
+	\begin{lstlisting}[style = Bashstyle]
+	$ pip uninstall pymavlink
+	\end{lstlisting}
+	\item Remove the mavlink directory
+	\begin{lstlisting}[style = Bashstyle]
+	$ rm -r -f mavlink/
+	\end{lstlisting}
+	\item Clone the mavlink repository
+	\begin{lstlisting}[style = Bashstyle]
+	$ git clone https://github.com/mavlink/mavlink.git
+	\end{lstlisting}
+	\item Update the submodule
+	\begin{lstlisting}[style = Bashstyle]
+	$ git submodule update --init --recursive
+	\end{lstlisting}
+	\item Copy mouse.xml file and the mouse.py files into mavlink/pymavlink/dialects/v20 
+	\item Change directory to mavlink/
+	\begin{lstlisting}[style = Bashstyle]
+	$ cd mavlink
+	\end{lstlisting}
+	\item Export the path to the repository so that python will find all the code it needs to run
+	\begin{lstlisting}[style = Bashstyle]
+	$ export PYTHONPATH=`path_to_repository/3DMouseTreadmill/`
+	\end{lstlisting}
+	\item Change directory to pymavlink
+	\begin{lstlisting}[style = Bashstyle]
+	$ cd pymavlink
+	\end{lstlisting}
+	\item Setup everything using the setup.py provided
+	\begin{lstlisting}[style = Bashstyle]
+	$ python3 setup.py install --user
+	\end{lstlisting}
+	
+\end{enumerate}
+\subsection{How to use the GUI}  
+In this section the use of the GUI and its functionalities are described.
+First of all the GUI provided can be expanded using the functions in the mouse.py generated using mavlink, and thus can be improved for future versions of the project. One screenshot of the GUI is shown in figure \ref{fig:GUI}.
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\linewidth]{fig/GUI.png}
+	\caption{GUI screenshot on a MAC.}\label{fig:GUI}
+\end{figure}
+Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on other platforms, but it might look different. The library used to design the GUI is Appjar, which is compatible with MAC, LINUX and Windows.
+\begin{itemize}
+	\item \textcolor{red}{\textbf{A}} In this region the content of the HEARTBEAT message are presented. Time is the time from boot of the system in milliseconds. Modes is the mode in which the stm32 is. The mode can be STOP, SPEED AUTO or RUNNING.
+	\item \textcolor{blue}{\textbf{B}} In this region the real-time data are plotted. The top plot shows the X and Y motor signals, the middle one shows the X and Y speed setpoints and the bottom one shows the motor signal. By using the top left buttons it is possible to save the plots and navigate them, it is advisable to store the data and plot them afterwards using another script for better analysis due to the fast update of the plots.
+	\item \textcolor{green}{\textbf{C}} In this region data from the sensors are displayed. ID is the product ID of the sensor and is used to verify that the communication between the sensor and the board is working correctly. LIFT is 0 if the sensor detects correctly the surface and 1 if it does not. SQUAL is the surface quality information. This value should be greater than 20 for the measure to be good. ROM is the SROM ID of the sensor. This value is used to verify that the SROM is flashed correctly during initialization. If everything is working correctly you should see something like table \ref{tab:sens_corr}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|c|} 
+			\hline
+			SENSOR STATUS\\ 
+			ID 66 = 66 | 66\\
+			LIFT 0 = 0 | 0\\
+			SQUAL > 20 = 34 | 43\\
+			ROM 4 = 4 | 4\\
+			\hline
+		\end{tabular} 
+		\caption{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
+		\label{tab:sens_corr}
+	\end{table}
+	\item \textcolor{cyan}{\textbf{D}} 
+	In this region the input from the user are taken. In the first line the user can select the mode to be used:
+	\begin{itemize}
+		\item \textbf{STOP}: When this mode is selected the motor are stopped.
+		\item \textbf{SPEED}: When this mode is selected the motor setpoints can be typed in the two entries under the Speed X and Speed Y labels.
+		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board (Modes: LOAD) and then run the routine (Modes: RUNNING).
+	\end{itemize} 
+	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
+\end{itemize}  
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/FSM.pdf}
+	\caption{Finite state machine of the mouse treadmill.}\label{fig:FSM}
+\end{figure}
+The finite state machine of the machine is shown in figure \ref{fig:FSM}. All the capital letters conditions (except for MAX\_POINTS) are widgets on the GUI that can be pressed by the user while using the machine.
+\subsection{How to write a routine}
+In this section the way to properly define a routine is described. 
+An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
+A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
+\subsection{How to extend the system}
+To extend the system with new messages and features the main operation consist in modifying \ref{app:mavlink}. This files describes all the messages and constants used in the communication protocol, thus it possible to add/modify them. If you need to create a new message or constant, please have a look at the already defined ones and use them as a template. 
+To extend the system please follow the following steps:
+\begin{enumerate}
+	\item Get the basic system installed correctly, for that see \ref{sec:install}.
+	\item Modify \ref{app:mavlink} (mouse.xml) as needed.
+	\item Generate the C libraries for the STM32, for that you need:
+	\begin{lstlisting}[style = Bashstyle]
+	$ cd 3DMouseTreadmill/mavlink
+	$ python 3 mavgenerate.py
+	\end{lstlisting}
+	Now a GUI asking you information appear, this must be filled as follow:
+	\begin{itemize}
+		\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
+		\item \textbf{Out} there you indicate the 3DMouseTreadmill/MAVLink Library/
+		\item \textbf{Language} Choose C
+		\item \textbf{Protocol} Choose 2.0
+		\item \textbf{Validate} Choose Yes
+		\item \textbf{Validate Units} Choose Yes
+	\end{itemize}
+	Now you can press on generate.
+	The GUI should be similar to figure \ref{fig:gen_c}.
+	If some errors are shown, correct them and try again.
+	\item Adapt the code in the STM32 project if needed.
+	\item Generate the python libraries for the PC, for that you need:
+	\begin{enumerate}
+		\item Run mavgenerate.py (if not still running)
+		\begin{lstlisting}[style = Bashstyle]
+		$ python 3 mavgenerate.py
+		\end{lstlisting}
+		Now a GUI asking you information appear, this must be filled as follow:
+		\begin{itemize}
+			\item \textbf{XML} there you indicate the mouse.xml file that was previously modified
+			\item \textbf{Out} there you indicate the 3DMouseTreadmill/mouse.py
+			\item \textbf{Language} Choose Python
+			\item \textbf{Protocol} Choose 2.0
+			\item \textbf{Validate} Choose Yes
+			\item \textbf{Validate Units} Choose Yes
+		\end{itemize}
+		Now you can press on generate.
+		The GUI should be similar to figure \ref{fig:gen_py}.
+		If some errors are shown, correct them and try again.
+		\item Change directory to the parent one
+		\begin{lstlisting}[style = Bashstyle]
+		$ cd ../
+		\end{lstlisting}
+		\item repeat the installation guide (see \ref{sec:install}) from point 3. 
+	\end{enumerate}
+	\item Adapt the python code if necessary. 	
+\end{enumerate}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/gen_c}
+		\caption{C libraries.}
+		\label{fig:gen_c}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{fig/gen_py}
+		\caption{python libraries.}
+		\label{fig:gen_py}
+	\end{subfigure}
+	\caption{mavgenerate GUI screenshots properly setup for generating python and C libraries.}
+\end{figure}
+
+\newpage
 \lhead{ }
 \begin{thebibliography}{100}
 	
