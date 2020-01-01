@@ -129,27 +129,27 @@
 \begin{document}
 	\date{\today}
 \begin{titlepage}
+\newgeometry{top=3cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm}
 \hspace{+2.8cm} %defines the geometry for the titlepage
 \pagecolor{titlepagecolor}
 \noindent
+\begin{center}
 \includegraphics[width=8cm]{fig/EPFL_Logo_Digital_RGB_PROD.jpg}\\[-1em]
 \color{black}
-\hspace{+3.5cm}
-\makebox[3pt][l]{\rule{8 cm}{1pt}}
 \par
 \noindent
-\hspace{+4.5cm}
+\hspace{-30cm}
+\makebox[3pt][l]{\rule{19 cm}{1pt}}
+\par
+\noindent
 \textbf{\Large \textsf{Biorobotics laboratory}}\\
+\end{center}
 \vspace{0.5cm}
 \hspace{-3.5cm}
-	%\begin{figure}[H]
-    %	\centering
-		%\includegraphics[width=12 cm]{fig/frontpage_1.pdf}
-		%\includegraphics[width=0.48\linewidth]{fig_pos/FS}
-		%\raisebox{-5cm}{\reflectbox{\includegraphics[width=0.48\linewidth]{fig_pos/BS}}}
-%					\includegraphics[width=0.49\linewidth]{fig_pos/BS}
-%		\reflectbox{\includegraphics[width=0.49\linewidth]{fig_pos/BS}}
-	%\end{figure}
+	\begin{figure}[H]
+    	\centering
+		\includegraphics[width=12 cm]{fig/front.pdf}
+	\end{figure}
 
 \vfill
 
@@ -172,7 +172,7 @@
 \vskip\baselineskip
 \noindent
 \hspace{+3.5cm}
-{\textsf{Assistant 1:\textbf{Shravan Tata Ramalingasetty} }}
+{\textsf{Assistant :\textbf{Shravan Tata Ramalingasetty} }}
 }
 \end{titlepage}
 
@@ -189,24 +189,29 @@
 \paragraph{Objectives and preliminary considerations} 
 \lfoot{\today}
 \rfoot{Biorobotics laboratory}
-The project consists of designing and manufacturing of a lightweight mechanism to improve roll authority at low angles of attack. After that the mechanism is tested and conclusions, with respect to the existing mechanism are drawn.
-A drone with morphing wings was designed and manufactured in the months before this project. The drone has wings with artificial overlapping feathers at the wing tip, which are used for roll control. The roll rate obtained at low angles of attack is too low to grant the desired high manoeuvrability as shown by \cite{ref6} for a similar roll control strategy. In the first part of the project different methods are taken into account: ailerons, which are used in the aircraft industry and wing twisting, which is inspired by birds \cite{bird}. Those methods are simulated on XFLR5 (using VLM and 3D-Panels), after which wing twisting is chosen for implementation and testing. Wing twisting has many advantages compared to ailerons: higher roll moment \cite{real_plane} and higher lift to drag ratio \cite{ref3}. On the other hand this technique is less used in industry and leads to an increased weight of the drone. 
-%\begin{figure}[H]
-%	\includegraphics[width=0.8\linewidth]{fig_des/exp_setup.jpg}
-%	\caption{Photo taken during the wind tunnel test, with a symmetric backward sweep configuration. }\label{fig:wind}
-%\end{figure}
-\paragraph{Mechanism design}
- A weight of less than 20 [$g$] is required as well as the interoperability with the pre-existing folding mechanism. Four different designs are taken into account (partial twisting, flexible components, cylindrical element and ball joints). In the end the design consisting of a lever actuated by a servo (ball joints) is chosen for implementation. This design is simple and can generate the required roll (roll control power over 2 [$\frac{\partial C_r}{\partial rad}$] for $\alpha \leq 8^\circ$) at low angles of attack, solving the initial problem. The folding angle $\phi$ is defined as the sum of the angles compared to normal sweep on the two sides. 
+
+The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system is characterized and tested. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
+
+\paragraph{System architecture}
+ For the system architecture one $\mu$controller is used for the closed-loop control. This controller sends and receives data using a USB cable and the UART 232 protocol with the MAVLink messaging protocol. On the other side the PC can get the messages, log them and plot them. To measure the speed of the treadmill two optical sensors are used. These sensors are the same that can be found in gaming mouse. The sensors provide rich information which can be used not only to measure the speed of the surface of the treadmill, but also the estimate the quality of the measure itself. By using this information the control loop is aware of possible measuring problems and can therefore discard low quality information.\\
+ Finally, to ease the user experience, a cross-platform graphical user interface as well as documentation, unit tests and a user manual are provided. 
+ 
 \paragraph{Testing and results}
 \begin{figure}[H]
 	\centering
-	%\includegraphics[width=1.2\linewidth]{fig_des/fin_comp}
+	\includegraphics[width=0.9\linewidth]{fig/OleSetup}
 	%\includegraphics[width=\linewidth]{fig_sim/fin_comp}
 	\caption{Roll coefficient as a function of the angle of attack for different values of twisting and folding angles. Schematics of folding configurations are added. }\label{fig:tw_vs_fold_bar}
 \end{figure}
-The third part consists of testing the drone in the wind tunnel at different angles of attack (from 0$^\circ$ to 28$^\circ$ with steps of 4$^\circ$), at three different twisting angles (0$^\circ$, 5$^\circ$ and 10$^\circ$), and with three possible wing shapes to take into account the effect of folding. Most of roll is generated with twisting at low angles of attack ($\alpha<8^\circ$), while at high angles folding has a greater impact (see figure \ref{fig:tw_vs_fold_bar}).
-\paragraph{Roll control and cost}
-Finally a roll control algorithm for folding and twisting wing drones is presented.  This is one of the most important accomplishments of this report since a study of different roll control methods on the same platform is, at the best of our knowledge, absent in literature. The cost of such a setup is discussed as well. This cost is very low, mainly due to the weight of the mechanism and to the energy consumption since the loss of aerodynamic performances during roll is small ($C_d$ +38,98\%), compared to the roll achieved ($C_r = 0.4519$ [ ]).
+Once the system is built some tests are carried out to characterize the system performances.
+First the noise at 0 [$\frac{m}{s}$] in the sensors is measured, then the noise at constant speed. This is important to determine what type of noise is present in the system and whatever it useful to filter it and how. The quality of the surface with a static and moving treadmill is also compared. The noise is characterize with the following parameters: \todo{ADD RESULTS}
+Then one test on the step response is performed, which gave these results: \todo{ADD RESULTS}
+Finally the treadmill was tested using a sinusoidal routine and the tracking performances (the difference between the desired path and the real routine) are shown in figure \ref{fig:track_res}.
+
+\paragraph{Cost}
+As a prof of concept the treadmill seems to be a proper solution providing solutions to many of the drawbacks of the previous cardboard maze setup. On the other hand not all the requirements are fulfilled yet, some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed as well. The main drawbacks of this design are the increased complexity, the increased cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issue of the fixed-head mouse in future iterations of this design outfaces all the drawbacks.  
+
+
 
 \end{multicols}
 
@@ -342,6 +347,8 @@ Other interesting features are: the big flash memory, the good RAM memory and th
 Finally the multiple serial interfaces allow the possibility to expand the system to a bigger one with more controllers involved.
 
 \subsection{Communication}
+\todo{ADD Baud rate, and other specs of the communication}
+
 \begin{wrapfigure}{R}{0.42\textwidth}
 	\includegraphics[width=\linewidth]{fig/MAVLink_logo.png}
 	\caption{MAVLink logo}\label{fig:MAVLink_logo}
@@ -381,7 +388,7 @@ Despite the light weight MAVLink comes with some interesting features, such is h
 	\caption{List and description of the MAVLink messages.}
 	\label{tab:msg}
 \end{table}
-
+\todo{ADD if message is status or not.}
 
 \subsection{Sensor}
 For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
@@ -419,14 +426,16 @@ The performances of the sensor are summarized on table \ref{tab:PMW3360}\footnot
 
 \subsection{Motor}
 To properly dimension the motors these assumptions are taken:
+\begin{multicols}{2}[]
 \begin{enumerate}
 	\item $\eta = 1$ No losses in wheel-sphere coupling
 	\item No slip of the wheel on the sphere
 	\item Hollow sphere
 	\item Flat disk
 \end{enumerate}
-
-The data given are:
+\end{multicols}
+The data given are
+\begin{multicols}{2}[]
 \begin{itemize}
 	\item $m_s$ mass of the sphere
 	\item $r_s$ radius of the sphere
@@ -436,7 +445,9 @@ The data given are:
 	\item $\omega_{max}$ maximum angular speed of the motor-gearbox
 	\item $J_m$ inertia of the rotor
 \end{itemize}
+\end{multicols}
 It is therefore possible to estimate the maximum continuous  acceleration and speed of the sphere.
+\newpage
 \section[User manual]{User manual for mouse treadmill software}
 The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
 \subsection{Installation of the PC software}
@@ -501,13 +512,12 @@ To install the software the sequent steps have to be accomplished:
 	\end{lstlisting}
 	
 \end{enumerate}
-\subsection{How to use the GUI}
-\todo{ADD STATE MACHINE FOR THE MACHINE}  
+\subsection{How to use the GUI}  
 In this section the use of the GUI and its functionalities are described.
 First of all the GUI provided can be expanded using the functions in the mouse.py generated using mavlink, and thus can be improved for future versions of the project. One screenshot of the GUI is shown in figure \ref{fig:GUI}.
 \begin{figure}[htp]
 	\centering
-	\includegraphics[width=0.8\linewidth]{fig/GUI.png}
+	\includegraphics[width=1\linewidth]{fig/GUI.png}
 	\caption{GUI screenshot on a MAC.}\label{fig:GUI}
 \end{figure}
 Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on other platforms, but it might look different. The library used to design the GUI is Appjar, which is compatible with MAC, LINUX and Windows.
@@ -529,16 +539,21 @@ Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on
 		\caption{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
 		\label{tab:sens_corr}
 	\end{table}
-	\item \textcolor{cyan}{\textbf{D}} In this region the input from the user are taken. In the first line the user can select the mode to be used:
+	\item \textcolor{cyan}{\textbf{D}} 
+	In this region the input from the user are taken. In the first line the user can select the mode to be used:
 	\begin{itemize}
 		\item \textbf{STOP}: When this mode is selected the motor are stopped.
-		\item \textbf{SPEED}: When this mode is selected the motor setpoint can be typed in the two entries under the Speed X and Speed Y labels.
-		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board and then run the routine.
+		\item \textbf{SPEED}: When this mode is selected the motor setpoints can be typed in the two entries under the Speed X and Speed Y labels.
+		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board (Modes: LOAD) and then run the routine (Modes: RUNNING).
 	\end{itemize} 
-	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO. Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
+	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
 \end{itemize}  
-
-
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig/FSM.pdf}
+	\caption{Finite state machine of the mouse treadmill.}\label{fig:FSM}
+\end{figure}
+The finite state machine of the machine is shown in figure \ref{fig:FSM}. All the capital letters conditions (except for MAX\_POINTS) are widgets on the GUI that can be pressed by the user while using the machine.
 \subsection{How to write a routine}
 In this section the way to properly define a routine is described. 
 An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
