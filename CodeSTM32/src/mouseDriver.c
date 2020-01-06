@@ -25,7 +25,7 @@
 \def I 
 \brief Integral coefficient for motor control.
 */
-#define MAX_MOTOR_SIGNAL 100
+#define MAX_MOTOR_SIGNAL 255
 /*!
 \def MAX_MOTOR_SIGNAL
 \brief Max value for the motor signal
@@ -300,9 +300,6 @@ void mouseDriver_sendMsg(uint32_t msgid){
             main_transmit_buffer(outBuffer, msg_size);
             break;
         case MAVLINK_MSG_ID_SPEED_INFO:
-            /* DEMO CODE INIT*/
-                actual_speed_measure.time_x = mouseDriver_getTime();
-            /* DEMO CODE END*/
             mavlink_msg_speed_info_encode(SYS_ID,COMP_ID, &msg, &actual_speed_measure);
             msg_size = mavlink_msg_to_send_buffer(outBuffer, &msg);
             main_transmit_buffer(outBuffer, msg_size);
@@ -347,6 +344,7 @@ void mouseDriver_idle (void){
         mouseDriver_initMotorSignal();
         actual_motor_signal.time = mouseDriver_getTime();
         main_stop_motors();
+        mouseDriver_control_idle();
         mouseDriver_sendMsg(MAVLINK_MSG_ID_SPEED_INFO);
 
         break;
@@ -360,6 +358,7 @@ void mouseDriver_idle (void){
         if (actual_point == 255){
             actual_error.error = MOUSE_ROUTINE_TOO_LONG;
             actual_error.time = mouseDriver_getTime();
+            mouseDriver_control_idle();
             mouseDriver_sendMsg(MAVLINK_MSG_ID_ERROR);
         }
         break;

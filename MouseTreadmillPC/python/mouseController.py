@@ -1,3 +1,4 @@
+
 import serial
 import os
 import sys
@@ -18,13 +19,14 @@ DATA = { "HEARTBEAT": {"time": [], "mode": []},
          "SPEED_INFO":  {"time": [], "speed_x": [], "speed_y": [], "start": 0}, 
          "MOTOR_SETPOINT": {"time": [], "motor_x": [], "motor_y": [], "start": 0} 
          }
-LOG = []
+
 MAX_SAMPLES_ON_SCREEN = 200
-print(mouseController.MAVLink_speed_info_message.fieldnames)
-#port = "/dev/cu.usbmodem14102"
-port  = "/dev/stdout"
+#print(mouseController.MAVLink_speed_info_message.fieldnames)
+port = "/dev/cu.usbmodem14102"
+#port  = "/dev/stdout"
 
 class MyApplication():
+     LOG = []
      actualMode = 0 
      actualTime = 0 
      actualSpeedSetpoint = [None, None]
@@ -45,7 +47,7 @@ class MyApplication():
             except:
                 pass
             if m:
-                LOG.append(m)
+                self.LOG.append(m)
                 if m.name == "HEARTBEAT":
                     self.actualTime = m.time
                     self.actualMode = m.mode
@@ -211,9 +213,11 @@ class MyApplication():
                             time.sleep(0.001)
                             stop = False
      def saveLog(self):
-        with open('log/log.txt', 'w+') as f:
-            for item in LOG:
-                f.write("%s\n" % item)    
+        log_name = "log/log_"+str(time.time_ns())+".txt"
+        with open(log_name, 'w+') as f:
+            for item in self.LOG:
+                f.write("%s\n" % item)  
+        self.LOG = []  
                
      def runRoutine(self):
         if self.actualMode == mouseController.MOUSE_MODE_AUTO_LOAD:

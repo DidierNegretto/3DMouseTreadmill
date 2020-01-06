@@ -187,7 +187,7 @@ void main_read_sensor_motion_burst(uint8_t *data );
 #define PRESCALER_HEART 1000
 #define CLOCK_FREQ 80000000
 #define COUNTER_PERIOD_HEART ((CLOCK_FREQ/(PRESCALER_HEART))*0.001*DT_HEART)
-#define PRESCALER_PWM 9
+#define PRESCALER_PWM 1000
 #define COUNTER_PERIOD_PWM 255
 #define PULSE_PWM 10
 #define B1_Pin GPIO_PIN_13

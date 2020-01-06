@@ -11,7 +11,10 @@ ROUTINE_NAME = "ROUTINE"
 ROUTINE_FILE = "routine_sin.py" # Where to store the new routine
 TIME_LENGHT = 40000 # Total time lenght of the routine in ms
 MAX_SPEED = 2
-'''ATTENTION : the time difference between two data points MUST BE INTEGER !'''
+'''ATTENTION : the time difference between two data points MUST BE INTEGER !
+    NOTE: the very last point is not exercuted.
+'''
+
 
 t = np.linspace(0,TIME_LENGHT,MAX_POINTS)
 t_ref = np.linspace(0,TIME_LENGHT,10*MAX_POINTS)

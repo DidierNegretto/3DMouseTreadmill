@@ -148,10 +148,10 @@ void sensorDriver_motion_read_speed(mavlink_raw_sensor_t sensor_data[2], mavlink
 	sensorDriver_motion_read_raw(SENSOR_X, &raw_values[0]);
 	sensorDriver_motion_read_raw(SENSOR_Y, &raw_values[1]);
 
-	speed_info->speed_x =  (float)raw_values[0].delta_x*(float)INCH2METER/(float)RESOLUTION;
+	speed_info->speed_x =  -(float)raw_values[0].delta_y*(float)INCH2METER/(float)RESOLUTION;
 	speed_info->speed_x /= (float)(raw_values[0].time-old_time[0])/(float)1000;
 	speed_info->time_x = raw_values[0].time;
-	speed_info->speed_y =  (float)raw_values[1].delta_x*(float)INCH2METER/(float)RESOLUTION;
+	speed_info->speed_y =  -(float)raw_values[1].delta_y*(float)INCH2METER/(float)RESOLUTION;
 	speed_info->speed_y /= (float)(raw_values[1].time-old_time[1])/(float)1000;
 	speed_info->time_y = raw_values[1].time;
 	sensor_data[0] = raw_values[0];
