@@ -1,6 +1,7 @@
 import os
 import sys
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 import numpy as np
 import json
 
@@ -41,6 +42,8 @@ for i in range(5):
             else:
                 log[i][data[0]][stuff[j][0]].append(float(stuff[j][1]))
 
+# =============================================================================
+
 fig = plt.figure()
 ax = []
 ax.append(fig.add_subplot(231))
@@ -66,6 +69,8 @@ for i in range(5):
     squal["median"].append(np.median(squal["data"][i]))
     ax[i].plot(t,y)
 
+# =============================================================================
+
 fig = plt.figure()
 ax = []
 ax.append(fig.add_subplot(231))
@@ -90,7 +95,9 @@ for i in range(5):
     speed["std"].append(np.std(speed["data"][i]))
     speed["median"].append(np.median(speed["data"][i]))
     ax[i].plot(t, y)
- 
+
+# =============================================================================
+
 fig = plt.figure()
 ax = []
 meanp = []
@@ -125,6 +132,66 @@ ax[0].legend()
 
 plt.savefig(path+"steady_state.pdf")
 
+# =============================================================================
+
+for i in range(5):
+    fig = plt.figure(figsize=(13, 4), tight_layout = True)
+    gs = GridSpec(nrows = 1, ncols = 3,hspace=0.0, figure = fig)
+
+    ax = []
+
+    ax.append(fig.add_subplot(gs[0, :-1]))
+    ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
+
+    ax[0].plot(t_speed["data"][i], speed["data"][i], "k-", lw = 0.01)
+
+    ax[0].set_xlabel("Time [ms]")
+    ax[0].set_ylabel("Measured speed [m/s]")
+    ax[1].set_xlabel("Number of occurencies [ ]")
+    ax[1].hist(speed["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+    ax[1].set_yticks([])
+
+    plt.savefig(path+"time_series_"+str(i)+".pdf")
+
+# =============================================================================
+
+timestamp = []
+for i in range(5):
+    timestamp.extend(t_speed["data"][i])
+timestamp = np.array(timestamp)
+dt = timestamp-np.roll(timestamp,1)
+
+dt = [el for el in dt if (el>0 and el<100)]
+dt = np.array(dt)
+dt = dt/1000
+dt = 1/dt
+x = np.arange(0,len(dt))
+
+fig = plt.figure(figsize=(13, 4), tight_layout = True)
+gs = GridSpec(nrows = 1, ncols = 3,hspace=0.0, figure = fig)
+
+ax = []
+
+ax.append(fig.add_subplot(gs[0, :-1]))
+ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
+
+ax[0].plot(x, dt, "k.", lw = 0.01)
+
+ax[0].set_xlabel("Time [ms]")
+ax[0].set_ylabel("Frequency [Hz]")
+ax[0].set_yticks([np.amax(dt), np.amin(dt)])
+ax[1].set_xlabel("Number of occurencies [ ]")
+res = ax[1].hist(dt,bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+
+ax[1].set_yticks([])
+ax[1].set_xticks([res[0][0], res[0][-1] ])
+
+print("Mean frequency = "+str(np.mean(dt)))
+print("STD on frequency = "+str(np.std(dt)))
+plt.savefig(path+"freq.pdf")
+
+# =============================================================================
+
 fig = plt.figure()
 ax = []
 meanp = []
@@ -145,9 +212,7 @@ ax[0].legend()
 
 plt.savefig(path+"std.pdf")
 
-plt.show()
-
-
+#plt.show()
 
 
 

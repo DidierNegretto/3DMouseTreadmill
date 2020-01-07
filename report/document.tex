@@ -176,7 +176,6 @@
 }
 \end{titlepage}
 
-\restoregeometry % restores the geometry
 \nopagecolor% Use this to restore the color pages to white
 \begin{center}
 \chead{\textit{\textbf{Mouse treadmill control}}}
@@ -191,29 +190,25 @@
 \rfoot{Biorobotics laboratory}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\linewidth]{fig/OleSetup}
-	%\includegraphics[width=\linewidth]{fig_sim/fin_comp}
-	\caption{Roll coefficient as a function of the angle of attack for different values of twisting and folding angles. Schematics of folding configurations are added. }\label{fig:tw_vs_fold_bar}
+	\includegraphics[width=0.95\linewidth]{fig/steady_state}
+	\caption{Measured speed as a function of the reference one.}\label{fig:steady_state_0}
 \end{figure}
-The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system is characterized and tested. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
+The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system's performances are characterized. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
 
 \paragraph{System architecture}
  For the system architecture one $\mu$controller is used for the closed-loop control. This controller sends and receives data using a USB cable and the UART 232 protocol with the MAVLink messaging protocol. On the other side the PC can get the messages, log them and plot them. To measure the speed of the treadmill two optical sensors are used. These sensors are the same that can be found in gaming mouse. The sensors provide rich information which can be used not only to measure the speed of the surface of the treadmill, but also the estimate the quality of the measure itself. By using this information the control loop is aware of possible measuring problems and can therefore discard low quality information.\\
  Finally, to ease the user experience, a cross-platform graphical user interface as well as documentation, unit tests and a user manual are provided. 
  
 \paragraph{Testing and results}
-Once the system is built some tests are carried out to characterize the system performances.
-First the noise at 0 [$\frac{m}{s}$] in the sensors is measured, then the noise at constant speed. This is important to determine what type of noise is present in the system and whatever it useful to filter it and how. The quality of the surface with a static and moving treadmill is also compared. The noise is characterize with the following parameters: \todo{ADD RESULTS}
-Then one test on the step response is performed, which gave these results: \todo{ADD RESULTS}
-Finally the treadmill was tested using a sinusoidal routine and the tracking performances (the difference between the desired path and the real routine) are shown in figure \ref{fig:track_res}.
+Once the system is built the performances are verified, more precisely, the sensor noise is analysed as well as the speed of the control loop. To carry out an analysis of the total noise on the sensors (which is due to the sensor itself and the vibrations/imperfections of the machine), the machine is set to a constant speed setpoint, while data are logged. This procedure is repeated for different speeds. Figure \ref{fig:steady_state_0} shows the reference speed as well as the mean, standard deviation (std), median and min/max values for all the setpoints tested. One can notice that it is not possible to reach the last setpoint due to saturation of the control signal. The minimum speed is always around 0 $[\frac{m}{s}]$ due to some imperfections in the moving part that causes it to get stuck periodically. On the other hand the maximum std is $<0.008$ $[\frac{m}{s}]$, thus fulfilling the requirement of $\leq0.02$ $[\frac{m}{s}]$. Finally the control loop is fast since it logs the speed measurements with a frequency of 200 $[Hz]$ 97.3\% of the time.
 
-\paragraph{Cost}
-As a prof of concept the treadmill seems to be a proper solution providing solutions to many of the drawbacks of the previous cardboard maze setup. On the other hand not all the requirements are fulfilled yet, some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed as well. The main drawbacks of this design are the increased complexity, the increased cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issue of the fixed-head mouse in future iterations of this design outfaces all the drawbacks.  
+\paragraph{Drawbacks and future improvements}
+As a prof of concept the treadmill seems to be a proper improvement of the previous design since it provides solutions to many of the drawbacks suffered by the cardboard maze. On the other hand not all the requirements are fulfilled yet (e.g. maximum speed), some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed as well. The main drawbacks of this design are the increased complexity, the higher cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issues mentioned above in future iterations of this design outfaces all the drawbacks.  
 
 
 
 \end{multicols}
-
+\restoregeometry % restores the geometry
 \clearpage
 \lfoot{ }
 \rfoot{ }
