@@ -291,8 +291,8 @@ The functional requirements are listed as well:
 \end{itemize}
 
 \subsection{Structure of the report}
-This report is structured as follows: an introduction is given in section \ref{sec:intro}. Section \ref{sec:design} describes the design decisions and the components choices made. Section \ref{sec:control} describes the control strategy.
-Finally in section \ref{sec:conc} the conclusion of the project is given. After that in section \ref{sec:user_manual} the user manual for mouse treadmill is given. The code and the data-sheets of the components are annexed. All the work done on the project can be downloaded from \url{https://github.com/DidierNegretto/3DMouseTreadmill}.
+This report is structured as follows: an introduction is given in section \ref{sec:intro}. Section \ref{sec:design} describes the design decisions and the components' choices made. Section \ref{sec:control} describes the control strategy, while in section \ref{sec:results} the results are shown.
+Finally in section \ref{sec:conc} the conclusion of the project is given. After that in section \ref{sec:user_manual} the user manual for mouse treadmill is provided. The code and the data-sheets of the components are annexed. All the work done on the project can be downloaded from \url{https://github.com/DidierNegretto/3DMouseTreadmill}.
 \section{Design choices}\label{sec:design}
 In this section the design choices are explained and justified. First an overview of the system architecture is given, then choice of the board and the sensors is analysed and finally the calculations for the motor dimensioning are shown.
 \subsection{System architecture overview} \label{sec:archi}
@@ -441,7 +441,7 @@ The specifications of the sensor are summarized on table \ref{tab:PMW3360}. For 
 
 
 \subsection{Motor}
-In this section one motor proposition \ref{app:motor} \footnote{This motor are not used in the actual version of the treadmill, but might be used for a future iteration.} is shown with all the calculations used to justify such a choice.
+In this section one motor proposition \ref{app:motor} \footnote{This motors are not used in the actual version of the treadmill, but might be used for a future iteration.} is shown with all the calculations used to justify such a choice.
 To properly dimension the motors these assumptions are taken:
 \begin{multicols}{2}[]
 \begin{enumerate}
@@ -452,6 +452,7 @@ To properly dimension the motors these assumptions are taken:
 	\item Negligible rotor and gearbox inertia 
 \end{enumerate}
 \end{multicols}
+\noindent
 The data given are:
 \begin{multicols}{2}[]
 \begin{itemize}
@@ -463,26 +464,30 @@ The data given are:
 	\item $\omega_{max} = 1000$ [$rpm$] maximum angular speed of the motor-gearbox
 \end{itemize}
 \end{multicols}
-
+\noindent
 It is therefore possible to estimate the maximum continuous acceleration and speed of the sphere.
-The maximum continuous speed can be computed using:
-\begin{equation}
-	v_{max} = \omega_{max}\frac{r_s}{60} = 3.16 [\frac{m}{s}]
+The maximum continuous speed can be computed using equation \ref{eq:v}:
+\begin{equation}\label{eq:v}
+	v_{max} = \omega_{max}\frac{r_s}{60}
 \end{equation} 
-For the acceleration first the inertia of the wheel $J_w$ and of the sphere $J_s$ can be computed using:
-\begin{equation}
-J_w = \frac{1}{2}mr_w^2\\
+For the acceleration first the inertia of the wheel $J_w$ and of the sphere $J_s$ as seen by the motor can be computed using equations \ref{eq:J_w} and \ref{eq:J_s} respectively:
+\begin{equation}\label{eq:J_w}
+J_w = m_wr_w^2\\
 \end{equation}
-\begin{equation}
-J_s = \frac{2}{3}mr_s^2\\
+\begin{equation}\label{eq:J_s}
+J_s = \frac{2}{3}m_sr_s^2*\frac{r_w}{r_s}\\
 \end{equation}
-
+Finally the maximum acceleration can be computed using equation \ref{eq:a}:
+\begin{equation}\label{eq:a}
+	a_{max} = \frac{M_{max}r_w}{J_w + J_s}
+\end{equation}
+Using the equations above we get $v_{max} = 3.16$ $[\frac{m}{s}]$ and $a_{max} = 2.74$ $[\frac{m}{s^2}]$, which are values within the requirements. The motors shown in \ref{app:motor} are not used in the current version of the treadmill, but the calculations used to choose them are shown since they might be useful for an improved version. 
 
 \section{Control} \label{sec:control}
-In this section the main aspect of the control are discussed as well as some results.
-For the closed-loop control a simple PI controller is used (see \ref{sec:controller}). This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). 
+In this section the main aspects of the control are discussed.
+For the closed-loop control a simple PI controller is used. This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). In \ref{sec:I/O} the inputs and outputs of the control loop are explained, in section \ref{sec:controller} the control logic is explained.
 
-\subsection{Inputs/Outputs}
+\subsection{Inputs/Outputs}\label{sec:I/O}
 In this section the signal definitions are described.
 The control diagram is shown in figure \ref{fig:ctrl_diag}. The signals are defined as follow:
 \begin{figure}[H]
@@ -497,12 +502,12 @@ The control diagram is shown in figure \ref{fig:ctrl_diag}. The signals are defi
 	v_x\\
 	v_y
 	\end{bmatrix}$
-	: is the measured $v_x$ and $v_y$ speeds. This measure is done using the optical sensors, which means that the raw values are as defined in the datasheet of the sensors (see \ref{app:PMW3660}). In short words the sensor runs a navigation program, which does the correlation between two images as fast as possible and finds out of how many counts the two images are displaced in the $x$ and $y$ direction of the sensor, those values are then integrated up to when the motion burst is performed. Since two sensors are used, only one axis of each sensor is meaningful for the control (since the other one is always fixed). The information that can be retrieved from one sensor is the number of counts along one axis that the ball has done since the last read. This can then be translated in to meters by knowing the resolution of the sensor (which is given in counts per inch) and the relation between inches and meters. Furthermore the speed can be computed by keeping track of when the last measure is taken, and the actual time, thus knowing the $dt$ between two measures.
+	: is the measured $v_x$ and $v_y$ speeds. This measure is done using the optical sensors, which means that the raw values are as defined in the datasheet of the sensors (see \ref{app:PMW3660}). In short words the sensor runs a navigation program, which does the correlation between two images as fast as possible and finds out of how many counts the two images are displaced in the $x$ and $y$ direction of the sensor. Those displacement are then integrated up to when the motion burst read is performed. Since two sensors are used, only one axis of each sensor is meaningful for the control (since the other one is always reading 0). Therefore the information that can be retrieved from one sensor is the number of counts along one axis that the ball has moved since the last read. This can then be translated in meters by knowing the resolution of the sensor (which is given in counts per inch). Finally the speed can be computed by keeping track of when the last measure is taken, and the actual time, thus knowing the $dt$ between two measures. The time measurement is done using time from boot expressed in $[ms]$.
 	\item	
 	$E = \begin{bmatrix}
 	e_x\\
 	e_y
-	\end{bmatrix}$: is the error id est the difference between the setpoint and the measured speed
+	\end{bmatrix}$: is the error, id est the difference between the setpoint and the measured speed.
 	\item  
 	$U = 
 	\begin{bmatrix}
@@ -533,17 +538,10 @@ Where $K$ and $I$ are constant scalar values and $\begin{bmatrix}i_x\\i_y\end{bm
 Moreover the control is done only if the measures taken are valid. Which means that the SQUAL measure is bigger than SQUAL\_THRESH, the sensors are not lifted, and the PRODUCT\_ID is equal 66.
 If those conditions are met it means that the surface quality is good, the sensor "sees" correctly the surface and the communication is done correctly.
 If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors are stopped and the mode goes to STOP mode to avoid damage to the machine.
-\subsection{Results}
-In this section the results of the control are shown as well as the achieved performances in terms measures \ref{sec:measure_test} and control \ref{sec:control_test}.
-\subsubsection{Measure test}\label{sec:measure_test}
-In this section a simple experiment is described and the results are shown. First the zero speed noise is measured in the sensors, then the same measure is repeated while spinning the ball at constant speed. This let us characterize the noise in the sensors and decide whatever some filtering is required.
-
-\subsubsection{Control test}\label{sec:control_test}
-In this section the $I$ and $K$ parameters in equation \ref{eq:U} are tuned, then the step responses are measured. Finally a 2D routine is described and the tracking error is analysed to see whatever the machine is able to follow such a routine and with which performances.
-
-
-
-
+\section{Results} \label{sec:results}
+In this section the results of a first test of the machine are presented. The experiment consisted in making the control slowly reach a target speed and then measure whatever the desired speed is reached and with which precision. Then, by analysing the log files it is studied if it is possible to recover the position of the ball relative to the starting and with which precision. This test is then repeated for different speed setpoints (0.01, 0.02, 0.03, 0.04 and 0.05 $[\frac{m}{s}]$).
+\subsubsection{Speed measure}\label{sec:measure_test}
+The time series of the speed error are shown in figure \ref{fig:speed_error}.
 
 
 
@@ -639,7 +637,7 @@ Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on
 			ROM 4 = 4 | 4\\
 			\hline
 		\end{tabular} 
-		\caption{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
+		\caption[Correct sensor status]{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
 		\label{tab:sens_corr}
 	\end{table}
 	\item \textcolor{cyan}{\textbf{D}} 
@@ -649,7 +647,7 @@ Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on
 		\item \textbf{SPEED}: When this mode is selected the motor setpoints can be typed in the two entries under the Speed X and Speed Y labels.
 		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board (Modes: LOAD) and then run the routine (Modes: RUNNING).
 	\end{itemize} 
-	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log.txt. This file is overwritten every time so if you need the data please copy them in a safe place. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
+	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log\_TIME.txt, where TIME is the time expressed in [$ns$]. This is done to avoid overwriting logs that were previously acquired. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
 \end{itemize}  
 \begin{figure}[H]
 	\centering
@@ -723,7 +721,7 @@ To extend the system please follow the following steps:
 		\caption{python libraries.}
 		\label{fig:gen_py}
 	\end{subfigure}
-	\caption{mavgenerate GUI screenshots properly setup for generating python and C libraries.}
+	\caption[Mavgenerate screenshots]{Mavgenerate screenshots properly setup for generating python and C libraries.}
 \end{figure}
 
 \newpage
@@ -740,6 +738,7 @@ To extend the system please follow the following steps:
 \bibliographystyle{plainnat}
 \listoffigures
 \listoftables
+\newpage
 \appendix
 \section{MAVLink dialect description file}\label{app:mavlink}
 \lstinputlisting[language=XML]{../mouse.xml}
@@ -769,12 +768,12 @@ To extend the system please follow the following steps:
 
 \section{Code for PC}
 \subsection{GUI}
-%\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
+\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
 \subsection{Routine example}
-%\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
+\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
 \section{Data-sheets}
 \subsection{Sensor Data-sheet }\label{app:PMW3660}
-%\includepdf[pages=-]{../resources/sensorDatasheet.pdf}
+\includepdf[pages=-]{../resources/sensorDatasheet.pdf}
 %\input{"../docs/latex/refman.tex"}
 
 

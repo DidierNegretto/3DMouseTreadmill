@@ -49,7 +49,8 @@ MAVLink Library folder.
 
 6. MouseTreadmillPC/python: contains the code to be run on the PC. An extra script (gen_routine.py) to generate 
 a routine in routine.py is provided as an exemple. This script can be improved for better 
-perfomances in the machine
+perfomances in the machine. The plot.py script can be used as inpiration for reading
+data from logs, log exemples are given in  MouseTreadmillPC/python/log
 
 7. MouseTreadmillSTM32Project: contains the stm32CubeIDE project. The most important 
 things are:
