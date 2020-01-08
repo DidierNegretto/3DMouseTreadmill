@@ -10,7 +10,10 @@ start_time = [2063500, 2173590, 2275030, 15595, 110351]
 stop_time =  [2123700, 2238690, 2354990, 74673, 141685]
 log = []
 path = "../../report/fig/"
-
+start_time = np.array(start_time)
+stop_time = np.array(stop_time)
+print((stop_time-start_time)/1000)
+print()
 for i in range(5):
     log.append(dict())
     log[i]["filename"] = "log/"+files[i]
@@ -137,23 +140,30 @@ plt.savefig(path+"steady_state.pdf")
 # =============================================================================
 
 for i in range(5):
-    fig = plt.figure(figsize=(13, 4), tight_layout = True)
-    gs = GridSpec(nrows = 1, ncols = 3,hspace=0.0, figure = fig)
+    fig = plt.figure(figsize=(13, 4))#, tight_layout = True)
+    gs = GridSpec(nrows = 1, ncols = 3,wspace=0.0, figure = fig)
 
     ax = []
 
     ax.append(fig.add_subplot(gs[0, :-1]))
-    ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
+    ax.append(fig.add_subplot(gs[0, -1], sharey = ax[0]))
+    plt.setp(ax[1].get_yticklabels(), visible=False)
+    ax[1].tick_params(size=0)
 
     ax[0].set_title("Speed error at speed = "+str(x[i])+" [m/s]")
     ax[1].set_title("Speed error distribution at speed = "+str(x[i])+" [m/s]")
+
     ax[0].plot(t_speed["data"][i], speed["data"][i]-x[i], "k-", lw = 0.01)
 
     ax[0].set_xlabel("Time [ms]")
     ax[0].set_ylabel("Speed error [m/s]")
     ax[1].set_xlabel("Number of occurencies [ ]")
-    ax[1].hist(speed["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
-    ax[1].set_yticks([])
+    ax[1].hist(speed["data"][i]-x[i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+    #ax[1].set_yticks([])
+    titicaca = ax[0].get_xticks()
+    titicaca = titicaca[1:-2]
+    ax[0].set_xticks(titicaca)
+    print("%.2f"%x[i]+"&"+"%.4f"%speed["mean"][i]+"&"+"%.4f"%speed["median"][i]+"&"+"%.4f"%speed["std"][i]+"&"+"%.4f"%speed["min"][i]+"&"+"%.4f"%speed["max"][i]+"&"+"$[\\frac{m}{s}]$"+"\\\\"+"\\hline")
 
     plt.savefig(path+"speed_error_"+str(i)+".pdf")
 
@@ -217,17 +227,19 @@ ax[0].legend()
 plt.savefig(path+"std_speed.pdf")
 
 # =============================================================================
-
+print("POS ERROR")
 pos_error = {"data" : [], "mean": [], "min": [], "max": [],"std": [], "median": []}
 for i in range(5):
-    fig = plt.figure(figsize=(13, 4), tight_layout = True)
-    gs = GridSpec(nrows = 1, ncols = 3,hspace=0.0, figure = fig)
+    fig = plt.figure(figsize=(13, 4))#, tight_layout = True)
+    gs = GridSpec(nrows = 1, ncols = 3,wspace=0.0, figure = fig)
 
     ax = []
 
     ax.append(fig.add_subplot(gs[0, :-1]))
     ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
-    
+    plt.setp(ax[1].get_yticklabels(), visible=False)
+    ax[1].tick_params(size=0)
+
     ref_pos = []
     pos = {"data":[], "time":[]}
     pos["data"].append(0)
@@ -239,12 +251,19 @@ for i in range(5):
     pos_error["data"].append((np.array(ref_pos)-np.array(pos["data"]))*1000)
     ax[0].plot(t_speed["data"][i][0:-1], pos_error["data"][i], 'k-', lw = 0.01)
     res = ax[1].hist(pos_error["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+    
+    ax[0].set_title("Position error at speed = "+str(x[i])+" [m/s]")
+    ax[1].set_title("Position error distribution at speed = "+str(x[i])+" [m/s]")
 
     ax[1].set_xlabel("Number of occurencies [ ]")
     ax[1].set_yticks([])
     #ax[1].set_xticks(res[0] )
     ax[0].set_xlabel("Time [ms]")
     ax[0].set_ylabel("Position error [mm]")
+    titicaca = ax[0].get_xticks()
+    titicaca = titicaca[1:-2]
+    ax[0].set_xticks(titicaca)
+    
     plt.savefig(path+"pos_error_"+str(i)+".pdf")
 
     pos_error["min"].append(np.amin(pos_error["data"][i]))
@@ -252,6 +271,7 @@ for i in range(5):
     pos_error["mean"].append(np.mean(pos_error["data"][i]))
     pos_error["std"].append(np.std(pos_error["data"][i]))
     pos_error["median"].append(np.median(pos_error["data"][i]))
+    print('{0:0.4}'.format(x[i])+" $[\\frac{m}{s}]$"+"&"+'{0:1.4e}'.format((pos_error["mean"][i]/1000))+"&"+'{0:1.4e}'.format((pos_error["median"][i]/1000))+"&"+'{0:1.4e}'.format((pos_error["std"][i]/1000))+"&"+'{0:1.4e}'.format((pos_error["min"][i]/1000))+"&"+'{0:1.4e}'.format((pos_error["max"][i]/1000))+"&"+"$[m]$"+"\\\\"+"\\hline")
 
 # =============================================================================
 plt.close("all")
@@ -305,7 +325,7 @@ ax[0].set_ylabel("Position Standard deviation [mm]")
 
 ax[0].legend()
 
-plt.show()
+#plt.show()
 
 
 

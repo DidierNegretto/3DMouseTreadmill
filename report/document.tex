@@ -200,7 +200,7 @@ Once the system is built the performances are verified, more precisely, the sens
 	\centering
 	\includegraphics[width=0.80\linewidth]{fig/steady_state}
 	\vspace{-0.1cm}
-	\caption{Measured speed as a function of the reference one.}\label{fig:steady_state_0}
+	\caption{Measured speed distribution as a function of the reference speed.}\label{fig:steady_state_0}
 	\vspace{-0.5cm}
 \end{figure}
 \paragraph{Drawbacks and future improvements}
@@ -539,14 +539,145 @@ Moreover the control is done only if the measures taken are valid. Which means t
 If those conditions are met it means that the surface quality is good, the sensor "sees" correctly the surface and the communication is done correctly.
 If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors are stopped and the mode goes to STOP mode to avoid damage to the machine.
 \section{Results} \label{sec:results}
-In this section the results of a first test of the machine are presented. The experiment consisted in making the control slowly reach a target speed and then measure whatever the desired speed is reached and with which precision. Then, by analysing the log files it is studied if it is possible to recover the position of the ball relative to the starting and with which precision. This test is then repeated for different speed setpoints (0.01, 0.02, 0.03, 0.04 and 0.05 $[\frac{m}{s}]$).
-\subsubsection{Speed measure}\label{sec:measure_test}
+In this section the results of a first test of the machine are presented. The experiment consisted in making the control slowly reach a target speed and then measure whatever the desired speed is reached and with which precision. Then, by analysing the log files it is studied if it is possible to recover the position of the ball relative to the starting and with which precision. This test is then repeated for different speed setpoints (0.01, 0.02, 0.03, 0.04 and 0.05 $[\frac{m}{s}]$). The visual display of the information is inspired by \cite{Tufte}.
+\subsubsection{Speed measure}
+\begin{wrapfigure}{L}{0.5\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{fig/steady_state}
+	\caption{Measured speed distribution as a function of the reference speed.}\label{fig:steady_state}
+\end{wrapfigure}
 The time series of the speed error are shown in figure \ref{fig:speed_error}.
+The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:speed_param}. One can notice that in every time-series there is a high frequency noise given by the sensor and a low frequency one. The low frequency noise is due to the imperfections on the ball. The ball gets periodically slowed down by some regions with higher friction.\\
+To better understand how the noise on the sensors varies with the increase of the reference speed figure \ref{fig:steady_state} is shown.
+In this figure the reference speed is compared with the measured one. The mean, median, standard deviation, min/max values of the measured speed are shown. One can notice that the minimum speed is always 0 $[\frac{m}{s}]$, this is due to the friction that causes the ball to get periodically blocked, as said before. Moreover the last speed reference of 0.05 $[\frac{m}{s}]$ is not reached because of the saturation of the control signal. On the other hand the median value is close to the mean, which is the case when the distribution is close to Gaussian.Finally a sensible increase in the standard deviation can be noticed when the reference speed is increased, this is probably due the sensor behaviour, but it might also be caused by more vibrations in the mechanical construction. Once it is possible to reach higher speeds it will be interesting to see which performances can be expected.
 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|c|c|c|c|r} 
+	\textbf{Reference}&\textbf{mean} &\textbf{median} 
+	&\textbf{std} & \textbf{min}&\textbf{max}& \textbf{unit}\\ 
+	\hline
+	\hline 
+	0.01&0.0100&0.0102&0.0025&-0.0000&0.0224&$[\frac{m}{s}]$\\\hline
+	0.02&0.0200&0.0193&0.0042&0.0041&0.0356&$[\frac{m}{s}]$\\\hline
+	0.03&0.0300&0.0295&0.0058&0.0020&0.0538&$[\frac{m}{s}]$\\\hline
+	0.04&0.0397&0.0396&0.0071&0.0020&0.0660&$[\frac{m}{s}]$\\\hline
+	0.05&0.0434&0.0427&0.0079&0.0020&0.0732&$[\frac{m}{s}]$\\
+	\end{tabular} 
+	\caption{Noise parameters on speed for different speed references.}
+	\label{tab:speed_param}
+\end{table}
 
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_0}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_1}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_2}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_3}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_4}
+	\caption[Speed error time-series]{Time-series of the speed error (measured speed-reference) for different reference speeds. On the right the number of occurrences is shown to study the distribution of the error.}\label{fig:speed_error}
+\end{figure}
 
+\subsection{Position measurement} 
+\begin{wrapfigure}{R}{0.5\textwidth}
+	\vspace{-1cm}
+	\centering
+	\includegraphics[width=\linewidth]{fig/pos_error_comp}
+	\caption{Position distribution as a function of the reference speed.}\label{fig:pos_error_comp}
+\end{wrapfigure}
+The time series of the position error are shown in figure \ref{fig:pos_error}.
+The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:pos_param}. One can notice that the position is not drifting from the expected one, or at least is drifting so slowly that on time scale of around $60$ $[s]$ it is not possible to measure it. This means that the optical sensors are very good and are able to compensate for the drift.\\
+To better understand how the noise on the position varies with the increase of the reference speed figure \ref{fig:pos_error_comp} is shown.
+ The mean, median, standard deviation, min/max values of the position are shown. No surprise to see that the worst case it at 0.05 [$\frac{m}{s}$], which is the case in which the motor signal saturates.\\
+ 
+ The accuracy in position is impressive $\leq 4.4e-5$ $[m]$ for the reference speeds tested, this seems to deteriorate with higher speeds but should be with the requirements for very high speeds. One question might arise at this point, why the speed is so less accurate if the position can be determined so precisely? This might be due to the precision in the time reference in the $\mu$controller, which is set to 1 [$ms$]. Try with a more precise beat might improve the speed accuracy quite a lot, despite the little effort.
+5
 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|c|c|c|c|r} 
+		\textbf{Reference}&\textbf{mean} &\textbf{median} 
+		&\textbf{std} & \textbf{min}&\textbf{max}& \textbf{unit}\\ 
+		\hline
+		\hline 
+0.01 $[\frac{m}{s}]$&6.4960e-08&-8.0000e-07&1.3375e-05&-9.3840e-05&7.8880e-05&$[m]$\\\hline
+0.02 $[\frac{m}{s}]$&3.3333e-08&3.4800e-06&2.2692e-05&-1.7752e-04&1.6792e-04&$[m]$\\\hline
+0.03 $[\frac{m}{s}]$&1.4768e-07&2.6800e-06&3.1088e-05&-2.7136e-04&2.1124e-04&$[m]$\\\hline
+0.04 $[\frac{m}{s}]$&1.5460e-06&1.8800e-06&3.8120e-05&-2.3820e-04&3.0028e-04&$[m]$\\\hline
+0.05 $[\frac{m}{s}]$&3.4602e-05&3.6640e-05&4.3614e-05&-2.0504e-04&4.8584e-04&$[m]$\\
+	\end{tabular} 
+	\caption{Noise parameters on position for different speed references.}
+	\label{tab:pos_param}
+\end{table}
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{fig/pos_error_0}\\
+	\includegraphics[width=0.8\textwidth]{fig/pos_error_1}\\
+	\includegraphics[width=0.8\textwidth]{fig/pos_error_2}\\
+	\includegraphics[width=0.8\textwidth]{fig/pos_error_3}\\
+	\includegraphics[width=0.8\textwidth]{fig/pos_error_4}
+	\caption[Position error time-series]{Time-series of the position error (reference position- measured) for different reference speeds. On the right the number of occurrences is shown to study the distribution of the error.}\label{fig:pos_error}
+\end{figure}
+
+\newpage
 \section{Conclusion} \label{sec:conc}
+In the first part of the section a comparison between requirements and achievements is done, then the conclusions are taken.
+\newline
+
+In the end the proposed system performs well in terms of accuracy, despite being just a proof of concept. Table \ref{tab:achieved} shows which requirements are achieved and which are not\footnote{The position and speed resolution/accuracy depends on the speed setpoint, the surface quality and others, only extensive tests for all possible dynamics can provide information on these values.}.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l||c|c|r|r} 
+		\textbf{Description}&\textbf{Required} &\textbf{Obtained} &\textbf{Unit} & \textbf{Achieved} \\ 
+		\hline
+		\hline 
+		Dimensions of the moving surface & 0.5 &$-$&$[m^2]$&$-$ \\ 
+		\hline 
+		Course & $\infty$ &$\infty$ & $[m]$&\textcolor{green}{\textbf{YES}}  \\ 
+		\hline 
+		Maximum speed & 3 & $\leq0.05$ &$[\frac{m}{s}]$&\textcolor{red}{\textbf{NO}} \\ 
+		\hline 
+		Maximum acceleration & 2 &$-$ &$[\frac{m}{s^2}]$&$-$  \\ 
+		\hline 
+		Position resolution & 0.01 & $\leq 4.4e-5$ & $[m]$ &\textcolor{green}{\textbf{YES}}  \\ 
+		\hline 
+		Speed resolution & 0.02 & $\leq 0.008$ & $[\frac{m}{s}]$ &\textcolor{green}{\textbf{YES}} \\ 
+		\hline 
+		Maximum weight & 0.1 & $-$ & $[kg]$ & $-$  \\  
+		\hline 
+		Mounting time for 1 person & 30 & $-$ & $[min]$ & $-$ \\
+		\hline 
+		Maximum weight of the mouse & 40 & $-$  & $[g]$ & $-$\\
+		\hline 
+		Length of common experiment (distance, time) & (20, 600) & feasible & ($[m]$,$[s]$) &\textcolor{green}{\textbf{YES}} \\
+	\end{tabular} 
+	\caption[Achieved performances]{Comparison between the requirements and the achieved performances. The slots marked with $-$ are not measured or part of the mechanical design.}
+	\label{tab:achieved}
+\end{table}
+\noindent
+One can notice that the position and speed can be determined with really high resolution, this means that it is possible to achieve precise position control on the ball if required, moreover the time-series for the position do not show drift from the expected value except when it is not possible to reach it due to saturation in the control signals.
+For the functional requirements it is possible to say that:
+\begin{itemize}
+	\item \textbf{Closed-loop control} The closed-loop control works correctly even if it is tested only for low speeds and accelerations, in a more advanced version it will possible to have higher performances on the control by using some advanced control and better motors. It will also be possible to do position control on the ball if needed.
+	
+	\item \textbf{Speed routines} All the necessary code for generating, uploading and running speed routines is available, due to some problems in the mechanical build of the machine it was not possible to test and improve this feature.
+	
+	\item \textbf{User interface} One user interface is provided, this interfaces allows the full control of the machine. Improvements can be done to make it more "user-friendly".
+	
+	\item \textbf{Data logging} The data are logged correctly to the computer. On the performance side the logging speed for the info messages (see table \ref{tab:msg}) reaches 200 $[Hz]$ for 97.3\% of the time, which is a quite high frequency.
+	
+	\item \textbf{Expandability of the system} It is possible to expand and modify the system for future uses, an interesting expansion is to add some cameras to track the position of the mouse and use it to control the speed or position of the machine.
+\end{itemize}
+In conclusion all the functional requirements are met by the current design even if some of them can be improved and others need more testing.
+\newline
+
+The goal of designing a mouse treadmill able to solve the drawbacks of the one used in \cite{Ole} and \cite{Neuron} is achieved. Unfortunately, not all the requirements for the new design are met, which means that steps to improve the machine needs to be taken. This report try to underline the good performances achieved, as well as the things that are not to show the way for improving the design.
+One crucial step to take is the improvement of the motors, the ones on the prototype are too noisy and slow to get close to a fully functional design. In this report one suggestion for the new motors is done, so that for the next iteration it is possible to start from a solid starting point. No need to underline that a different choice can be made, especially since the motors are controlled using PWM, which is a very common technique used by most motor drivers.
+
+Working on this project was a great opportunity to practice many different skills and improve my knowledge on the field. The most interesting part was to implement a functional embedded system and its interface with the PC, the sensors and the motors. A true and complete robotic project from A to Z !
+
+
 
 \newpage
 \section[User manual]{User manual for mouse treadmill software}\label{sec:user_manual}
@@ -730,9 +861,10 @@ To extend the system please follow the following steps:
 	
 	\bibitem{Ole}Jared M. Cregg, Roberto Leiras, Alexia Montalant, Ian R. Wickersham, and Ole Kiehn, \textit{Brainstem Neurons that Command Left/Right Locomotor Asymmetries} 
 	\bibitem{Neuron} Jakob Voigts, Mark T. Harnett, \textit{Somatic and Dendritic Encoding of Spatial Variables in Retrosplenial Cortex Differs during 2D Navigation}
+	\bibitem{Tufte} Edward R. Tufte, \textit{The visual display of quantitative information}.
 	\bibitem{mavlink} MAVLink Developer Guide, \textit{https://mavlink.io/en/}
 	\bibitem{py} Python website, \textit{https://www.python.org/downloads/}
-	
+
 	
 \end{thebibliography}
 \bibliographystyle{plainnat}
