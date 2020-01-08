@@ -98,7 +98,7 @@ for i in range(5):
 
 # =============================================================================
 
-fig = plt.figure()
+fig = plt.figure(tight_layout = True)
 ax = []
 meanp = []
 meanm = []
@@ -107,24 +107,26 @@ y_ticks = []
 
 ax.append(fig.add_subplot(111))
 ax[0].set_xticks(x)
+ax[0].set_title("Measured speed for different speed setpoints")
 ax[0].plot(x, x, "r.", label = "reference")
 y_ticks.extend(speed["median"])
-ax[0].plot(x, speed["mean"], "k.", label = "mean", ms = 2)
+ax[0].plot(x, speed["mean"], "k.", label = "mean", ms = 3)
 ax[0].plot(x, speed["median"], "k_", label = "median")
 meanp = (np.array(speed["mean"])+np.array(speed["std"]))
-#ax[0].plot(x, meanp, "c.", label = "std")
+ax[0].plot(x, meanp, "kx", label = "std")
 meanm = (np.array(speed["mean"])-np.array(speed["std"]))
-#ax[0].plot(x, meanm, "c.")
+ax[0].plot(x, meanm, "kx")
 
-#ax[0].plot(x, speed["max"], "rx", label = "min/max")
-#ax[0].plot(x, speed["min"], "rx")
+ax[0].plot(x, speed["max"], "kv", label = "min/max")
+ax[0].plot(x, speed["min"], "k^")
 
 for i in range(5):
     ax[0].plot([x[i], x[i]], [speed["max"][i], meanp[i]], "k" )
     ax[0].plot([x[i], x[i]], [speed["min"][i], meanm[i]], "k" )
     #ax[0].plot([x[i], x[i]], [, meanm[i]], "c-" )
 
-ax[0].set_xlabel("Reference speed [m/s]")
+
+ax[0].set_xlabel("Speed setpoint [m/s]")
 ax[0].set_ylabel("Measured speed [m/s]")
 
 ax[0].legend()
@@ -143,15 +145,17 @@ for i in range(5):
     ax.append(fig.add_subplot(gs[0, :-1]))
     ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
 
-    ax[0].plot(t_speed["data"][i], speed["data"][i], "k-", lw = 0.01)
+    ax[0].set_title("Speed error at speed = "+str(x[i])+" [m/s]")
+    ax[1].set_title("Speed error distribution at speed = "+str(x[i])+" [m/s]")
+    ax[0].plot(t_speed["data"][i], speed["data"][i]-x[i], "k-", lw = 0.01)
 
     ax[0].set_xlabel("Time [ms]")
-    ax[0].set_ylabel("Measured speed [m/s]")
+    ax[0].set_ylabel("Speed error [m/s]")
     ax[1].set_xlabel("Number of occurencies [ ]")
     ax[1].hist(speed["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
     ax[1].set_yticks([])
 
-    plt.savefig(path+"time_series_"+str(i)+".pdf")
+    plt.savefig(path+"speed_error_"+str(i)+".pdf")
 
 # =============================================================================
 
@@ -210,9 +214,98 @@ ax[0].set_ylabel("Standard deviation [m/s]")
 ax[0].legend()
 
 
-plt.savefig(path+"std.pdf")
+plt.savefig(path+"std_speed.pdf")
 
-#plt.show()
+# =============================================================================
+
+pos_error = {"data" : [], "mean": [], "min": [], "max": [],"std": [], "median": []}
+for i in range(5):
+    fig = plt.figure(figsize=(13, 4), tight_layout = True)
+    gs = GridSpec(nrows = 1, ncols = 3,hspace=0.0, figure = fig)
+
+    ax = []
+
+    ax.append(fig.add_subplot(gs[0, :-1]))
+    ax.append(fig.add_subplot(gs[0, -1]))#, sharey=ax[0]))
+    
+    ref_pos = []
+    pos = {"data":[], "time":[]}
+    pos["data"].append(0)
+    ref_pos.append(0)
+    for j in range(1,len(speed["data"][i])-1):
+        pos["data"].append(speed["data"][i][j]*(t_speed["data"][i][j]-t_speed["data"][i][j-1])/1000+ref_pos[j-1])
+        ref_pos.append(x[i]*(t_speed["data"][i][j]-t_speed["data"][i][j-1]) /1000+ ref_pos[j-1])
+    
+    pos_error["data"].append((np.array(ref_pos)-np.array(pos["data"]))*1000)
+    ax[0].plot(t_speed["data"][i][0:-1], pos_error["data"][i], 'k-', lw = 0.01)
+    res = ax[1].hist(pos_error["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+
+    ax[1].set_xlabel("Number of occurencies [ ]")
+    ax[1].set_yticks([])
+    #ax[1].set_xticks(res[0] )
+    ax[0].set_xlabel("Time [ms]")
+    ax[0].set_ylabel("Position error [mm]")
+    plt.savefig(path+"pos_error_"+str(i)+".pdf")
+
+    pos_error["min"].append(np.amin(pos_error["data"][i]))
+    pos_error["max"].append(np.amax(pos_error["data"][i]))
+    pos_error["mean"].append(np.mean(pos_error["data"][i]))
+    pos_error["std"].append(np.std(pos_error["data"][i]))
+    pos_error["median"].append(np.median(pos_error["data"][i]))
+
+# =============================================================================
+plt.close("all")
+fig = plt.figure()
+ax = []
+asgard = [0,0,0,0,0]
+ax.append(fig.add_subplot(111))
+ax[0].set_xticks(x)
+ax[0].set_title("Position error for different speed setpoints")
+ax[0].plot(x,asgard, "r.", label = "reference")
+y_ticks.extend(pos_error["median"])
+ax[0].plot(x, pos_error["mean"], "k.", label = "mean", ms = 3)
+ax[0].plot(x, pos_error["median"], "k_", label = "median")
+meanp = (np.array(pos_error["mean"])+np.array(pos_error["std"]))
+ax[0].plot(x, meanp, "kx", label = "std")
+meanm = (np.array(pos_error["mean"])-np.array(pos_error["std"]))
+ax[0].plot(x, meanm, "kx")
+
+ax[0].plot(x, pos_error["max"], "kv", label = "min/max")
+ax[0].plot(x, pos_error["min"], "k^")
+
+for i in range(5):
+    ax[0].plot([x[i], x[i]], [pos_error["max"][i], meanp[i]], "k" )
+    ax[0].plot([x[i], x[i]], [pos_error["min"][i], meanm[i]], "k" )
+    #ax[0].plot([x[i], x[i]], [, meanm[i]], "c-" )
+
+ax[0].set_xlabel("Reference speed [m/s]")
+ax[0].set_ylabel("Position error [mm]")
+
+ax[0].legend()
+
+
+plt.savefig(path+"pos_error_comp.pdf")
+# =============================================================================
+plt.close("all")
+
+fig = plt.figure()
+ax = []
+meanp = []
+meanm = []
+x = [0.01, 0.02, 0.03, 0.04, 0.05]
+y_ticks = []
+
+ax.append(fig.add_subplot(111))
+ax[0].set_xticks(x)
+y_ticks.extend(pos_error["std"])
+ax[0].plot(x, pos_error["std"], "k.--", label = "mean")
+
+ax[0].set_xlabel("Reference speed [m/s]")
+ax[0].set_ylabel("Position Standard deviation [mm]")
+
+ax[0].legend()
+
+plt.show()
 
 
 

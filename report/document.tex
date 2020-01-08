@@ -186,22 +186,23 @@
 []
 
 \paragraph{Objectives and preliminary considerations} 
+\indent
 \lfoot{\today}
 \rfoot{Biorobotics laboratory}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]{fig/steady_state}
-	\caption{Measured speed as a function of the reference one.}\label{fig:steady_state_0}
-\end{figure}
 The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system's performances are characterized. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
-
 \paragraph{System architecture}
  For the system architecture one $\mu$controller is used for the closed-loop control. This controller sends and receives data using a USB cable and the UART 232 protocol with the MAVLink messaging protocol. On the other side the PC can get the messages, log them and plot them. To measure the speed of the treadmill two optical sensors are used. These sensors are the same that can be found in gaming mouse. The sensors provide rich information which can be used not only to measure the speed of the surface of the treadmill, but also the estimate the quality of the measure itself. By using this information the control loop is aware of possible measuring problems and can therefore discard low quality information.\\
  Finally, to ease the user experience, a cross-platform graphical user interface as well as documentation, unit tests and a user manual are provided. 
- 
-\paragraph{Testing and results}
-Once the system is built the performances are verified, more precisely, the sensor noise is analysed as well as the speed of the control loop. To carry out an analysis of the total noise on the sensors (which is due to the sensor itself and the vibrations/imperfections of the machine), the machine is set to a constant speed setpoint, while data are logged. This procedure is repeated for different speeds. Figure \ref{fig:steady_state_0} shows the reference speed as well as the mean, standard deviation (std), median and min/max values for all the setpoints tested. One can notice that it is not possible to reach the last setpoint due to saturation of the control signal. The minimum speed is always around 0 $[\frac{m}{s}]$ due to some imperfections in the moving part that causes it to get stuck periodically. On the other hand the maximum std is $<0.008$ $[\frac{m}{s}]$, thus fulfilling the requirement of $\leq0.02$ $[\frac{m}{s}]$. Finally the control loop is fast since it logs the speed measurements with a frequency of 200 $[Hz]$ 97.3\% of the time.
 
+\paragraph{Testing and results}
+Once the system is built the performances are verified, more precisely, the sensor noise is analysed as well as the speed of the control loop. To carry out an analysis of the total noise on the sensors (which is due to the sensor itself and the vibrations/imperfections of the machine), the machine is set to a constant speed setpoint, while data are logged. This procedure is repeated for different speeds. Figure \ref{fig:steady_state_0} shows the reference speed as well as the mean, standard deviation (std), median and min/max values of the measured speed for all the setpoints tested. One can notice that it is not possible to reach the last setpoint due to saturation of the control signal. The minimum speed is always around 0 $[\frac{m}{s}]$ due to some imperfections in the moving part that causes it to get stuck periodically. On the other hand the maximum std is $<0.008$ $[\frac{m}{s}]$, thus fulfilling the requirement of $\leq0.02$ $[\frac{m}{s}]$. By integrating the speed it is possible to compute the position, doing so leads to a std on the position $\leq 0.045$ $[mm]$, fulfilling the requirements. Finally the control loop is fast since it logs the speed measurements with a frequency of 200 $[Hz]$ 97.3\% of the time.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\linewidth]{fig/steady_state}
+	\vspace{-0.1cm}
+	\caption{Measured speed as a function of the reference one.}\label{fig:steady_state_0}
+	\vspace{-0.5cm}
+\end{figure}
 \paragraph{Drawbacks and future improvements}
 As a prof of concept the treadmill seems to be a proper improvement of the previous design since it provides solutions to many of the drawbacks suffered by the cardboard maze. On the other hand not all the requirements are fulfilled yet (e.g. maximum speed), some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed as well. The main drawbacks of this design are the increased complexity, the higher cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issues mentioned above in future iterations of this design outfaces all the drawbacks.  
 
@@ -225,13 +226,15 @@ As a prof of concept the treadmill seems to be a proper improvement of the previ
 \pagestyle{fancy}
 \section{Introduction}\label{sec:intro}
 In this section the main objectives and the state of the art for the project are presented as well as the overall structure of this report.
+
 \subsection{Motivation}
-\begin{wrapfigure}{L}{0.42\textwidth}
-	\includegraphics[width=\linewidth]{fig/OleSetup.png}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{fig/OleSetup.png}
 	\caption{The experimental setup used in \cite{Ole}.}\label{fig:OleSetup}
-	\vspace{-2 cm}
-\end{wrapfigure}
-The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, on the other hand, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist in a spiral maze made out cardboard. This setup comes with some advantages such as:
+\end{figure}
+The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole} or \cite{Neuron}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist in a spiral maze made out cardboard. This setup comes with some advantages such as:
+
 \begin{itemize}
 	\item Low price
 	\item Simple to implement and use
@@ -243,7 +246,9 @@ As well as some disadvantages:
 	\item Impossibility to analyse the mouse gait
 	\item The mouse movements can't be imposed
 \end{itemize}
-To asses these issues a new design is needed for conducting such experiments. The new platform needs to allow the control on the walking surface on which the mouse is standing in such a way that a specific speed profile can be imposed to the mouse. Moreover it must be possible to analyse the mouse gait using cameras. \\
+
+A more advanced platform is used in \cite{Neuron}. In this case a rotating headpost allows 2-photon imaging in freely locomoting and rotating mice. This means that the measuring apparatus is fixed to the mouse head, while the mouse os free to move at his will. With such a setup it is possible to analyse the mouse gait, but it is not possible to control it, thus it is not the correct approach to use in the new design.\\
+To asses the issues mentioned above a new design is needed for conducting such experiments. The new platform needs to allow the control on the walking surface on which the mouse is standing in such a way that a specific speed profile can be imposed to the mouse. Moreover it must be possible to analyse the mouse gait using cameras. \\
 For the new design inspiration is taken from some existing solutions on the market. 
 \subsection{Requirements}
 First the mechanical requirements are discussed and stated. Table \ref{tab:Requirements} summarizes them.
@@ -273,42 +278,41 @@ First the mechanical requirements are discussed and stated. Table \ref{tab:Requi
 		\hline 
 		Length of common experiment (distance, time) & (20, 600)  & ($[m]$,$[s]$)  \\
 	\end{tabular} 
-	\caption{Summary of the requirements for the mouse treadmill platform.}
+	\caption[Mechanical requirements]{Summary of the requirements for the mouse treadmill platform.}
 	\label{tab:Requirements}
 \end{table}
 The functional requirements are listed as well:
 \begin{itemize}
-	\item \textbf{Closed-loop control} Once a 2D speed setpoint is chosen the speed of the surface needs to be measured and the motor control signal need to be adjusted automatically to reach the desired setpoint. 
-	\item \textbf{Speed routines} The user can define a speed routine, which needs to be executed by the treadmill. The speed routine consist in a list of 2D speed setpoints and the time interval during which the machine should execute them.
-	\item \textbf{User interface} The user can use a Graphical user interface (GUI) on a computer to be able to use the mouse treadmill. This interface informs the user if the sensors are correctly connected and initialized, and it should give a live update of the treadmill speed.
+	\item \textbf{Closed-loop control} The user can specify a 2D speed setpoint, the control is then able to measure the speed of the treadmill surface and adjust the motor signals to reach the desired setpoint.
+	\item \textbf{Speed routines} The user can define a speed routine, which needs to be executed by the treadmill. The speed routine consists of a list of 2D speed setpoints and the time interval during which the machine should execute them.
+	\item \textbf{User interface} The user can use a graphical user interface (GUI) on a computer to be able to use the mouse treadmill. This interface informs the user if the sensors are correctly connected and initialized, and it should give a live update of the treadmill speed.
 	\item \textbf{Data logging} The user can save the data sent by the treadmill during the experiment for future uses. 
 	\item \textbf{Expandability of the system} The user can easily expand the system with other controllers to have other features, than the ones listed above.
 \end{itemize}
 
 \subsection{Structure of the report}
-This report is structured as follows: an introduction is given in section \ref{sec:intro}, the system architecture and communication are explained in \ref{sec:archi}. Section \ref{sec:design}, describes the design decisions and the components choices made .Section \ref{sec:control} describes the control strategy and shows some preliminary responses.
-Finally in section \ref{sec:conc} the conclusion of the project is given. The code, code documentation as well as the data-sheets of the components are annexed.
-
-\section{System architecture} \label{sec:archi}
-In this section the architecture of the system is explained and detailed.
-One first overview of the system is given in figure \ref{fig:arch}.
+This report is structured as follows: an introduction is given in section \ref{sec:intro}. Section \ref{sec:design} describes the design decisions and the components choices made. Section \ref{sec:control} describes the control strategy.
+Finally in section \ref{sec:conc} the conclusion of the project is given. After that in section \ref{sec:user_manual} the user manual for mouse treadmill is given. The code and the data-sheets of the components are annexed. All the work done on the project can be downloaded from \url{https://github.com/DidierNegretto/3DMouseTreadmill}.
+\section{Design choices}\label{sec:design}
+In this section the design choices are explained and justified. First an overview of the system architecture is given, then choice of the board and the sensors is analysed and finally the calculations for the motor dimensioning are shown.
+\subsection{System architecture overview} \label{sec:archi}
+The overview of the system is given in figure \ref{fig:arch}.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\linewidth]{fig/archi.pdf}
 	\caption{Architecture for mouse treadmill project}
 	\label{fig:arch}
 \end{figure}
-The core of the system is the STM32L476RG, which can read from the sensors using the SPI interface and control the motors using the PWM. Moreover it can communicate with the computer and the GUI for data logging and to receive the inputs form the user. The communication with the computer uses the DMA capabilities of the microcontroller to free the processor from waiting for the communication to end before being able to take care of other tasks.
+The core of the system is the STM32L476RG, which can read from the sensors using the SPI interface and control the motors using PWM. Moreover it can communicate with the computer and the GUI for data logging and to receive the inputs from the user. The communication with the computer uses the DMA capabilities of the microcontroller to free the processor from waiting for the communication to end before being able to take care of other tasks. More detailed informations on how the treadmill works and can be used are given in section \ref{sec:user_manual}.
 
-\section{Design choices}\label{sec:design}
-In this section the design choices are explained and justified. First the choice of the board is analysed, then the sensors and finally the calculations for the motor dimensioning are shown.
 \subsection{Board}
 For the board choice different types are taken into account:
 \begin{itemize}
 	\item \textbf{Single board computer}: In this category the raspberry pi and the odroid are taken into consideration. These boards offer powerful computers, which can be running operating systems such as Linux or Windows, which makes them interesting. Unfortunately they can't provide any accurate timing,  which is needed for the motor control and PWM generation.
-	\item \textbf{Evaluation boards}: In this category the STM32 nucleo boards as well as the arduino boards can be found. These boards allow proper timing of the signals and accurate PWM generation, but on the other hand a computer is needed for plotting and storing the data, which can't be done locally on the board due to memory restrictions and limited resources on the board.
+	\item \textbf{Evaluation boards}: In this category the STM32 nucleo boards as well as the arduino boards can be found. These boards allow proper timing of the signals and accurate PWM generation, but on the other hand a computer is needed for plotting and storing the data, which can't be done locally on the board due to memory restrictions and limited resources available.
 \end{itemize}
-Due to the constraints in the system the second category is consider for implementation, the STM32L476RG board is taken for the system. Table \ref{tab:board} summarizes the features of the board.
+
+Due to the constraints in the system the second category is consider for implementation, the  STM32L476RG board is taken for the system. Table \ref{tab:board} summarizes the features of the board.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{l||c|r} 
@@ -338,7 +342,7 @@ Due to the constraints in the system the second category is consider for impleme
 \end{table}
 One of the most important feature of the board is the DMA, which enhances the performances of the CPU. The DMA is used for the UART communication with the computer. This technique frees the CPU from waiting for the UART communication to be finished, so that it can spend more time on other activities. This same solution can be, in principle, adopted for the SPI communication if a standard SPI is used. Unfortunately the timing diagrams for the sensors are not standard, thus some time needs to be "wasted" by the processor so that the sensors can keep up with the communication.
 Other interesting features are: the big flash memory, the good RAM memory and the low cost. One drawback is that dynamic memory allocation is not possible in such an small system to prevent stack overflow and problems during run time. This is why the size of the speed routine is limited to a given number of points.
-Finally the multiple serial interfaces allow the possibility to expand the system to a bigger one with more controllers involved.
+Finally the multiple serial interfaces allow the possibility to expand the system to a bigger one with more $\mu$controllers involved.
 
 \subsection{Communication}
 
@@ -346,7 +350,7 @@ Finally the multiple serial interfaces allow the possibility to expand the syste
 	\includegraphics[width=\linewidth]{fig/MAVLink_logo.png}
 	\caption{MAVLink logo}\label{fig:MAVLink_logo}
 \end{wrapfigure}
-For the communication with the computer the UART protocol is chosen. This choice is almost mandatory since most boards are provided with an UART to USB interface and a mini-USB connector. The STM32L476RG is no exception to this rule. The main settings for the UART protocol are reported in table \ref{tab:UART}.
+For the communication with the computer the UART 232 protocol is chosen. This choice is almost mandatory since most boards are provided with an UART to USB interface and a mini-USB connector. The STM32L476RG is no exception to this rule. This protocol comes with the advantage that can be used to communicate with most of the PCs, but it comes with limited baud rate. The main settings for the UART protocol are reported in table \ref{tab:UART}.
 
 \begin{table}[H]
 	\centering
@@ -364,15 +368,15 @@ For the communication with the computer the UART protocol is chosen. This choice
 		\hline 
 		MSB first & Disable & $-$  \\ 
 	\end{tabular} 
-	\caption{Table describing the main parameters of the UART communication protocol.}
+	\caption[UART communication parameters]{Table describing the main parameters of the UART communication protocol.}
 	\label{tab:UART}
 \end{table}
 
 Since the system needs to be expanded for future more complex experiments some thought is put in the choice of the messaging protocol to allow this key feature.
 The best solution found is MAVLink. "MAVLink is a very lightweight messaging protocol for communicating with drones"\cite{mavlink}, one can say that the mouse treadmill is not meant to fly around, but this messaging protocol is flexible enough to be adapted to the mouse treadmill.
-More precisely a dialect is described in \ref{app:mavlink}, and summarized in table \ref{tab:msg}. Thanks to the description file it is possible to generate libraries in different programming languages (C, Python, Java, ...) and if in the future a new message is required a additional definition can be added to the file and the libraries can be regenerated.
+More precisely a dialect is described in \ref{app:mavlink}, and summarized in table \ref{tab:msg}. Thanks to the description file (\ref{app:mavlink}) it is possible to generate libraries in different programming languages (C, Python, Java, ...) and if in the future a new message is required an additional definition can be added to the file and the libraries can be regenerated.
 
-Despite the light weight MAVLink comes with some interesting features, such is high reliability (detects packets drops and corruption), high efficiency (only 14-bits of overhead), it can also allow up to 255 concurrent systems on the network.
+Despite the light weight MAVLink comes with some interesting features, such is high reliability (detects packets drops and corruption), high efficiency (only 14-bits of overhead), it can also allow up to 255 concurrent systems on the network. Thus it looks perfect for the expandability requirement.
 
 \begin{table}[H]
 	\centering
@@ -398,21 +402,21 @@ Despite the light weight MAVLink comes with some interesting features, such is h
 		\hline
 		RAW\_SENSOR & Raw sensor values & STM32 & PC & Status\\
 	\end{tabular} 
-	\caption{List and description of the MAVLink messages. The Type indicates whatever the message is high frequency (Info), low frequency (Status) or none of the previous ones ($-$)}
+	\caption[MAVLink messages description]{List and description of the MAVLink messages. The Type indicates whatever the message is high frequency (Info), low frequency (Status) or none of the previous ones ($-$)}
 	\label{tab:msg}
 \end{table}
 
 \subsection{Sensor}
-For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Nevertheless the sensor need to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
-Because of that the PMW3360 is chosen for the implentation.
+For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Another criterion is that the sensor needs to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
+Because of that the PMW3360 is chosen for the implementation.
 The working principle of the sensor is quite simple. The sensor is equipped with a LED to light a given area and a camera. The camera takes picture of the moving surface with a frequency of up to 12000 $[fps]$. Using the integrated DSP module some features are extracted form the images and, by knowing the displacement of the features, it is possible to determine how much the surface has moved on the X and Y direction.
 Some other useful information can be retrieved from the sensor such as :
 \begin{itemize}
 	\item \textbf{Lift status} This bit in the motion register gives information about the status of the sensor and especially if the sensor detects a surface or not. This information is used to determine if the read value is valid or not.
-	\item \textbf{Surface quality (SQUAL)} This register gives an information about how many features are detected on the surface. This value is used to verify the quality of the measurement, which is considered valid only if the number of detected feature is above a given threshold.
+	\item \textbf{Surface quality (SQUAL)} This register gives an information about how many features are detected on the surface. This value is used to verify the quality of the measurement, which is considered valid only if the number of detected features is above a given threshold.
 	\item \textbf{SROM ID} This value is read after the power up of the sensor to verify that the SROM of the sensor is uploaded correctly using the SPI interface. If this value is not as expected it means that the sensor is not initialized correctly and thus might not work properly. 
 \end{itemize}
-The performances of the sensor are summarized on table \ref{tab:PMW3360}\footnote{$[cpi]$ stands for counts per inch.}. For more details refer to \ref{app:PMW3660}.
+The specifications of the sensor are summarized on table \ref{tab:PMW3360}. For more details refer to \ref{app:PMW3660}.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{l||c|r} 
@@ -423,7 +427,7 @@ The performances of the sensor are summarized on table \ref{tab:PMW3360}\footnot
 		\hline 
 		High acceleration detection & 490  & $[\frac{m}{s^2}]$  \\ 
 		\hline 
-		Default resolution & 5000 & $[cpi]$ \\ 
+		Default resolution & 0.00508 & $[mm]$ \\ 
 		\hline 
 		Resolution error of & 1 & $[\%]$  \\ 
 		\hline 
@@ -461,6 +465,17 @@ The data given are:
 \end{multicols}
 
 It is therefore possible to estimate the maximum continuous acceleration and speed of the sphere.
+The maximum continuous speed can be computed using:
+\begin{equation}
+	v_{max} = \omega_{max}\frac{r_s}{60} = 3.16 [\frac{m}{s}]
+\end{equation} 
+For the acceleration first the inertia of the wheel $J_w$ and of the sphere $J_s$ can be computed using:
+\begin{equation}
+J_w = \frac{1}{2}mr_w^2\\
+\end{equation}
+\begin{equation}
+J_s = \frac{2}{3}mr_s^2\\
+\end{equation}
 
 
 \section{Control} \label{sec:control}
@@ -536,7 +551,7 @@ In this section the $I$ and $K$ parameters in equation \ref{eq:U} are tuned, the
 \section{Conclusion} \label{sec:conc}
 
 \newpage
-\section[User manual]{User manual for mouse treadmill software}
+\section[User manual]{User manual for mouse treadmill software}\label{sec:user_manual}
 The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
 \subsection{Installation of the PC software}\label{sec:install}
 First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
@@ -716,25 +731,11 @@ To extend the system please follow the following steps:
 \begin{thebibliography}{100}
 	
 	\bibitem{Ole}Jared M. Cregg, Roberto Leiras, Alexia Montalant, Ian R. Wickersham, and Ole Kiehn, \textit{Brainstem Neurons that Command Left/Right Locomotor Asymmetries} 
+	\bibitem{Neuron} Jakob Voigts, Mark T. Harnett, \textit{Somatic and Dendritic Encoding of Spatial Variables in Retrosplenial Cortex Differs during 2D Navigation}
 	\bibitem{mavlink} MAVLink Developer Guide, \textit{https://mavlink.io/en/}
 	\bibitem{py} Python website, \textit{https://www.python.org/downloads/}
 	
-	\bibitem{sar} Robin R. Murphy, Eric Steimle et al. \textit{Cooperative Use of Unmanned Sea Surface and Micro Aerial Vehicles at Hurricane Wilma},Journal of Field Robotics,2008
-	\bibitem{eco}     Kenzo Nonami, Farid Kendoul, Satoshi Suzuki, Wei Wang, Daisuke Nakazawa,\textit{Autonomous Flying Robots}, Springer, 2010.
-	\bibitem{roll} G. Sachs, \textit{What Can Be Learned from Unique Lateral-Directional Dynamics Properties of Birds for Mini-Aircraft}, Atmospheric Flight Mechanics Conference and Exhibit, 2007
-	%\bibitem{ref1} Onur Bilgen, Kevin B. Kochersberger, and Daniel J. Inman, \textit{Novel, Bidirectional, Variable-Camber Airfoil via Macro-Fiber Composite Actuators}, Journal of aircraft Vol. 47, No. 1, January–February 2010.
-	\bibitem{real_plane} R. Pecora, F. Amoroso, and L. Lecce, \textit{Effectiveness of Wing Twist Morphing in Roll Control}, Journal of aircraft Vol. 49, No. 6, November–December 2012
-	\bibitem{ref3} Osgar John Ohanian III, Christopher Hickling, Brandon Stiltner, Etan D. Karni, \textit{Piezoelectric Morphing versus Servo-Actuated MAV Control Surfaces}, 53rd AIAA/ASME/ASCE/AHS/ASC Structures, Structural Dynamics and Materials Conference, 2012
-	\bibitem{ref4} Helen M. Garcia , Mujahid Abdulrahim and Rick Lind, \textit{Roll control for a micro air vehicle using active wing morphing}, AIAA Guidance, Navigation, and Control Conference and Exhibit, 2003
-	\bibitem{ref5} Mujahid Abdulrahim, Helen Garcia, and Rick Lind, \textit{Flight Characteristics of Shaping the Membrane Wing of a Micro Air Vehicle}, Journal of aircraft Vol. 42, No. 1, January–February 2005
-	\bibitem{ref6} M. Di Luca, S. Mintchev, G. Heitz, F. Noca and D. Floreano, \textit{Bioinspired morphing wings for extended flight envelope and roll control of small drones}, Interface Focus 7, 2017
-	\bibitem{urb_env} William E. Green and Paul Y. Oh, \textit{A Hybrid MAV for Ingress and Egress of Urban Environments}, IEEE transactions on robotics, 2009
-	\bibitem{twist} Bret Stanford, Mujahid Abdulrahim, Rick Lind, and Peter Ifju, \textit{Actuation for Roll Control of a Micro Air Vehicle}, Journal of aircraft,  2007
-	\bibitem{rev} Juan Carlos Gomez and Ephrahim Garcia, \textit{Morphing unmanned aerial vehicles}, Smart materials and structures, 2011.
-	\bibitem{book} E.L. Houghton, P.W. Carpenter, Steven H. Collicott and Daniel T. Valentine, \textit{Aerodynamics for engineering students}, Seventh edition.
-	\bibitem{fire} Pero Skorput, Sadko Mandzuka, Hrvoje Vojvodic, \textit{The Use of Unmanned Aerial Vehicles for Forest Fire Monitoring }, 58th International Symposium ELMAR, 2016
-	\bibitem{city} David Gallacher, \textit{Drone Applications for Environmental Management in Urban Spaces: A Review}, International Journal of Sustainable Land Use and Urban Planning, 2016
-	\bibitem{disaster} Ludovic Apvrille, Tullio Tanzi, and Jean-Luc Dugelay \textit{Autonomous Drones for Assisting Rescue Services within the context of Natural Disasters}, XXXIth URSI General Assembly and Scientific Symposium, 2014
+	
 \end{thebibliography}
 \bibliographystyle{plainnat}
 \listoffigures
@@ -768,12 +769,12 @@ To extend the system please follow the following steps:
 
 \section{Code for PC}
 \subsection{GUI}
-\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
+%\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/mouseController.py}
 \subsection{Routine example}
-\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
+%\lstinputlisting[style=PyStyle]{../MouseTreadmillPC/python/routine.py}
 \section{Data-sheets}
 \subsection{Sensor Data-sheet }\label{app:PMW3660}
-\includepdf[pages=-]{../resources/sensorDatasheet.pdf}
+%\includepdf[pages=-]{../resources/sensorDatasheet.pdf}
 %\input{"../docs/latex/refman.tex"}
 
 
