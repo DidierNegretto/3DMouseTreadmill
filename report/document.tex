@@ -681,7 +681,7 @@ Working on this project was a great opportunity to practice many different skill
 
 \newpage
 \section[User manual]{User manual for mouse treadmill software}\label{sec:user_manual}
-The software is well documented in the docs folder, nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
+The software is well documented (just run doxygen using the Doxyfile in the docs folder), nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
 \subsection{Installation of the PC software}\label{sec:install}
 First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
 \begin{multicols}{3}[]
@@ -855,6 +855,22 @@ To extend the system please follow the following steps:
 	\caption[Mavgenerate screenshots]{Mavgenerate screenshots properly setup for generating python and C libraries.}
 \end{figure}
 
+\section{What to do if you do not know what to do}
+If you find yourself in the situation depicted in figure \ref{fig:xkcd}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{fig/wisdom_of_the_ancients}
+	\caption{Situation in which you might be if nothing works as expected \cite{xkcd}}\label{fig:xkcd}
+\end{figure}
+And you have tried everything, you might be able to reach \textit{DenverCoder9} by emailing:\\
+\vspace{-0.5cm}
+\begin{center}
+	\texttt{didier.negretto@epfl.ch}
+\end{center}
+
+
+
+
 \newpage
 \lhead{ }
 \begin{thebibliography}{100}
@@ -864,6 +880,7 @@ To extend the system please follow the following steps:
 	\bibitem{Tufte} Edward R. Tufte, \textit{The visual display of quantitative information}.
 	\bibitem{mavlink} MAVLink Developer Guide, \textit{https://mavlink.io/en/}
 	\bibitem{py} Python website, \textit{https://www.python.org/downloads/}
+	\bibitem{xkcd} Randall Munroe, \textit{https://xkcd.com/979/}
 
 	
 \end{thebibliography}
