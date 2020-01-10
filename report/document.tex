@@ -189,22 +189,22 @@
 \indent
 \lfoot{\today}
 \rfoot{Biorobotics laboratory}
-The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system's performances are characterized. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction), which are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
+The project consists of designing and manufacturing the electronics and control for a mouse treadmill. After that the system's performances are characterized. This work starts from \cite{Ole}: in this paper a cardboard maze is used to test the mouse behaviour. This setup is quite simple and comes with some drawbacks (i.e. it is not possible to analyse the mouse gait or control its speed and direction). In \cite{Neuron} the setup do not allow for control on the mouse motion. These drawbacks are addressed by the treadmill design. The new design features closed-loop speed control, a user interface (with real-time plotting), data logging, moreover the system can be expanded easily thanks to the use of MAVLink.
 \paragraph{System architecture}
- For the system architecture one $\mu$controller is used for the closed-loop control. This controller sends and receives data using a USB cable and the UART 232 protocol with the MAVLink messaging protocol. On the other side the PC can get the messages, log them and plot them. To measure the speed of the treadmill two optical sensors are used. These sensors are the same that can be found in gaming mouse. The sensors provide rich information which can be used not only to measure the speed of the surface of the treadmill, but also the estimate the quality of the measure itself. By using this information the control loop is aware of possible measuring problems and can therefore discard low quality information.\\
+ For the system architecture one $\mu$controller is used for the closed-loop control. This controller sends and receives data using a USB cable, UART 232 and the MAVLink messaging protocol. On the other side the PC can get the messages, log them and plot them. To measure the speed of the treadmill two optical sensors are used. These sensors are the same that can be found in gaming mouse. The sensors provide rich information which can be used not only to measure the speed of the surface of the treadmill, but also to estimate the quality of the measure itself. By using this information the control loop is aware of possible measuring problems and can therefore discard low quality information.\\
  Finally, to ease the user experience, a cross-platform graphical user interface as well as documentation, unit tests and a user manual are provided. 
 
 \paragraph{Testing and results}
-Once the system is built the performances are verified, more precisely, the sensor noise is analysed as well as the speed of the control loop. To carry out an analysis of the total noise on the sensors (which is due to the sensor itself and the vibrations/imperfections of the machine), the machine is set to a constant speed setpoint, while data are logged. This procedure is repeated for different speeds. Figure \ref{fig:steady_state_0} shows the reference speed as well as the mean, standard deviation (std), median and min/max values of the measured speed for all the setpoints tested. One can notice that it is not possible to reach the last setpoint due to saturation of the control signal. The minimum speed is always around 0 $[\frac{m}{s}]$ due to some imperfections in the moving part that causes it to get stuck periodically. On the other hand the maximum std is $<0.008$ $[\frac{m}{s}]$, thus fulfilling the requirement of $\leq0.02$ $[\frac{m}{s}]$. By integrating the speed it is possible to compute the position, doing so leads to a std on the position $\leq 0.045$ $[mm]$, fulfilling the requirements. Finally the control loop is fast since it logs the speed measurements with a frequency of 200 $[Hz]$ 97.3\% of the time.
+Once the system is built the performances are verified, more precisely, the sensor noise is analysed as well as the speed of the control loop. To carry out an analysis of the total noise on the sensors (which is due to the sensor itself and the vibrations/imperfections of the machine), the treadmill is set to a constant speed setpoint, while data are logged. This procedure is repeated for different reference speeds. Figure \ref{fig:steady_state_0} shows the distribution of the measured speed as a function of the setpoint. One can notice that it is not possible to reach the last setpoint due to saturation of the control signal. The minimum speed is always around 0 $[\frac{m}{s}]$ due to some imperfections in the moving part that causes it to get slowed down periodically. On the other hand the maximum std is $<0.008$ $[\frac{m}{s}]$, thus fulfilling the requirement of $\leq0.02$ $[\frac{m}{s}]$. By integrating the speed it is possible to compute the position, doing so leads to a std on the position $\leq 0.045$ $[mm]$ fulfilling the requirement of $\leq0.01$ $[m]$. Over a 60 $[s]$ time no drift on the position can be measured.  Finally the control loop is fast since it logs the speed measurements with a frequency of 200 $[Hz]$ 97.3\% of the time.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.80\linewidth]{fig/steady_state}
+	\includegraphics[width=0.75\linewidth]{fig/steady_state}
 	\vspace{-0.1cm}
 	\caption{Measured speed distribution as a function of the reference speed.}\label{fig:steady_state_0}
 	\vspace{-0.5cm}
 \end{figure}
 \paragraph{Drawbacks and future improvements}
-As a prof of concept the treadmill seems to be a proper improvement of the previous design since it provides solutions to many of the drawbacks suffered by the cardboard maze. On the other hand not all the requirements are fulfilled yet (e.g. maximum speed), some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed as well. The main drawbacks of this design are the increased complexity, the higher cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issues mentioned above in future iterations of this design outfaces all the drawbacks.  
+The treadmill is an improvement of the previous designs since it provides solutions to many of the drawbacks. On the other hand not all the requirements are fulfilled yet (e.g. maximum speed), some improvements may include: new motors, which can provide the required speed and torque for better tracking and a camera to get information on the mouse position so that experiments with a free moving mouse can be performed. The main drawbacks of this design are the increased complexity, the higher cost and the need of a fixed-head mouse. No need to underline that the much richer information that can be retrieved using the new design as well as the possibility to solve the issues mentioned above in future iterations of this design outfaces all the drawbacks.  
 
 
 
@@ -225,15 +225,15 @@ As a prof of concept the treadmill seems to be a proper improvement of the previ
 \clearpage
 \pagestyle{fancy}
 \section{Introduction}\label{sec:intro}
-In this section the main objectives and the state of the art for the project are presented as well as the overall structure of this report.
+In section \ref{sec:mot} the motivations for the project are given, then in section \ref{sec:req} the requirements are presented and finally in section \ref{sec:plan} the overall structure of the report is shown.
 
-\subsection{Motivation}
+\subsection{Motivation} \label{sec:mot}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\linewidth]{fig/OleSetup.png}
 	\caption{The experimental setup used in \cite{Ole}.}\label{fig:OleSetup}
 \end{figure}
-The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole} or \cite{Neuron}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist in a spiral maze made out cardboard. This setup comes with some advantages such as:
+The studies on mammal locomotion have driven more and more attention over the years, and especially experiments on mice, such as \cite{Ole} or \cite{Neuron}, have enhanced our understanding of the neuronal circuits that enable locomotion. The experimental setup in \cite{Ole}, is quite rudimental. As shown in \ref{fig:OleSetup} it only consist of a spiral maze made out cardboard. This setup comes with some advantages such as:
 
 \begin{itemize}
 	\item Low price
@@ -247,11 +247,11 @@ As well as some disadvantages:
 	\item The mouse movements can't be imposed
 \end{itemize}
 
-A more advanced platform is used in \cite{Neuron}. In this case a rotating headpost allows 2-photon imaging in freely locomoting and rotating mice. This means that the measuring apparatus is fixed to the mouse head, while the mouse os free to move at his will. With such a setup it is possible to analyse the mouse gait, but it is not possible to control it, thus it is not the correct approach to use in the new design.\\
-To asses the issues mentioned above a new design is needed for conducting such experiments. The new platform needs to allow the control on the walking surface on which the mouse is standing in such a way that a specific speed profile can be imposed to the mouse. Moreover it must be possible to analyse the mouse gait using cameras. \\
-For the new design inspiration is taken from some existing solutions on the market. 
-\subsection{Requirements}
-First the mechanical requirements are discussed and stated. Table \ref{tab:Requirements} summarizes them.
+A more advanced platform is used in \cite{Neuron}. In this case a rotating headpost allows 2-photon imaging in freely locomoting and rotating mice. This means that the measuring apparatus is fixed to the mouse head, while the mouse is free to move at his will. With such a setup it is possible to analyse the mouse gait, but it is not possible to control it, thus it is not the correct approach to use in the new design.\\
+
+To asses the issues mentioned above a new design is needed for conducting such experiments. The new platform needs to allow the control on the walking surface on which the mouse is standing in such a way that a specific speed profile can be imposed to the mouse. Moreover it must be possible to analyse the mouse gait using cameras.
+\subsection{Requirements}\label{sec:req}
+In this section the mechanical and functional requirements are stated. Table \ref{tab:Requirements} summarizes the mechanical ones.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{l||c|r} 
@@ -281,7 +281,8 @@ First the mechanical requirements are discussed and stated. Table \ref{tab:Requi
 	\caption[Mechanical requirements]{Summary of the requirements for the mouse treadmill platform.}
 	\label{tab:Requirements}
 \end{table}
-The functional requirements are listed as well:
+\noindent
+The functional requirements are listed below.
 \begin{itemize}
 	\item \textbf{Closed-loop control} The user can specify a 2D speed setpoint, the control is then able to measure the speed of the treadmill surface and adjust the motor signals to reach the desired setpoint.
 	\item \textbf{Speed routines} The user can define a speed routine, which needs to be executed by the treadmill. The speed routine consists of a list of 2D speed setpoints and the time interval during which the machine should execute them.
@@ -290,11 +291,14 @@ The functional requirements are listed as well:
 	\item \textbf{Expandability of the system} The user can easily expand the system with other controllers to have other features, than the ones listed above.
 \end{itemize}
 
-\subsection{Structure of the report}
+\subsection{Structure of the report}\label{sec:plan}
 This report is structured as follows: an introduction is given in section \ref{sec:intro}. Section \ref{sec:design} describes the design decisions and the components' choices made. Section \ref{sec:control} describes the control strategy, while in section \ref{sec:results} the results are shown.
 Finally in section \ref{sec:conc} the conclusion of the project is given. After that in section \ref{sec:user_manual} the user manual for mouse treadmill is provided. The code and the data-sheets of the components are annexed. All the work done on the project can be downloaded from \url{https://github.com/DidierNegretto/3DMouseTreadmill}.
+\newpage
+
+
 \section{Design choices}\label{sec:design}
-In this section the design choices are explained and justified. First an overview of the system architecture is given, then choice of the board and the sensors is analysed and finally the calculations for the motor dimensioning are shown.
+In this section the design choices are explained and justified. First an overview of the system architecture is given in section \ref{sec:archi}, then the choices of: the board \ref{sec:board}, the communication system \ref{sec:com} and the sensors \ref{sec:sensor} are analysed. Finally the calculations for the motor's dimensioning are shown \ref{sec:motor}.
 \subsection{System architecture overview} \label{sec:archi}
 The overview of the system is given in figure \ref{fig:arch}.
 \begin{figure}[H]
@@ -305,14 +309,14 @@ The overview of the system is given in figure \ref{fig:arch}.
 \end{figure}
 The core of the system is the STM32L476RG, which can read from the sensors using the SPI interface and control the motors using PWM. Moreover it can communicate with the computer and the GUI for data logging and to receive the inputs from the user. The communication with the computer uses the DMA capabilities of the microcontroller to free the processor from waiting for the communication to end before being able to take care of other tasks. More detailed informations on how the treadmill works and can be used are given in section \ref{sec:user_manual}.
 
-\subsection{Board}
+\subsection{Board} \label{sec:board}
 For the board choice different types are taken into account:
 \begin{itemize}
-	\item \textbf{Single board computer}: In this category the raspberry pi and the odroid are taken into consideration. These boards offer powerful computers, which can be running operating systems such as Linux or Windows, which makes them interesting. Unfortunately they can't provide any accurate timing,  which is needed for the motor control and PWM generation.
-	\item \textbf{Evaluation boards}: In this category the STM32 nucleo boards as well as the arduino boards can be found. These boards allow proper timing of the signals and accurate PWM generation, but on the other hand a computer is needed for plotting and storing the data, which can't be done locally on the board due to memory restrictions and limited resources available.
+	\item \textbf{Single board computer}: In this category the raspberry pi and the odroid are taken into consideration. These boards offer powerful computers, which can run operating systems such as Linux or Windows, which makes them interesting. Unfortunately they can't provide any accurate timing,  which is needed for the motor control and PWM generation.
+	\item \textbf{Evaluation boards}: In this category the STM32 nucleo boards as well as the Arduino boards can be found. These boards allow proper timing of the signals and accurate PWM generation, but on the other hand a computer is needed for plotting and storing the data, which can't be done locally on the board due to memory restrictions and limited resources available. 
 \end{itemize}
 
-Due to the constraints in the system the second category is consider for implementation, the  STM32L476RG board is taken for the system. Table \ref{tab:board} summarizes the features of the board.
+Due to the constraints in the system the second category is consider for implementation. By comparing the Arduino and STM boards the choice of the STM is done, since it comes with much more and better features. The  STM32L476RG board is taken for the system. Table \ref{tab:board} summarizes the features of the board.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{l||c|r} 
@@ -340,11 +344,12 @@ Due to the constraints in the system the second category is consider for impleme
 	\caption{STM32L476RG main features.}
 	\label{tab:board}
 \end{table}
-One of the most important feature of the board is the DMA, which enhances the performances of the CPU. The DMA is used for the UART communication with the computer. This technique frees the CPU from waiting for the UART communication to be finished, so that it can spend more time on other activities. This same solution can be, in principle, adopted for the SPI communication if a standard SPI is used. Unfortunately the timing diagrams for the sensors are not standard, thus some time needs to be "wasted" by the processor so that the sensors can keep up with the communication.
+One of the most important feature of the board is the DMA, which enhances the performances of the CPU. The DMA is used for the UART communication with the computer. This technique frees the CPU from waiting for the UART communication to be finished, so that it can spend more time on other activities. This same solution can be, in principle, adopted for the SPI communication if a standard SPI is used. Unfortunately the timing diagrams for the sensors are not standard, thus some time needs to be "wasted" by the processor so that the sensors can keep up with the communication.\\
+
 Other interesting features are: the big flash memory, the good RAM memory and the low cost. One drawback is that dynamic memory allocation is not possible in such an small system to prevent stack overflow and problems during run time. This is why the size of the speed routine is limited to a given number of points.
 Finally the multiple serial interfaces allow the possibility to expand the system to a bigger one with more $\mu$controllers involved.
 
-\subsection{Communication}
+\subsection{Communication}\label{sec:com}
 
 \begin{wrapfigure}{R}{0.42\textwidth}
 	\includegraphics[width=\linewidth]{fig/MAVLink_logo.png}
@@ -373,8 +378,10 @@ For the communication with the computer the UART 232 protocol is chosen. This ch
 \end{table}
 
 Since the system needs to be expanded for future more complex experiments some thought is put in the choice of the messaging protocol to allow this key feature.
-The best solution found is MAVLink. "MAVLink is a very lightweight messaging protocol for communicating with drones"\cite{mavlink}, one can say that the mouse treadmill is not meant to fly around, but this messaging protocol is flexible enough to be adapted to the mouse treadmill.
-More precisely a dialect is described in \ref{app:mavlink}, and summarized in table \ref{tab:msg}. Thanks to the description file (\ref{app:mavlink}) it is possible to generate libraries in different programming languages (C, Python, Java, ...) and if in the future a new message is required an additional definition can be added to the file and the libraries can be regenerated.
+The best solution found is MAVLink. "MAVLink is a very lightweight messaging protocol for communicating with drones" \cite{mavlink}, one can say that the mouse treadmill is not meant to fly around, but this messaging protocol is flexible enough to be adapted to the mouse treadmill.
+More precisely a dialect is described in \ref{app:mavlink}, and summarized in table \ref{tab:msg}. Thanks to the description file (\ref{app:mavlink}) it is possible to generate libraries in different programming languages (C, Python, Java, ...) and if in the future a new message is required an additional definition can be added to the file and the libraries can be regenerated.\\
+
+Being able to use the same messages in different programming languages is crucial to this project because the best solutions for graphical user interfaces are in python, while the $\mu$controller is programmed in C. That's why on the PC a python script is running, while on the embedded system a C program is used. Thanks to MAVLink it is possible to use the same data structure on both and similar functions for parsing the incoming and sent data.\\
 
 Despite the light weight MAVLink comes with some interesting features, such is high reliability (detects packets drops and corruption), high efficiency (only 14-bits of overhead), it can also allow up to 255 concurrent systems on the network. Thus it looks perfect for the expandability requirement.
 
@@ -406,14 +413,15 @@ Despite the light weight MAVLink comes with some interesting features, such is h
 	\label{tab:msg}
 \end{table}
 
-\subsection{Sensor}
+\subsection{Sensor}\label{sec:sensor}
 For sensing the speed of the wheel a contactless solution is chosen. To achieve this goal a optical gaming mouse sensor is taken. Another criterion is that the sensor needs to come mounted on a PCB with a simple interface to reduce the time needed to design and manufacture the machine.
 Because of that the PMW3360 is chosen for the implementation.
-The working principle of the sensor is quite simple. The sensor is equipped with a LED to light a given area and a camera. The camera takes picture of the moving surface with a frequency of up to 12000 $[fps]$. Using the integrated DSP module some features are extracted form the images and, by knowing the displacement of the features, it is possible to determine how much the surface has moved on the X and Y direction.
+The working principle of the sensor is quite simple. The sensor is equipped with a LED to light a given area and a camera. The camera takes pictures of the moving surface with a frequency of up to 12000 $[fps]$. Using the integrated DSP module some features are extracted form the images and, by knowing the displacement of the features, it is possible to determine how much the surface has moved on the X and Y direction.
 Some other useful information can be retrieved from the sensor such as :
 \begin{itemize}
 	\item \textbf{Lift status} This bit in the motion register gives information about the status of the sensor and especially if the sensor detects a surface or not. This information is used to determine if the read value is valid or not.
 	\item \textbf{Surface quality (SQUAL)} This register gives an information about how many features are detected on the surface. This value is used to verify the quality of the measurement, which is considered valid only if the number of detected features is above a given threshold.
+	\item \textbf{Product ID} This register has a constant value and is read to verify that the SPI connection between the sensor and the board is connected correctly. If this value is not has expected the reading is flagged as non valid.
 	\item \textbf{SROM ID} This value is read after the power up of the sensor to verify that the SROM of the sensor is uploaded correctly using the SPI interface. If this value is not as expected it means that the sensor is not initialized correctly and thus might not work properly. 
 \end{itemize}
 The specifications of the sensor are summarized on table \ref{tab:PMW3360}. For more details refer to \ref{app:PMW3660}.
@@ -440,7 +448,7 @@ The specifications of the sensor are summarized on table \ref{tab:PMW3360}. For 
 \end{table}
 
 
-\subsection{Motor}
+\subsection{Motor}\label{sec:motor}
 In this section one motor proposition \ref{app:motor} \footnote{This motors are not used in the actual version of the treadmill, but might be used for a future iteration.} is shown with all the calculations used to justify such a choice.
 To properly dimension the motors these assumptions are taken:
 \begin{multicols}{2}[]
@@ -482,10 +490,10 @@ Finally the maximum acceleration can be computed using equation \ref{eq:a}:
 	a_{max} = \frac{M_{max}r_w}{J_w + J_s}
 \end{equation}
 Using the equations above we get $v_{max} = 3.16$ $[\frac{m}{s}]$ and $a_{max} = 2.74$ $[\frac{m}{s^2}]$, which are values within the requirements. The motors shown in \ref{app:motor} are not used in the current version of the treadmill, but the calculations used to choose them are shown since they might be useful for an improved version. 
-
+\newpage
 \section{Control} \label{sec:control}
 In this section the main aspects of the control are discussed.
-For the closed-loop control a simple PI controller is used. This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). In \ref{sec:I/O} the inputs and outputs of the control loop are explained, in section \ref{sec:controller} the control logic is explained.
+For the closed-loop control a simple PI controller is used. This can be improved in future works to allow for faster and better performance control. The implementation of the controller is done in CodeSTM32/mouseDrive.c in the function void mouseDriver\_control\_idle(void). In \ref{sec:I/O} the inputs and outputs of the control loop are explained, in section \ref{sec:controller} the control logic is shown.
 
 \subsection{Inputs/Outputs}\label{sec:I/O}
 In this section the signal definitions are described.
@@ -502,7 +510,7 @@ The control diagram is shown in figure \ref{fig:ctrl_diag}. The signals are defi
 	v_x\\
 	v_y
 	\end{bmatrix}$
-	: is the measured $v_x$ and $v_y$ speeds. This measure is done using the optical sensors, which means that the raw values are as defined in the datasheet of the sensors (see \ref{app:PMW3660}). In short words the sensor runs a navigation program, which does the correlation between two images as fast as possible and finds out of how many counts the two images are displaced in the $x$ and $y$ direction of the sensor. Those displacement are then integrated up to when the motion burst read is performed. Since two sensors are used, only one axis of each sensor is meaningful for the control (since the other one is always reading 0). Therefore the information that can be retrieved from one sensor is the number of counts along one axis that the ball has moved since the last read. This can then be translated in meters by knowing the resolution of the sensor (which is given in counts per inch). Finally the speed can be computed by keeping track of when the last measure is taken, and the actual time, thus knowing the $dt$ between two measures. The time measurement is done using time from boot expressed in $[ms]$.
+	: is the measured $v_x$ and $v_y$ speeds. This measure is done using the optical sensors, which means that the raw values are as defined in the datasheet of the sensors (see \ref{app:PMW3660}). In short words the sensor runs a navigation program, which does the correlation between two images as fast as possible and finds out of how many counts the two images are displaced in the $x$ and $y$ direction of the sensor. Those displacements are then integrated up to when the motion burst read is performed. Since two sensors are used, only one axis of each sensor is meaningful for the control (since the other one is always reading 0). Therefore the information that can be retrieved from one sensor is the number of counts along one axis that the ball has moved since the last read. This can then be translated in meters by knowing the resolution of the sensor (which is given in counts per inch). Finally the speed can be computed by keeping track of when the last measure is taken, and the actual time, thus knowing the $dt$ between two measures. The time measurement is done using time from boot expressed in $[ms]$.
 	\item	
 	$E = \begin{bmatrix}
 	e_x\\
@@ -538,18 +546,23 @@ Where $K$ and $I$ are constant scalar values and $\begin{bmatrix}i_x\\i_y\end{bm
 Moreover the control is done only if the measures taken are valid. Which means that the SQUAL measure is bigger than SQUAL\_THRESH, the sensors are not lifted, and the PRODUCT\_ID is equal 66.
 If those conditions are met it means that the surface quality is good, the sensor "sees" correctly the surface and the communication is done correctly.
 If the measures are not valid for more than MAX\_MISSING\_MEASURES the motors are stopped and the mode goes to STOP mode to avoid damage to the machine.
+\newpage
 \section{Results} \label{sec:results}
-In this section the results of a first test of the machine are presented. The experiment consisted in making the control slowly reach a target speed and then measure whatever the desired speed is reached and with which precision. Then, by analysing the log files it is studied if it is possible to recover the position of the ball relative to the starting and with which precision. This test is then repeated for different speed setpoints (0.01, 0.02, 0.03, 0.04 and 0.05 $[\frac{m}{s}]$). The visual display of the information is inspired by \cite{Tufte}.
-\subsubsection{Speed measure}
+In this section the results of a first test of the machine are presented. The experiment consisted in making the control slowly reach a target speed and then measure whatever the desired speed is reached and with which precision (section \ref{sec:spee_mes}). Then, by analysing the log files it is studied if it is possible to recover the position of the ball relative to the starting point (section \ref{sec:pos_mes}). This test is then repeated for different speed setpoints (0.01, 0.02, 0.03, 0.04 and 0.05 $[\frac{m}{s}]$). The visual display of the information is inspired by \cite{Tufte}.
+\subsection{Speed measure} \label{sec:spee_mes}
 \begin{wrapfigure}{L}{0.5\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{fig/steady_state}
-	\caption{Measured speed distribution as a function of the reference speed.}\label{fig:steady_state}
+	\caption{Measured speed as a function of the reference speed.}\label{fig:steady_state}
 \end{wrapfigure}
 The time series of the speed error are shown in figure \ref{fig:speed_error}.
-The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:speed_param}. One can notice that in every time-series there is a high frequency noise given by the sensor and a low frequency one. The low frequency noise is due to the imperfections on the ball. The ball gets periodically slowed down by some regions with higher friction.\\
+The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:speed_param}. One can notice that in every time-series there is a high frequency noise given by the sensor and a low frequency one. The low frequency noise is due to the imperfections on the ball. The ball gets periodically slowed down by some regions with higher friction.
 To better understand how the noise on the sensors varies with the increase of the reference speed figure \ref{fig:steady_state} is shown.
-In this figure the reference speed is compared with the measured one. The mean, median, standard deviation, min/max values of the measured speed are shown. One can notice that the minimum speed is always 0 $[\frac{m}{s}]$, this is due to the friction that causes the ball to get periodically blocked, as said before. Moreover the last speed reference of 0.05 $[\frac{m}{s}]$ is not reached because of the saturation of the control signal. On the other hand the median value is close to the mean, which is the case when the distribution is close to Gaussian.Finally a sensible increase in the standard deviation can be noticed when the reference speed is increased, this is probably due the sensor behaviour, but it might also be caused by more vibrations in the mechanical construction. Once it is possible to reach higher speeds it will be interesting to see which performances can be expected.
+In this figure the reference speed is compared with the measured one.\\
+
+One can notice that the minimum speed is always 0 $[\frac{m}{s}]$, this is due to the friction that causes the ball to get periodically blocked, as said before. Moreover the last speed reference of 0.05 $[\frac{m}{s}]$ is not reached because of the saturation of the control signal. On the other hand the median value is close to the mean, which is the case when the distribution is close to Gaussian. Finally a sensible increase in the standard deviation can be noticed when the reference speed is increased, this is probably due the sensor behaviour, but it might also be caused by more vibrations in the mechanical construction. \\
+
+When it will be possible to reach higher speeds it will be interesting to see if the sensor's performances are degraded, probably the standard deviation will increase and then saturate for high speeds. It is expected, from the sensor's data-sheet, that the requirements are met for the full speed range of the final version of the treadmill (up to 3 $[\frac{m}{s}]$) even if it was not possible to test this situation.
 
 \begin{table}[H]
 	\centering
@@ -568,30 +581,21 @@ In this figure the reference speed is compared with the measured one. The mean, 
 	\label{tab:speed_param}
 \end{table}
 
-\begin{figure}[htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{fig/speed_error_0}\\
-	\includegraphics[width=0.8\textwidth]{fig/speed_error_1}\\
-	\includegraphics[width=0.8\textwidth]{fig/speed_error_2}\\
-	\includegraphics[width=0.8\textwidth]{fig/speed_error_3}\\
-	\includegraphics[width=0.8\textwidth]{fig/speed_error_4}
-	\caption[Speed error time-series]{Time-series of the speed error (measured speed-reference) for different reference speeds. On the right the number of occurrences is shown to study the distribution of the error.}\label{fig:speed_error}
-\end{figure}
-
-\subsection{Position measurement} 
+\subsection{Position measurement}\label{sec:pos_mes}
 \begin{wrapfigure}{R}{0.5\textwidth}
-	\vspace{-1cm}
 	\centering
 	\includegraphics[width=\linewidth]{fig/pos_error_comp}
-	\caption{Position distribution as a function of the reference speed.}\label{fig:pos_error_comp}
+	\caption{Position error as a function of the reference speed.}\label{fig:pos_error_comp}
 \end{wrapfigure}
 The time series of the position error are shown in figure \ref{fig:pos_error}.
-The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:pos_param}. One can notice that the position is not drifting from the expected one, or at least is drifting so slowly that on time scale of around $60$ $[s]$ it is not possible to measure it. This means that the optical sensors are very good and are able to compensate for the drift.\\
+The noise distribution is close to Gaussian for every speed reference, the parameters to model the noise are given in table \ref{tab:pos_param}. One can notice that the position is not drifting from the expected one, or at least is drifting so slowly that on a time scale of $60$ $[s]$ it is not possible to measure it. This means that the optical sensors are very good and are able to compensate for the drift.\\
+
 To better understand how the noise on the position varies with the increase of the reference speed figure \ref{fig:pos_error_comp} is shown.
- The mean, median, standard deviation, min/max values of the position are shown. No surprise to see that the worst case it at 0.05 [$\frac{m}{s}$], which is the case in which the motor signal saturates.\\
+  No surprise to see that the worst case it at 0.05 [$\frac{m}{s}$], which is the case in which the motor signal saturates.\\
  
- The accuracy in position is impressive $\leq 4.4e-5$ $[m]$ for the reference speeds tested, this seems to deteriorate with higher speeds but should be with the requirements for very high speeds. One question might arise at this point, why the speed is so less accurate if the position can be determined so precisely? This might be due to the precision in the time reference in the $\mu$controller, which is set to 1 [$ms$]. Try with a more precise beat might improve the speed accuracy quite a lot, despite the little effort.
-5
+ The accuracy in position is impressive $\leq 4.4e-5$ $[m]$ for the reference speeds tested, this seems to deteriorate with higher speeds but should be within the requirements even for very high speeds. This high accuracy is expected from the sensors, since in the data sheet a similar result is presented.
+ One question might arise at this point, why the speed is so less accurate if the position can be determined so precisely? This might be due to the precision in the time reference in the $\mu$controller, which is set to 1 [$ms$]. Trying to use a more precise beat might improve the speed accuracy quite a lot, despite the little effort.
+
 
 \begin{table}[H]
 	\centering
@@ -609,7 +613,17 @@ To better understand how the noise on the position varies with the increase of t
 	\caption{Noise parameters on position for different speed references.}
 	\label{tab:pos_param}
 \end{table}
-
+	
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_0}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_1}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_2}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_3}\\
+	\includegraphics[width=0.8\textwidth]{fig/speed_error_4}
+	\caption[Speed error time-series]{Time-series of the speed error (measured speed-reference) for different reference speeds. On the right the number of occurrences is shown to study the distribution of the error.}\label{fig:speed_error}
+\end{figure}
+	
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\textwidth]{fig/pos_error_0}\\
@@ -625,7 +639,7 @@ To better understand how the noise on the position varies with the increase of t
 In the first part of the section a comparison between requirements and achievements is done, then the conclusions are taken.
 \newline
 
-In the end the proposed system performs well in terms of accuracy, despite being just a proof of concept. Table \ref{tab:achieved} shows which requirements are achieved and which are not\footnote{The position and speed resolution/accuracy depends on the speed setpoint, the surface quality and others, only extensive tests for all possible dynamics can provide information on these values.}.
+In the end the proposed system performs well in terms of accuracy, even if it is lacking on other requirements. Table \ref{tab:achieved} shows which requirements are achieved and which are not\footnote{The position and speed resolution/accuracy depends on the speed setpoint, the surface quality and others, only extensive tests for different dynamics can provide good knowledge of these values.}.
 \begin{table}[H]
 	\centering
 	\begin{tabular}{l||c|c|r|r} 
@@ -672,16 +686,20 @@ For the functional requirements it is possible to say that:
 In conclusion all the functional requirements are met by the current design even if some of them can be improved and others need more testing.
 \newline
 
-The goal of designing a mouse treadmill able to solve the drawbacks of the one used in \cite{Ole} and \cite{Neuron} is achieved. Unfortunately, not all the requirements for the new design are met, which means that steps to improve the machine needs to be taken. This report try to underline the good performances achieved, as well as the things that are not to show the way for improving the design.
-One crucial step to take is the improvement of the motors, the ones on the prototype are too noisy and slow to get close to a fully functional design. In this report one suggestion for the new motors is done, so that for the next iteration it is possible to start from a solid starting point. No need to underline that a different choice can be made, especially since the motors are controlled using PWM, which is a very common technique used by most motor drivers.
+The goal of designing a mouse treadmill able to solve the drawbacks of the ones used in \cite{Ole} and \cite{Neuron} is achieved. Unfortunately, not all the requirements for the new design are met, which means that steps to improve the machine needs to be taken. This report try to underline the good performances achieved, as well as the things that are not to show the way for improving the design.
+One crucial step to take is the improvement of the motors, the ones on the prototype are too noisy and slow to be used for testing with a real mouse. In this report one suggestion for the new motors is done, so that for the next iteration it is possible to start from a solid starting point. No need to underline that a different choice can be made, especially since the motors are controlled using PWM, which is a very common technique used by most motor drivers.\\
 
-Working on this project was a great opportunity to practice many different skills and improve my knowledge on the field. The most interesting part was to implement a functional embedded system and its interface with the PC, the sensors and the motors. A true and complete robotic project from A to Z !
+Working on this project was a great opportunity to practice many different skills and improve my knowledge on the field. The most interesting part was to implement a functional embedded system and its interface with the PC, the sensors and the motors. A true and complete robotic project from A to Z !\\
+
+ I thanks the professor for this opportunity and the assistant for his help throughout the project. I also thanks Maxime Rioux for his work on the mechanical design of the treadmill, Alessandro Crespi for his advices on electronics and Jérôme Savary who helped me with Altium designer.
 
 
 
 \newpage
 \section[User manual]{User manual for mouse treadmill software}\label{sec:user_manual}
-The software is well documented (just run doxygen using the Doxyfile in the docs folder), nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. The installation guide for the PC software, a user manual for the GUI, a explanation on how to write a speed routine as well as a guide on how to expand the system with new messages is provided. Note that all the provided commands and instructions are tested for MAC, mavlink is available also for LINUX and WINDOWS, the user can adapt these command to be able to install and successfully use the software on his machine. 
+The software is well documented (just run doxygen using the Doxyfile in the docs folder), nevertheless some important things are pointed out in this report so that the user can more easily install and start using the mouse treadmill. In this manual the following sections are provided: the installation guide for the PC software \ref{sec:install} , a user manual for the GUI \ref{sec:gui} as well as a guide on how to expand the system with new messages \ref{sec:expand}. Note that all the provided commands and instructions are tested for MAC. MAVLink is available also for LINUX and WINDOWS, the user therefore adapt these commands to be able to install and successfully use the software on his own machine.\\
+
+On \url{https://github.com/DidierNegretto/3DMouseTreadmill} it is possible to find example code for writing a routine and reading the log files, do not hesitate to take inspiration\footnote{ "inspiration" includes, but it is not limited to copy-pasting. Remember to cite the sources of your inspiration.} from this code.
 \subsection{Installation of the PC software}\label{sec:install}
 First python 3 needs to be installed, for that see \cite{py}. GIT needs to be install as well. Some other python packages needs to be installed, they can be obtained using PiP. The required ones are:\\
 \begin{multicols}{3}[]
@@ -744,8 +762,11 @@ To install the software the sequent steps have to be accomplished:
 	\end{lstlisting}
 	
 \end{enumerate}
-\subsection{How to use the GUI}  
-In this section the use of the GUI and its functionalities are described.
+\subsection{How to use the GUI} \label{sec:gui}  
+In this section the use of the GUI and its functionalities are described.\\
+
+You can use the GUI only after installing the PC software as shown in \ref{sec:install}. To run it you just need to run the mouseController.py using python3. Note that you will need to change the port according to the port on which the stm32 is connected as well as the import routine as mouseRoutine if you change the name of the file in which the routine is. \\
+
 First of all the GUI provided can be expanded using the functions in the mouse.py generated using mavlink, and thus can be improved for future versions of the project. One screenshot of the GUI is shown in figure \ref{fig:GUI}.
 \begin{figure}[htp]
 	\centering
@@ -768,14 +789,14 @@ Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on
 			ROM 4 = 4 | 4\\
 			\hline
 		\end{tabular} 
-		\caption[Correct sensor status]{Example of GUI output for sensor initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
+		\caption[Correct sensor status]{Example of GUI output when the sensors are initialized and connected correctly and detecting a good quality surface. Before = the name of the information and its correct value are shown, after the sensor x | sensor y readings are displayed.}
 		\label{tab:sens_corr}
 	\end{table}
 	\item \textcolor{cyan}{\textbf{D}} 
 	In this region the input from the user are taken. In the first line the user can select the mode to be used:
 	\begin{itemize}
-		\item \textbf{STOP}: When this mode is selected the motor are stopped.
-		\item \textbf{SPEED}: When this mode is selected the motor setpoints can be typed in the two entries under the Speed X and Speed Y labels.
+		\item \textbf{STOP}: When this mode is selected the motors are stopped.
+		\item \textbf{SPEED}: When this mode is selected the speed setpoints can be typed in the two entries under the Speed X and Speed Y labels.
 		\item \textbf{AUTO}: When this mode is selected the user can load the points of the routine on the board (Modes: LOAD) and then run the routine (Modes: RUNNING).
 	\end{itemize} 
 	Finally the RESET PLOTS button is used to reset the plot in case of reset on the board, the SAVE LOG button stores all the data received in a file in /log/log\_TIME.txt, where TIME is the time expressed in [$ns$]. This is done to avoid overwriting logs that were previously acquired. The LOAD POINTS sends the points defined in routine.py to the board. This will work only if the mode is set to AUTO (should see LOAD in Modes in  \textcolor{red}{\textbf{A}} and the time should not be updated). Finally the RUN ROUTINE button starts the routine on the board (the board goes in mode RUNNING).	
@@ -785,12 +806,14 @@ Figure \ref{fig:GUI} is taken on a MAC, the GUI have the same functionalities on
 	\includegraphics[width=0.7\linewidth]{fig/FSM.pdf}
 	\caption{Finite state machine of the mouse treadmill.}\label{fig:FSM}
 \end{figure}
-The finite state machine of the machine is shown in figure \ref{fig:FSM}. All the capital letters conditions (except for MAX\_POINTS) are widgets on the GUI that can be pressed by the user while using the machine.
+The finite state machine of the machine is shown in figure \ref{fig:FSM}. All the capital letters conditions (except for MAX\_POINTS) are widgets on the GUI that can be pressed by the user while using the machine.\\
+
 \subsection{How to write a routine}
 In this section the way to properly define a routine is described. 
 An example routine is provided in MouseTreadmillPC/python/routine.py. The routine is a python dictionary containing a list of durations, setpoint\_x and setpoint\_y. The two setpoints define the desired speed along x and y, while the duration is the time span during which the two setpoints are applied. One should notice that the system time is discrete and increased every millisecond, moreover one should take into account the settling time for the control and the maximum acceleration provided by the motors to do a proper discretization of the desired speed profile.\\
-A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000.
-\subsection{How to extend the system}
+
+A duration of 0 means that the end of the routine is reached and the routine is started again at the first point defined. A maximum of 255 points can be defined, if more points are needed the id of the point have to be changed from type uint8\_t to uint16\_t to allow for IDs above 255. A memory limitation is still present, but for a number of points above 1'000. An example script to generate a routine is given (gen\_routine.py).
+\subsection{How to extend the system} \label{sec:expand}
 To extend the system with new messages and features the main operation consist in modifying \ref{app:mavlink}. This files describes all the messages and constants used in the communication protocol, thus it possible to add/modify them. If you need to create a new message or constant, please have a look at the already defined ones and use them as a template. 
 To extend the system please follow the following steps:
 \begin{enumerate}
@@ -848,7 +871,7 @@ To extend the system please follow the following steps:
 		\label{fig:gen_c}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{fig/gen_py}
+	 	\includegraphics[width=\textwidth]{fig/gen_py}
 		\caption{python libraries.}
 		\label{fig:gen_py}
 	\end{subfigure}

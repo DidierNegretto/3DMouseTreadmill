@@ -158,7 +158,7 @@ for i in range(5):
     ax[0].set_xlabel("Time [ms]")
     ax[0].set_ylabel("Speed error [m/s]")
     ax[1].set_xlabel("Number of occurencies [ ]")
-    ax[1].hist(speed["data"][i]-x[i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+    ax[1].hist(speed["data"][i]-x[i],bins =18 , orientation = 'horizontal', histtype = 'bar', ec = None, fc = 'lightgrey')
     #ax[1].set_yticks([])
     titicaca = ax[0].get_xticks()
     titicaca = titicaca[1:-2]
@@ -195,7 +195,7 @@ ax[0].set_xlabel("Time [ms]")
 ax[0].set_ylabel("Frequency [Hz]")
 ax[0].set_yticks([np.amax(dt), np.amin(dt)])
 ax[1].set_xlabel("Number of occurencies [ ]")
-res = ax[1].hist(dt,bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+res = ax[1].hist(dt,bins =18 , orientation = 'horizontal', histtype = 'bar', ec = None, fc = 'lightgrey')
 
 ax[1].set_yticks([])
 ax[1].set_xticks([res[0][0], res[0][-1] ])
@@ -250,7 +250,7 @@ for i in range(5):
     
     pos_error["data"].append((np.array(ref_pos)-np.array(pos["data"]))*1000)
     ax[0].plot(t_speed["data"][i][0:-1], pos_error["data"][i], 'k-', lw = 0.01)
-    res = ax[1].hist(pos_error["data"][i],bins =18 , orientation = 'horizontal', histtype = 'step', ec = 'k')
+    res = ax[1].hist(pos_error["data"][i],bins =18 , orientation = 'horizontal', histtype = 'bar', ec = None, fc = 'lightgrey')
     
     ax[0].set_title("Position error at speed = "+str(x[i])+" [m/s]")
     ax[1].set_title("Position error distribution at speed = "+str(x[i])+" [m/s]")
