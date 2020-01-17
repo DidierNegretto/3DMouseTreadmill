@@ -1,0 +1,47 @@
+Removed Member From Class: ClassName=Connect_Board_Sch Member=J2
+Change Component Designator: OldDesignator=J1 NewDesignator=SENSOR_X
+Added Component: Designator=SENSOR_Y(7-215079-8)
+Add component (AddParameter): Name = "Allied Price/Stock"; Value = "http://www.alliedelec.com/te-connectivity-7-215079-8/70346681/"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Allied_Number"; Value = "70346681"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet Link"; Value = "http://www.farnell.com/datasheets/1699417.pdf"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Name"; Value = "TE Connectivity"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "7-215079-8"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Part Number"; Value = "571-7-215079-8"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mouser Price/Stock"; Value = "https://www.mouser.com/Search/Refine.aspx?Keyword=571-7-215079-8"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RS Part Number"; Value = "3018032P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RS Price/Stock"; Value = "http://uk.rs-online.com/web/p/products/3018032P"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=5V Pin=P1-18
+Added Pin To Net: NetName=5V Pin=SENSOR_X-1
+Added Pin To Net: NetName=5V Pin=SENSOR_Y-1
+Added Net: Name=5V
+Added Pin To Net: NetName=CS_X Pin=P1-38
+Added Pin To Net: NetName=CS_X Pin=SENSOR_X-4
+Added Net: Name=CS_X
+Added Pin To Net: NetName=CS_Y Pin=P1-36
+Added Pin To Net: NetName=CS_Y Pin=SENSOR_Y-4
+Added Net: Name=CS_Y
+Added Pin To Net: NetName=GD Pin=SENSOR_X-2
+Added Pin To Net: NetName=GD Pin=SENSOR_Y-2
+Added Net: Name=GD
+Added Pin To Net: NetName=MI Pin=P1-35
+Added Pin To Net: NetName=MI Pin=SENSOR_X-7
+Added Pin To Net: NetName=MI Pin=SENSOR_Y-7
+Added Net: Name=MI
+Added Pin To Net: NetName=MO Pin=P1-37
+Added Pin To Net: NetName=MO Pin=SENSOR_X-6
+Added Pin To Net: NetName=MO Pin=SENSOR_Y-6
+Added Net: Name=MO
+Added Pin To Net: NetName=MT Pin=SENSOR_X-3
+Added Pin To Net: NetName=MT Pin=SENSOR_Y-3
+Added Net: Name=MT
+Added Pin To Net: NetName=PW_X Pin=P1-34
+Added Pin To Net: NetName=PW_X Pin=SENSOR_X-8
+Added Net: Name=PW_X
+Added Pin To Net: NetName=PW_Y Pin=P1-32
+Added Pin To Net: NetName=PW_Y Pin=SENSOR_Y-8
+Added Net: Name=PW_Y
+Added Pin To Net: NetName=SC Pin=P2-25
+Added Pin To Net: NetName=SC Pin=SENSOR_X-5
+Added Pin To Net: NetName=SC Pin=SENSOR_Y-5
+Added Net: Name=SC
+Added Member To Class: ClassName=Connect_Board_Sch Member=Component SENSOR_Y 7-215079-8

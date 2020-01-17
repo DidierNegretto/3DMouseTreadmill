@@ -1,0 +1,9 @@
+Manufacturer=TE Connectivity
+PartNumber=7-215079-8
+PartCategory=Connector
+PackageCategory=Other
+PinCount=8
+Version=1.1
+Released=2016-05-22 21:05:33
+Downloaded=2019-12-08 13:51:48
+3D=N

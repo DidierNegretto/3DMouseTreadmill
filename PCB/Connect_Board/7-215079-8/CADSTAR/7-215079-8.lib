@@ -1,0 +1,19 @@
+.7-215079-8 :1 ;8 way top entry micro-match PCB socket TE Connectivity Micro-Match Series 2.54mm 8 Way 2 Row Straight PCB Socket Through Hole Female-On-Board
+"7-215079-8"
+*STM J
+*NGS
+*PLB 1="1" 2="2" 3="3" 4="4" 5="5" 6="6" 7="7" 8="8"
+*MXP 9
+*DFN 7-215079-8
+~!Manufacturer_Name (TE Connectivity)
+~!Manufacturer_Part_Number (7-215079-8)
+~!Mouser Part Number (571-7-215079-8)
+~!Link Mouser Price/Stock (https://www.mouser.com/Search/Refine.aspx?Keyword=571-7-215079-8)
+~!RS Part Number (3018032P)
+~!Link RS Price/Stock (http://uk.rs-online.com/web/p/products/3018032P)
+~!Allied_Number (70346681)
+~!Link Allied Price/Stock (http://www.alliedelec.com/te-connectivity-7-215079-8/70346681/)
+~!Link Datasheet (http://www.farnell.com/datasheets/1699417.pdf)
+~!Height (-)
+"7-215079-8"
+1.1!U 3.1!U 5.1!U 7.1!U 2.1!U 4.1!U 6.1!U 8.1!U 

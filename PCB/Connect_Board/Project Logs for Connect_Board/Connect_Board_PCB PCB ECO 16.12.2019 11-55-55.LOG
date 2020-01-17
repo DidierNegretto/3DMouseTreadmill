@@ -1,0 +1,7 @@
+Added Pin To Net: NetName=GND Pin=MOT_DRIV_X2-5
+Added Pin To Net: NetName=NetMOT_DRIV_X2_1 Pin=MOT_DRIV_X2-1
+Added Pin To Net: NetName=NetMOT_DRIV_X2_1 Pin=P2-21
+Added Net: Name=NetMOT_DRIV_X2_1
+Added Pin To Net: NetName=NetMOT_DRIV_X2_2 Pin=MOT_DRIV_X2-2
+Added Pin To Net: NetName=NetMOT_DRIV_X2_2 Pin=P2-23
+Added Net: Name=NetMOT_DRIV_X2_2

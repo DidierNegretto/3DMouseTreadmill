@@ -1,0 +1,3 @@
+SENSOR connector from DISTRELEC:
+
+- 7-215079-8 .

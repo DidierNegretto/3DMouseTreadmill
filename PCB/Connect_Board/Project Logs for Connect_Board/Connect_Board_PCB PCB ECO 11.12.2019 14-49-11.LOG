@@ -1,0 +1,12 @@
+Removed Pin From Net: NetName=5V Pin=SENSOR_X-1
+Removed Pin From Net: NetName=5V Pin=SENSOR_Y-1
+Added Pin To Net: NetName=GD Pin=P1-19
+Added Pin To Net: NetName=GD Pin=P2-9
+Added Pin To Net: NetName=GD Pin=P2-20
+Change Net Name : Old Net Name=CS_X New Net Name=NetP1_38
+Change Net Name : Old Net Name=CS_Y New Net Name=NetP1_36
+Change Net Name : Old Net Name=GD New Net Name=GND
+Change Net Name : Old Net Name=MI New Net Name=NetP1_35
+Change Net Name : Old Net Name=MO New Net Name=NetP1_37
+Change Net Name : Old Net Name=PW_Y New Net Name=NetP1_32
+Change Net Name : Old Net Name=SC New Net Name=NetP2_25

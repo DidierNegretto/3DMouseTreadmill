@@ -1,0 +1,11 @@
+Removed Pin From Net: NetName=MO Pin=P2-23
+Removed Pin From Net: NetName=MO Pin=SENSOR_X-5
+Removed Pin From Net: NetName=MO Pin=SENSOR_Y-5
+Removed Pin From Net: NetName=MO Pin=TEST_X-5
+Removed Pin From Net: NetName=MO Pin=TEST_Y-5
+Added Pin To Net: NetName=SC Pin=P2-23
+Added Pin To Net: NetName=SC Pin=SENSOR_X-5
+Added Pin To Net: NetName=SC Pin=SENSOR_Y-5
+Added Pin To Net: NetName=SC Pin=TEST_X-5
+Added Pin To Net: NetName=SC Pin=TEST_Y-5
+Added Net: Name=SC

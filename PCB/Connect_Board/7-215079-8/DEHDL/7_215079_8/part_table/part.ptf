@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART '7_215079_8'
+CLASS = IO
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "RS_PART_NUMBER", "RS_PRICE/STOCK", "ALLIED_NUMBER", "ALLIED_PRICE/STOCK", "DESCRIPTION", "DATASHEET";
+{========================================================================================}
+ "TE Connectivity", "7-215079-8" (!) = "", "7-215079-8", "Other", "571-7-215079-8", "https://www.mouser.com/Search/Refine.aspx?Keyword=571-7-215079-8", "3018032P", "http://uk.rs-online.com/web/p/products/3018032P", "70346681", "http://www.alliedelec.com/te-connectivity-7-215079-8/70346681/", "8 way top entry micro-match PCB socket TE Connectivity Micro-Match Series 2.54mm 8 Way 2 Row Straight PCB Socket Through Hole Female-On-Board", "http://www.farnell.com/datasheets/1699417.pdf"
+END_PART
+
+END.

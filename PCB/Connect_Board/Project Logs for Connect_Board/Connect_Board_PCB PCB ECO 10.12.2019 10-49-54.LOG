@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=5V Pin=TEST_X-1
+Removed Pin From Net: NetName=GD Pin=TEST_X-2
+Removed Pin From Net: NetName=CS_X Pin=TEST_X-4
+Removed Pin From Net: NetName=SC Pin=TEST_X-5
+Removed Pin From Net: NetName=MO Pin=TEST_X-6
+Removed Pin From Net: NetName=MI Pin=TEST_X-7
+Removed Pin From Net: NetName=PW_X Pin=TEST_X-8
+Removed Pin From Net: NetName=5V Pin=TEST_Y-1
+Removed Pin From Net: NetName=GD Pin=TEST_Y-2
+Removed Pin From Net: NetName=CS_Y Pin=TEST_Y-4
+Removed Pin From Net: NetName=SC Pin=TEST_Y-5
+Removed Pin From Net: NetName=MO Pin=TEST_Y-6
+Removed Pin From Net: NetName=MI Pin=TEST_Y-7
+Removed Pin From Net: NetName=PW_Y Pin=TEST_Y-8
+Added Member To Class: ClassName=Connect_Board_Sch Member=Component SENSOR_X 7-215079-8
