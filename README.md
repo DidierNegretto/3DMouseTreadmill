@@ -1,6 +1,6 @@
 #  3D MOUSE TREADMILL PROJECT
 This is the readme that describes the code for the 3D mouse treadmill project at BIOROB, EPFL
-First of all the code that is not provided by stm or mavlink is given under the GPL 3 license, which is 
+First of all the code that is not provided by stm or mavlink or that has someother license is given under the GPL 3 license, which is 
 copied below. The code given by stm or mavlink , which include the HAL libraries and the mavlink libraries
 comes with its own license.
 
